@@ -14,7 +14,7 @@ instance:
     kind: GitRepository
     name: flux-system
     #url: ssh://git@github.com/gznzeus/flux-ops.git
-    url: ssh://git@github.com:sstr-dev/infrastructure.git
+    url: ssh://git@github.com/sstr-dev/infrastructure.git
     ref: refs/heads/main
     #pullSecret: flux-git-deploy
     path: kubernetes/clusters/core-rke2
