@@ -1,0 +1,57 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  SOPS_CONFIG_FILE: "{{.ROOT_DIR}}/.sops.yaml"
+
+tasks:
+  download-dashboards:
+    silent: true
+    desc: Search for dashboard-config.yaml files and download all dashboards
+    cmds:
+      - |
+        echo "🔍 Searching for dashboard-config.yaml files in '{{.ROOT_DIR}}/kubernetes' ..."
+        find "{{.ROOT_DIR}}/kubernetes" -type f -name "dashboard-config.yaml" | while read config_file; do
+          config_dir=$(dirname "$config_file")
+          echo "📄 Processing $config_file ..."
+
+          # 1️⃣ Process .dashboards (only if it exists and is a map)
+          if yq e 'has("dashboards") and (.dashboards | type == "map")' "$config_file" | grep -q true; then
+            keys=$(yq e '.dashboards | keys | .[]' "$config_file")
+            for key in $keys; do
+              filename="$key.json"
+              url=$(yq e ".dashboards[\"$key\"].url" "$config_file")
+              if [[ -n "$url" ]]; then
+                echo "⬇️  Downloading $filename from $url to $config_dir ..."
+                curl -sSL "$url" -o "$config_dir/$filename"
+                if [[ $? -eq 0 ]]; then
+                  echo "✅ Saved: $config_dir/$filename"
+                else
+                  echo "❌ Failed: $url"
+                fi
+              fi
+            done
+          else
+            echo "ℹ️ No 'dashboards' section in $config_file"
+          fi
+
+          # 2️⃣ Process .dashboard (only if url and files exist)
+          if yq e 'has("dashboard") and .dashboard.url and (.dashboard.files | length > 0)' "$config_file" | grep -q true; then
+            base_url=$(yq e '.dashboard.url' "$config_file")
+            file_count=$(yq e '.dashboard.files | length' "$config_file")
+            for ((i=0; i<file_count; i++)); do
+              filename=$(yq e ".dashboard.files[$i]" "$config_file")
+              full_url="${base_url%/}/$filename"
+              echo "⬇️  Downloading $filename from $full_url to $config_dir ..."
+              curl -sSL "$full_url" -o "$config_dir/$filename"
+              if [[ $? -eq 0 ]]; then
+                echo "✅ Saved: $config_dir/$filename"
+              else
+                echo "❌ Failed: $full_url"
+              fi
+            done
+          else
+            echo "ℹ️ No valid 'dashboard' block in $config_file"
+          fi
+        done

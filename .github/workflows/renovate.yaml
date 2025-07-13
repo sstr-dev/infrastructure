@@ -1,0 +1,85 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: "Renovate"
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - .renovaterc.json5
+      - .renovate/**.json5
+  workflow_dispatch:
+    inputs:
+      dryRun:
+        description: Dry Run
+        type: boolean
+        default: false
+        required: true
+      logLevel:
+        description: Log Level
+        type: choice
+        default: info
+        options:
+          - debug
+          - info
+        required: true
+      version:
+        description: Renovate Version
+        default: latest
+        required: true
+  schedule:
+    #- cron: "0 * * * *" # Every hour
+    #- cron: "0 */6 * * *" # Every 6 hours
+    - cron: "0 */24 * * *" # Every 24 hours
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  renovate:
+    name: Renovate
+    runs-on: ubuntu-latest
+    #runs-on: home-ops-runner
+    #runs-on: ["gha-runner-scale-set"]
+    permissions:
+      packages: read
+    steps:
+      - name: Early exit if not gznzeus on issues or pull_request
+        if: ${{ (github.event_name == 'issues' || github.event_name == 'pull_request') && github.event.sender.login != 'gznzeus' }}
+        run: |
+          echo "Not gznzeus, exiting early."
+          exit 0
+      - name: Generate Token
+        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2
+        id: app-token
+        with:
+          app-id: "${{ secrets.BOT_APP_ID }}"
+          private-key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          persist-credentials: false
+          token: "${{ steps.app-token.outputs.token }}"
+
+      - name: Renovate
+        uses: renovatebot/github-action@13da59cf7cfbd3bfea72ce26752ed22edf747ce9 # v43.0.2
+        env:
+          LOG_LEVEL: "${{ inputs.logLevel || 'info' }}"
+          RENOVATE_AUTODISCOVER: true
+          RENOVATE_AUTODISCOVER_FILTER: "${{ github.repository }}"
+          #RENOVATE_USERNAME: "${{ secrets.BOT_USERNAME }}[bot]"
+          #RENOVATE_GIT_AUTHOR: "${{ secrets.BOT_USERNAME }} <${{ secrets.BOT_USER_ID }}+${{ secrets.BOT_USERNAME }}[bot]@users.noreply.github.com>"
+          RENOVATE_DRY_RUN: ${{ inputs.dryRun && 'true' || 'false' }}
+          RENOVATE_PLATFORM: github
+          RENOVATE_PLATFORM_COMMIT: true
+          WORKFLOW_RENOVATE_VERSION: "${{ inputs.version || 'latest' }}"
+        with:
+          configurationFile: .renovaterc.json5
+          token: "${{ steps.app-token.outputs.token }}"
+          renovate-version: "${{ env.WORKFLOW_RENOVATE_VERSION }}"

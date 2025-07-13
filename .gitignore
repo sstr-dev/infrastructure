@@ -1,0 +1,67 @@
+/.cache
+/bin
+/dist
+*.swp
+.idea
+#.vscode/
+Dockerfile.dapper[0-9]*
+TODO.md
+temp/
+.secrets
+.ansible
+# Trash
+.DS_Store
+Thumbs.db
+# k8s
+kubeconfig*
+config.xml
+.config.env
+*.pub
+*.key
+*.pem
+
+*github-push-token.txt
+
+ansible/venv
+ansible/.venv
+debug_test
+#.vscode
+.vagrant
+ansible/inventory/inventory.yaml
+ansible/inventory.yaml
+ansible/playbooks/debug.yaml
+
+# vscode-sops
+.decrypted~*.yaml
+*.agekey
+.env
+.tmp
+# Ansible
+.venv*
+
+# k8s
+kubeconfig
+.decrypted~*.yaml
+.config.env
+*.agekey
+*.pub
+*.key
+# Private
+.private
+.bin
+# Taskfile
+.task
+# Brew
+Brewfile.lock.json
+# Bootstrap
+/config.yaml
+*.private.example
+test.py
+test-*.py
+# Terraform
+.terraform
+.terraform.tfstate*
+.terraform.lock.hcl
+terraform.tfstate*
+*.tfvars
+.trash

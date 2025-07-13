@@ -1,0 +1,104 @@
+---
+version: "3"
+set: [pipefail]
+shopt: [globstar]
+vars:
+
+  # Directories
+  ANSIBLE_DIR: "{{.ROOT_DIR}}/ansible"
+  PRIVATE_DIR: "{{.ROOT_DIR}}/.private"
+  SECRETS_DIR: "{{.ROOT_DIR}}/.secrets"
+  SCRIPTS_DIR: "{{.ROOT_DIR}}/scripts"
+
+  KUBERNETES_DIR: "{{.ROOT_DIR}}/clusters"
+
+  BOOSTRAP_DIR: '{{.ROOT_DIR}}/bootstrap'
+
+  cluster: '{{.cluster | default "main"}}'
+  cluster_apps: '{{.ROOT_DIR}}/kubernetes/apps/{{.cluster}}'
+  cluster_dir: '{{.ROOT_DIR}}/kubernetes/clusters/{{.cluster}}'
+  cluster_config_dir: '{{.ROOT_DIR}}/kubernetes/config/{{.cluster}}'
+  shared_apps: '{{.ROOT_DIR}}/kubernetes/apps/base'
+  components_dir: '{{.ROOT_DIR}}/kubernetes/components'
+
+  # Files
+  AGE_FILE: "{{.ROOT_DIR}}/age.key"
+  PIP_REQUIREMENTS_FILE: "{{.ROOT_DIR}}/requirements.txt"
+  # Binaries
+  PYTHON_BIN: python3.11
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  SOPS_AGE_KEY_FILE: "{{.AGE_FILE}}"
+  VIRTUAL_ENV: "{{.ROOT_DIR}}/.venv"
+
+includes:
+  ansible: .taskfiles/Ansible/Taskfile.yaml
+  sync: .taskfiles/Sync/Taskfile.yaml
+  flux: .taskfiles/Flux/Taskfile.yaml
+  kubernetes:
+    aliases: ["k8s"]
+    taskfile: .taskfiles/Kubernetes/Taskfile.yaml
+  repository:
+    aliases: ["repo"]
+    taskfile: .taskfiles/Repository/Taskfile.yaml
+  sops: .taskfiles/Sops/Taskfile.yaml
+  workstation: .taskfiles/Workstation/Taskfile.yaml
+  kubeblocks:
+    aliases: ["kb"]
+    taskfile: .taskfiles/Kubeblocks/Taskfile.yaml
+
+tasks:
+
+  default:
+    silent: true
+    cmd: task --list
+
+  noop:
+    internal: true
+    silent: true
+    cmd: noop() { :; }
+
+  # TODO: cleanup
+
+
+  init:
+    desc: Initialize configuration files
+    cmds:
+      - mkdir -p {{.PRIVATE_DIR}}
+      - cp -n {{.BOOTSTRAP_CONFIG_FILE | replace ".yaml" ".sample.yaml"}} {{.BOOTSTRAP_CONFIG_FILE}}
+      - cmd: echo === Configuration file copied ===
+        silent: true
+      - cmd: echo Proceed with updating the configuration files...
+        silent: true
+      - cmd: echo {{.BOOTSTRAP_CONFIG_FILE}}
+        silent: true
+    status:
+      - test -f "{{.BOOTSTRAP_CONFIG_FILE}}"
+
+  configure:
+    desc: Configure repository from bootstrap vars
+    prompt: Any conflicting config in the root kubernetes and ansible directories will be overwritten... continue?
+    deps: ["workstation:direnv", "workstation:venv", "sops:age-keygen", "init"]
+    cmds:
+      - task: .template
+      - task: sops:encrypt
+
+  testtemplate:
+    desc: Configure repository from bootstrap vars
+    #prompt: Any conflicting config in the root kubernetes and ansible directories will be overwritten... continue?
+    #deps: ["workstation:direnv", "workstation:venv", "sops:age-keygen", "init"]
+    cmds:
+      - task: .template
+      - task: sops:encrypt
+
+  .template:
+    internal: true
+    cmd: "{{.VIRTUAL_ENV}}/bin/makejinja"
+    preconditions:
+      - { msg: "Missing virtual environment", sh: "test -d {{.VIRTUAL_ENV}}" }
+      - { msg: "Missing Makejinja config file", sh: "test -f {{.MAKEJINJA_CONFIG_FILE}}" }
+      - { msg: "Missing Makejinja plugin file", sh: "test -f {{.BOOTSTRAP_DIR}}/scripts/plugin.py" }
+      - { msg: "Missing bootstrap config file", sh: "test -f {{.BOOTSTRAP_CONFIG_FILE}}" }
+
+

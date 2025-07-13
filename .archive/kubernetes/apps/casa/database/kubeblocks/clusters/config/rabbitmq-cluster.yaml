@@ -1,0 +1,36 @@
+apiVersion: apps.kubeblocks.io/v1alpha1
+kind: Cluster
+metadata:
+  name: rabbitmq-cluster
+  labels:
+    helm.sh/chart: rabbitmq-cluster-0.9.0
+    app.kubernetes.io/version: "3.13.2"
+    app.kubernetes.io/instance: rabbitmq-cluster
+spec:
+  terminationPolicy: Delete
+  affinity:
+    podAntiAffinity: Preferred
+    topologyKeys:
+      - kubernetes.io/hostname
+  componentSpecs:
+    - name: rabbitmq
+      componentDef: rabbitmq
+      serviceVersion: 3.13.2
+      replicas: 2
+      serviceAccountName: kb-rabbitmq-cluster
+      resources:
+        limits:
+          cpu: "0.5"
+          memory: "0.5Gi"
+        requests:
+          cpu:    100m      # 0.1 CPU
+          memory: 256Mi     # 256 MiB
+      volumeClaimTemplates:
+        - name: data # ref clusterDefinition components.containers.volumeMounts.name
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 20Gi
+      #services:

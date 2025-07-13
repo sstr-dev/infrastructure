@@ -1,0 +1,161 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+
+  sync-secrets:
+    desc: Sync all ExternalSecrets
+    cmds:
+      - for: { var: SECRETS, split: "\n" }
+        cmd: kubectl --context {{.cluster}} --namespace {{splitList "," .ITEM | first}} annotate externalsecret {{splitList "," .ITEM | last}} force-sync="{{now | unixEpoch}}" --overwrite
+    vars:
+      SECRETS:
+        sh: kubectl --context {{.cluster}} get externalsecret --all-namespaces --no-headers --output=jsonpath='{range .items[*]}{.metadata.namespace},{.metadata.name}{"\n"}{end}'
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - which kubectl
+    requires:
+      vars: [cluster]
+
+  labelandtaint:
+    desc: "Apply node labels and taints to cluster {{.cluster}}"
+    cmds:
+      - |
+        echo "▶ Using Kubernetes context: {{.cluster}}"
+        echo "▶ Reading nodes from {{.cluster_config_dir}}/nodes.yaml…"
+        for node in $(yq e 'keys | .[]' {{.cluster_config_dir}}/nodes.yaml); do
+          echo "──> Processing node: $node"
+          # Apply labels
+          for lbl in $(yq e ".${node}.label[]" {{.cluster_config_dir}}/nodes.yaml); do
+            echo "    • Label: $lbl"
+            kubectl --context {{.cluster}} label node $node $lbl --overwrite
+          done
+          # Apply taints, if any
+          for tnt in $(yq e ".${node}.taints[]?" {{.cluster_config_dir}}/nodes.yaml); do
+            echo "    • Taint: $tnt"
+            kubectl --context {{.cluster}} taint node $node $tnt --overwrite || true
+          done
+        done
+    silent: true
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: test -f {{.cluster_config_dir}}/nodes.yaml
+        msg: "⚠️  No nodes.yaml found in {{.cluster_config_dir}}"
+    requires:
+      vars: [cluster]
+    status:
+      - "Labels and taints applied successfully"
+
+  browse-pvc:
+    desc: Mount a PVC to an temp container [cluster=required] [ns=default] [claim=required]
+    summary: |
+      Args:
+        cluster: Cluster to run command against (required)
+        ns: Namespace to browse PersistentVolumeClaims in (default: default)
+        claim: PersistentVolumeClaim to browse (required)
+    interactive: true
+    cmd: kubectl browse-pvc --context {{.cluster}} --namespace {{.ns}} --image docker.io/library/alpine:latest {{.claim}}
+    vars:
+      ns: '{{.ns | default "default"}}'
+    requires:
+      vars: ["cluster", "claim"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get persistentvolumeclaims {{.claim}}
+        msg: "❌ Persistentvolumeclaims '{{.claim}}' not found!"
+
+
+  node-shell:
+    desc: Open a shell to a node [node=required]
+    interactive: true
+    cmd: kubectl node-shell --context {{.cluster}} -n kube-system -x {{.node}}
+    requires:
+      vars: ["cluster", node]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: kubectl --context {{.cluster}} get nodes {{.node}}
+        msg: "❌ Node '{{.node}}' not found!"
+
+
+
+
+  drain:
+    desc: Drain a node
+    summary: |
+      Args:
+        cluster: Cluster to run command against (required)
+        node: Node to drain (required)
+    cmd: kubectl --context {{.cluster}} drain {{.node}} --ignore-daemonsets --delete-local-data --force
+    requires:
+      vars: ["cluster", "node"]
+
+  delete-failed-pods:
+    desc: Deletes pods with a Failed status
+    summary: |
+      Args:
+        cluster: Cluster to run command against (required)
+    cmds:
+      - for: ["Evicted", "Failed", "Succeeded"]
+        cmd: kubectl --context {{.cluster}} delete pods --field-selector status.phase={{.ITEM}} -A --ignore-not-found=true
+    requires:
+      vars: ["cluster"]
+
+  resources:
+    desc: Gather common resources in your cluster, useful when asking for support
+    summary: |
+      Args:
+        cluster: Cluster to run command against (required)
+    cmds:
+      - for: { var: resource }
+        cmd: kubectl --context {{.cluster}} get {{.ITEM}} {{.CLI_ARGS | default "-A"}}
+    vars:
+      cluster: '{{ or .cluster (fail "Argument (cluster) is required") }}'
+      resource: >-
+        nodes
+        gitrepositories
+        kustomizations
+        helmrepositories
+        helmreleases
+        certificates
+        certificaterequests
+        ingresses
+        pods
+
+  alpine:
+    desc: Run alpine container
+    summary: |
+      Args:
+        cluster: Cluster to run alpine container (required)
+    cmds:
+      - kubectl --context {{.cluster}} run -it alpine --image alpine:3.15.4
+    requires:
+      vars: ["cluster"]
+
+  dnsutils:
+    desc: Run DNSUtils pod
+    summary: |
+      Args:
+        cluster: Cluster to run DNSUtils pod (required)
+    cmds:
+      - kubectl --context {{.cluster}} run -it dnsutils --image gcr.io/kubernetes-e2e-test-images/dnsutils:1.3
+    requires:
+      vars: ["cluster"]
+
+  what-dockerhub:
+    desc: What dockerhub images are running in my cluster
+    summary: |
+      Args:
+        cluster: Cluster to run command against (required)
+    cmds:
+      - kubectl --context {{.cluster}} get pods --all-namespaces -o=jsonpath="{range .items[*]}{'\n'}{range .spec.containers[*]}{.image}{'\n'}{end}{end}" | sort | uniq | grep -Ev 'quay|gcr|ghcr|ecr|us-docker' | grep -Ev 'bitnami|rook|intel|grafana' |  sed -e 's/docker\.io\///g' | sort | uniq
+    requires:
+      vars: ["cluster"]
+
+  .reset:
+    internal: true
+    cmd: rm -rf {{.KUBERNETES_DIR}}

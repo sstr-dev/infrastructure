@@ -1,0 +1,43 @@
+---
+area/bootstrap:
+  - changed-files:
+      - any-glob-to-any-file: "bootstrap/**/*"
+area/docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "README.md"
+area/github:
+  - changed-files:
+      - any-glob-to-any-file: .github/**/*
+area/kubernetes:
+  - changed-files:
+      - any-glob-to-any-file: kubernetes/**/*
+area/scripts:
+  - changed-files:
+      - any-glob-to-any-file: "scripts/**/*"
+area/talos:
+  - changed-files:
+      - any-glob-to-any-file: "talos/**/*"
+area/taskfile:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".taskfiles/**/*"
+          - "Taskfile.yaml"
+area/renovate:
+  - changed-files:
+      - any-glob-to-any-file:
+          - .renovate/**/*
+          - .renovaterc.json5
+area/terraform:
+  - changed-files:
+      - any-glob-to-any-file: terraform/**/*
+area/ansible:
+  - changed-files:
+      - any-glob-to-any-file: ansible/**/*
+# Cluster
+cluster/core:
+  - changed-files:
+      - any-glob-to-any-file: kubernetes/**/core/**/*
+cluster/casa:
+  - changed-files:
+      - any-glob-to-any-file: kubernetes/**/casa/**/*

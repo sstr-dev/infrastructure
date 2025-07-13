@@ -1,0 +1,20 @@
+---
+keys:
+  - &kubernetes age13x3gvqpe83vx0rcmcdcqnt202c4rsq3sax8s5q2p5t2lcjflpsvqgng8s3
+  - &ansible age1pvq7pns09vm4cw3kyq4t9lawnaf8ywlhe7ksx3mct9r9dcutgcyss2sdqa
+
+creation_rules:
+
+  - path_regex: kubernetes/.*\.sops\.ya?ml
+    encrypted_regex: "^(data|stringData)$"
+    key_groups:
+      - age:
+          - *kubernetes
+  - path_regex: ansible/.*\.sops\.ya?ml
+    key_groups:
+      - age:
+          - *ansible
+
+stores:
+  yaml:
+    indent: 2

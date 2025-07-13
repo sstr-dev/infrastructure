@@ -1,0 +1,8 @@
+{% for namespace in ["external-secrets", "flux-system", "security"] %}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ namespace }}
+{% endfor %}
+---

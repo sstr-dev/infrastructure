@@ -1,0 +1,49 @@
+---
+#- name: Proxmox
+#  hosts: servers:&proxmox
+#  become: true
+#  gather_facts: true
+#  any_errors_fatal: true
+#  #pre_tasks:
+#  #  - name: Pausing for 5 seconds...
+#  #    ansible.builtin.pause:
+#  #      seconds: 5
+#  #roles:
+#  #  - lablabs.rke2
+- name: Post-Internet access tasks
+  hosts: servers:&proxmox
+  tasks:
+    # - name: Update APT configuration
+    #   ansible.builtin.include_role:
+    #     name: configure_apt
+    - name: Install utilities
+      ansible.builtin.apt:
+        name:
+          - curl
+          - htop
+          - net-tools
+          - tree
+          - dhcpdump
+          - jq
+        state: present
+        update_cache: true
+        cache_valid_time: 600
+        autoclean: true
+        autoremove: true
+
+    # - name: Remove subscription nag
+    #   ansible.builtin.replace:
+    #     path: /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+    #     regexp: "res === null \\|\\| res === undefined \\|\\| \\!res \\|\\| res\\n\\t\\t\\t.data.status.toLowerCase\\(\\) \\!== 'active'"
+    #     replace: "false"
+    #     backup: yes
+    #   register: web_js
+    # - name: Restart the web GUI service
+    #   ansible.builtin.service:
+    #     name: pveproxy
+    #     state: restarted
+    #   when: web_js.changed
+
+    - name: Install exporters
+      ansible.builtin.include_role:
+        name: install_exporters

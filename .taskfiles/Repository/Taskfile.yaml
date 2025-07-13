@@ -1,0 +1,55 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+
+  validate:
+    silent: true
+    desc: Validate repositority before commit
+    cmds:
+      - task: validate:sops
+
+  validate:sops:
+    silent: true
+    desc: Ensure all *.sops.yaml files are encrypted
+    cmds:
+      - |
+        echo "🔍 Checking SOPS encryption ..."
+        failed=0
+        for file in $(find . -type f -name "*.sops.yaml" ! -path "./.sops.yaml"); do
+          if ! grep -q "sops:" "$file"; then
+            echo "❌ Not encrypted: $file"
+            failed=1
+          fi
+        done
+        if [ "$failed" -eq 1 ]; then
+          echo "⛔ Some files are not encrypted."
+          exit 1
+        fi
+        echo "✅ All SOPS files are encrypted."
+
+  generate-git-secret:
+    silent: true
+    desc: "Generate SOPS-encrypted Git SSH key Secret for a cluster"
+    vars:
+      cluster: '{{.cluster | default "casa-rke2"}}'
+      tmp_dir: '.tmp/{{.cluster}}'
+      secret_path: '{{.cluster_dir}}/bootstrap/github-ssh-secret.sops.yaml'
+    cmds:
+      - rm -rf {{.tmp_dir}}
+      - mkdir -p {{.tmp_dir}} {{.cluster_dir}}/bootstrap
+      - ssh-keygen -t ed25519 -C "{{.cluster}}-flux-gitops" -f {{.tmp_dir}}/id_ed25519 -N "" > /dev/null
+      - |
+        kubectl create secret generic flux-git-deploy \
+          --namespace=flux-system \
+          --from-literal=identity="$(cat {{.tmp_dir}}/id_ed25519)" \
+          --from-literal=identity.pub="$(cat {{.tmp_dir}}/id_ed25519.pub)" \
+          --dry-run=client -o yaml \
+        | yq 'del(.metadata.creationTimestamp)' > {{.secret_path}}
+      - sops --encrypt --in-place {{.secret_path}}
+      - echo "🔑 Public key to add in GitHub:"
+      - cat {{.tmp_dir}}/id_ed25519.pub
+      - rm -rf {{.tmp_dir}}
+    generates:
+      - "{{.secret_path}}"

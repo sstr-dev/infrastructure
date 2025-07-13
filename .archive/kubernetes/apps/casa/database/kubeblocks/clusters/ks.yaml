@@ -1,0 +1,54 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app kubeblocks-clusters
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  path: ./kubernetes/apps/casa/database/kubeblocks/clusters/config
+  prune: true
+  dependsOn:
+    - name: kubeblocks-backups
+  retryInterval: 2m
+  postBuild:
+    substitute:
+      APP: *app
+      CLUSTER: casa
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: database
+  timeout: 5m
+  wait: true
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app kubeblocks-ops
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  path: ./kubernetes/apps/casa/database/kubeblocks/clusters/ops
+  prune: true
+  dependsOn:
+    - name: kubeblocks-clusters
+  retryInterval: 2m
+  postBuild:
+    substitute:
+      APP: *app
+      CLUSTER: casa
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: database
+  timeout: 5m
+  wait: true

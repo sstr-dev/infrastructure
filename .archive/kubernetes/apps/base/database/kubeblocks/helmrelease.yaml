@@ -1,0 +1,76 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/source.toolkit.fluxcd.io/helmrepository_v1beta2.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: kubeblocks
+spec:
+  interval: 2h
+  url: https://apecloud.github.io/helm-charts
+  timeout: 3m
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app kubeblocks
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: kubeblocks
+      version: 1.0.0
+      interval: 30m
+      sourceRef:
+        kind: HelmRepository
+        name: kubeblocks
+  #install:
+  #  remediation:
+  #    retries: -1
+  #upgrade:
+  #  cleanupOnFail: true
+  #  remediation:
+  #    retries: 3
+  values:
+    ## Data protection settings
+    dataProtection:
+      encryptionKeySecretKeyRef:
+        name: "dp-encryption-key"
+        key: "encryptionKey"
+    grafana:
+      sidecar:
+        dashboards:
+          enabled: false
+        datasources:
+          enabled: false
+  #  backupRepo:
+  #    create: true
+  #    default: true
+  #    storageProvider: minio
+  #    accessMethod: Tool
+  #    pvReclaimPolicy: Retain
+  #    volumeCapacity: 100Gi
+  #    config:
+  #      bucket: kb-backup
+  #      mountOptions: ""
+  #      endpoint: ${MINIOSERVER}
+  #      insecure: "true"
+  #      update: "true"
+  #    #credential:
+  #    #  name: kb-minio-credential-for-backuprepo
+  #    #  namespace: database
+ #   ## @param autoInstalledAddons - the list of auto-installed addons when install and upgrade.
+ #   autoInstalledAddons:
+ #     - "apecloud-mysql"
+ #     - "etcd"
+ #     - "kafka"
+ #     - "mongodb"
+ #     - "mysql"
+ #     - "postgresql"
+ #     - "qdrant"
+ #     - "redis"
+ #     - "rabbitmq"
+ #     - "mariadb"
+ #     - "elasticsearch"
+ #     - "influxdb"
+ #     - "minio"

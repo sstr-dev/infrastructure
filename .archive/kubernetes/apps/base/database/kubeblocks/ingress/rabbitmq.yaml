@@ -1,0 +1,18 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rabbitmq-management
+spec:
+  ingressClassName: ${INGRESSCLASS}
+  rules:
+    - host: "rabbitmq-management.${DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rabbitmq-cluster-rabbitmq
+                port:
+                  name: management

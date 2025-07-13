@@ -1,0 +1,212 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+
+
+  reconcile:
+    desc: Force update Flux to pull in changes from your Git repository
+    cmds:
+      - flux get ks --no-header -n flux-system --context {{.cluster}} | awk '{print $1, $2}' | xargs -L1 bash -c 'flux reconcile ks -n flux-system $0 --context {{.cluster}}'
+      - flux get ks --all-namespaces --no-header --context {{.cluster}} | awk '{print $1, $2}' | xargs -L1 bash -c 'flux reconcile ks -n $0 $1 --context {{.cluster}}'
+    #cmd: flux --context {{.cluster}} reconcile --namespace flux-system kustomization cluster --with-source
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+    requires:
+      vars: [cluster]
+
+  helmfile:
+    desc: Bootstrap Cluster apps
+    cmds:
+      - bash {{.SCRIPTS_DIR}}/bootstrap-apps.sh
+    env:
+      cluster: '{{.cluster}}'
+      cluster_apps: '{{.cluster_apps}}'
+      cluster_dir: '{{.cluster_dir}}'
+      shared_apps: '{{.shared_apps}}'
+      components_dir: '{{.components_dir}}'
+    requires:
+      vars: [cluster]
+    preconditions:
+    - sh: kubectl config get-contexts {{.cluster}}
+      msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+    - sh: test -f {{.AGE_FILE}}
+      msg: "❌ SOPS Age key file missing: {{.AGE_FILE}}"
+    - sh: test -f {{.cluster_dir}}/bootstrap/github-ssh-secret.sops.yaml
+      msg: "❌ Missing SSH secret file for cluster '{{.cluster}}'"
+    - sh: sops --decrypt {{.cluster_dir}}/bootstrap/github-ssh-secret.sops.yaml > /dev/null
+      msg: "❌ Failed to decrypt SSH secret – is the age key correct?"
+    - sh: test -f {{.SCRIPTS_DIR}}/bootstrap-apps.sh
+      msg: "❌ Bootstrap file missing: {{.SCRIPTS_DIR}}/bootstrap-apps.sh"
+
+  monitor:
+    desc: Monitor the progress of Kustomizations and Helm Releases
+    summary: |
+      Args:
+        cluster: Cluster to run command against (required)
+    cmd: watch "flux --context {{.cluster}} get kustomizations -A|grep -v Applied;flux --context {{.cluster}} get helmrelease -A|grep -v succeeded"
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+
+  ks-sync:
+    desc: Sync Flux Kustomizations
+    cmds:
+      - |
+        kubectl --context {{.cluster}} get kustomization --all-namespaces --no-headers | awk '{print $1, $2}' \
+          | xargs --max-procs=4 -l bash -c \
+            'kubectl --context {{.cluster}} -n $0 annotate kustomization/$1 reconcile.fluxcd.io/requestedAt="$(date +%s)" --field-manager=flux-client-side-apply --overwrite'
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+    requires:
+      vars:
+        - cluster
+
+  ks-*:
+    desc: Suspend or resume Kustomizations [CLUSTER=main]
+    cmds:
+      - kubectl --context {{.cluster}} get ns -o jsonpath='{.items[*].metadata.name}' | xargs -n1 flux {{.STATE}} ks --all --namespace
+    vars:
+      STATE: '{{index .MATCH 0}}'
+    requires:
+      vars: [cluster]
+    preconditions:
+      - '[[ "{{.STATE}}" == "suspend" || "{{.STATE}}" == "resume" ]]'
+      - which flux kubectl
+
+
+
+
+  #bootstrap:
+  #  desc: Bootstrap Flux into a Kubernetes cluster
+  #  summary: |
+  #    Args:
+  #      cluster: Cluster to run command against (required)
+  #  # prompt: Bootstrap Flux into the '{{.cluster}}' cluster... continue?
+  #  cmds:
+  #    - echo "🚀 Bootstrapping Flux for cluster '{{.cluster}}'"
+  #    - echo "📦 Creating namespace 'flux-system' (if not exists)..."
+  #    - kubectl --context {{.cluster}} create namespace flux-system 2>&1 | grep -v 'AlreadyExists' || true
+  #    - echo "🔐 Applying SOPS-encrypted GitHub SSH secret..."
+  #    - sops --decrypt {{.cluster_dir}}/bootstrap/github-ssh-secret.sops.yaml | kubectl apply --context {{.cluster}} --server-side --filename -
+  #    - echo "✨ Installing Flux CRDs & controllers..."
+  #    # - kubectl --context {{.cluster}} apply --server-side --kustomize {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/flux
+  #    # - echo "🔓 Applying decrypted cluster secrets and settings..."
+  #    # - sops --decrypt {{.KUBERNETES_DIR}}/{{.cluster}}/flux/vars/cluster-secrets.sops.yaml | kubectl --context {{.cluster}} apply -f -
+  #    # - kubectl --context {{.cluster}} apply --server-side --filename {{.KUBERNETES_DIR}}/{{.cluster}}/flux/vars/cluster-settings.yaml
+#
+  #    # - echo "🧩 Applying Flux Kustomizations (config)..."
+  #    # - kubectl --context {{.cluster}} apply --server-side --kustomize {{.KUBERNETES_DIR}}/{{.cluster}}/flux/config
+  #    - echo "✅ Bootstrap completed successfully for '{{.cluster}}'"
+  #  preconditions:
+  #  - sh: kubectl config get-contexts {{.cluster}}
+  #    msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+  #  - sh: test -f {{.AGE_FILE}}
+  #    msg: "❌ SOPS Age key file missing: {{.AGE_FILE}}"
+  #  - sh: test -f {{.cluster_dir}}/bootstrap/github-ssh-secret.sops.yaml
+  #    msg: "❌ Missing SSH secret file for cluster '{{.cluster}}'"
+  #  - sh: sops --decrypt {{.cluster_dir}}/bootstrap/github-ssh-secret.sops.yaml > /dev/null
+  #    msg: "❌ Failed to decrypt SSH secret – is the age key correct?"
+#
+  #    #- test -f {{.KUBERNETES_DIR}}/{{.cluster}}/flux/vars/cluster-settings.yaml
+  #    #- test -f {{.KUBERNETES_DIR}}/{{.cluster}}/flux/vars/cluster-secrets.sops.yaml
+  #    # - sops --decrypt {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/github-ssh-secret.sops.yaml
+  #    #- kustomize build {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/flux
+  #    #- kustomize build {{.KUBERNETES_DIR}}/{{.cluster}}/flux/config
+  #  requires:
+  #    vars:
+  #      - cluster
+#
+  ## TODO test apply for multicluster
+  #apply:
+  #  desc: Apply a Flux Kustomization resource for a cluster
+  #  summary: |
+  #    Args:
+  #      cluster: Cluster to run command against (required)
+  #      path: Path to the Flux Kustomization resource (required)
+  #      name: Name of the Flux Kustomization to apply (default: last segment of <path> variable)
+  #      ns: Namespace the Flux Kustomization exists in (default: flux-system)
+  #  cmds:
+  #    - flux --context {{.cluster}} build ks {{.ks_name}}
+  #      --namespace {{.ns}}
+  #      --kustomization-file {{.kustomization_file}}
+  #      --path {{.kustomization_path}}
+  #      {{ if contains "not found" .kustomization_found }}--dry-run{{ end }}
+  #      |
+  #      kubectl --context {{.cluster}} apply --server-side
+  #      --field-manager=kustomize-controller -f -
+  #  vars:
+  #    kustomization_path: "{{.KUBERNETES_DIR}}/{{.cluster}}/apps/{{.path}}"
+  #    kustomization_file: "{{.kustomization_path}}/ks.yaml"
+  #    cluster: '{{ or .cluster (fail "Argument (cluster) is required") }}'
+  #    path: '{{ or .path (fail "Argument (path) is required") }}'
+  #    ks_name: '{{ .name | default (splitList "/" .path | last) }}'
+  #    ns: '{{.ns | default "flux-system"}}'
+  #    kustomization_found:
+  #      sh: flux --context {{.cluster}} --namespace {{.ns}} get kustomization {{.ks_name}} 2>&1
+  #  preconditions:
+  #    - sh: "test -f {{.kustomization_file}}"
+  #      msg: "Kustomization file {{.kustomization_file}} not found"
+  #    - sh: kubectl config get-contexts {{.cluster}}
+  #      msg: "Kubectl context {{.cluster}} not found"
+
+  gr-sync:
+    desc: Sync Flux GitRepositories
+    cmds:
+      - |
+        kubectl --context {{.cluster}} get gitrepositories --all-namespaces --no-headers | awk '{print $1, $2}' \
+          | xargs --max-procs=4 -l bash -c \
+            'kubectl --context {{.cluster}} -n $0 annotate gitrepository/$1 reconcile.fluxcd.io/requestedAt=$(date +%s) --field-manager=flux-client-side-apply --overwrite'
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "Kubectl context {{.cluster}} not found"
+    requires:
+      vars:
+        - cluster
+
+
+
+  hr-sync:
+    desc: Sync Flux HelmReleases
+    cmds:
+      - |
+        kubectl --context {{.cluster}} get helmreleases --all-namespaces --no-headers | awk '{print $1, $2}' \
+          | xargs --max-procs=4 -l bash -c \
+            'kubectl --context {{.cluster}} -n $0 annotate helmrelease/$1 reconcile.fluxcd.io/requestedAt="$(date +%s)" --overwrite'
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "Kubectl context {{.cluster}} not found"
+    requires:
+      vars:
+        - cluster
+
+  hr-suspend:
+    desc: Suspend all Flux HelmReleases
+    cmds:
+      - |
+        flux --context {{.cluster}} get helmrelease --all-namespaces --no-header | awk '{print $1, $2}' \
+          | xargs -l bash -c 'flux --context {{.cluster}} -n $0 suspend helmrelease $1'
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "Kubectl context {{.cluster}} not found"
+    requires:
+      vars:
+        - cluster
+
+  hr-resume:
+    desc: Suspend all Flux HelmReleases
+    cmds:
+      - |
+        flux --context {{.cluster}} get helmrelease --all-namespaces --no-header | awk '{print $1, $2}' \
+          | xargs -l bash -c 'flux --context {{.cluster}} -n $0 resume helmrelease $1'
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "Kubectl context {{.cluster}} not found"
+    requires:
+      vars:
+        - cluster

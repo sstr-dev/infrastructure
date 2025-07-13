@@ -1,0 +1,21 @@
+{
+    "recommendations": [
+        "albert.TabOut",
+        "britesnow.vscode-toggle-quotes",
+        "fcrespo82.markdown-table-formatter",
+        "mikestead.dotenv",
+        "mitchdenny.ecdc",
+        "redhat.ansible",
+        "signageos.signageos-vscode-sops",
+        "will-stone.in-any-case",
+        "EditorConfig.editorconfig",
+        "PKief.material-icon-theme",
+        "Gruntfuggly.todo-tree",
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "ms-vscode-remote.remote-containers",
+        "tamasfe.even-better-toml",
+        "redhat.vscode-yaml",
+        "samuelcolvin.jinjahtml",
+        "task.vscode-task"
+    ]
+}

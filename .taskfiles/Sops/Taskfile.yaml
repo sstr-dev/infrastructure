@@ -1,0 +1,92 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  SOPS_CONFIG_FILE: "{{.ROOT_DIR}}/.sops.yaml"
+
+tasks:
+
+  age-keygen:
+    desc: Initialize Age Key for Sops
+    cmd: age-keygen --output {{.AGE_FILE}}
+    status:
+      - test -f "{{.AGE_FILE}}"
+
+  cluster-age-keygen:
+    desc: Initialize Age Key for Sops
+    cmd: age-keygen --output {{.cluster_dir}}/age.key
+    preconditions:
+      - sh: "test ! -f {{.cluster_dir}}/age.key"
+        msg: "Missing Sops Age key file"
+    requires:
+      vars: ["cluster"]
+
+  generate-cluster-push-token:
+    cmd: python3.11 -c "import secrets; print(secrets.token_hex(16))" > {{.cluster_dir}}/github-push-token.txt
+    status:
+      - test -f {{.cluster_dir}}/github-push-token.txt
+    requires:
+      vars: ["cluster"]
+
+  generate-cluster-age-secret:
+    silent: true
+    desc: "Generate SOPS-encrypted Age key Secret for a cluster"
+    vars:
+      cluster: '{{.cluster | default "casa-rke2"}}'
+      secret_path: '{{.cluster_dir}}/bootstrap/age-key.sops.yaml'
+    cmds:
+      - |
+        kubectl create secret generic sops-age \
+          --namespace=flux-system \
+          --from-literal=age.agekey="$(cat {{.cluster_dir}}/age.key)" \
+          --dry-run=client -o yaml \
+          | yq 'del(.metadata.creationTimestamp)' > {{.secret_path}}
+      - sops --encrypt --in-place {{.secret_path}}
+    generates:
+      - "{{.secret_path}}"
+    preconditions:
+      - sh: test -f {{.cluster_dir}}/age.key
+        msg: "❌ SOPS Age key file missing: {{.cluster_dir}}/age.key"
+
+  cluster-encrypt:
+    desc: Encrypt all Kubernetes SOPS secrets that are not already encrypted
+    cmds:
+      - for: { var: file }
+        task: .encrypt-file
+        vars:
+          file: "{{.ITEM}}"
+    requires:
+      vars: ["cluster"]
+    vars:
+      file:
+        sh: |
+          if [ -d "{{.cluster_dir}}" ]; then
+              find "{{.cluster_dir}}" -type f -name "*.sops.*" -exec grep -L "ENC\[AES256_GCM" {} \;
+          fi
+
+
+  encrypt:
+    desc: Encrypt all Kubernetes SOPS secrets that are not already encrypted
+    cmds:
+      - for: { var: file }
+        task: .encrypt-file
+        vars:
+          file: "{{.ITEM}}"
+    vars:
+      file:
+        sh: |
+          find bootstrap ansible kubernetes -type f -name "*.sops.*" ! -name ".decrypted*" -exec grep -L "ENC\[AES256_GCM" {} + || true
+
+  .encrypt-file:
+    internal: true
+    cmd: sops --encrypt --in-place {{.file}}
+    requires:
+      vars: ["file"]
+    preconditions:
+      - { msg: "Missing Sops config file", sh: "test -f {{.SOPS_CONFIG_FILE}}" }
+      - { msg: "Missing Sops Age key file", sh: "test -f {{.AGE_FILE}}" }
+
+  .reset:
+    internal: true
+    cmd: rm -rf {{.SOPS_CONFIG_FILE}}

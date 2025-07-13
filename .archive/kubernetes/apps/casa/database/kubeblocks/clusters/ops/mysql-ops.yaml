@@ -1,0 +1,19 @@
+apiVersion: apps.kubeblocks.io/v1alpha1
+kind: OpsRequest
+metadata:
+  name: mysql-reconfiguring
+spec:
+  clusterName: mysql-cluster
+  # Instructs the system to bypass pre-checks (including cluster state checks and customized pre-conditions hooks) and immediately execute the opsRequest, except for the opsRequest of 'Start' type, which will still undergo pre-checks even if `force` is true.  Note: Once set, the `force` field is immutable and cannot be updated.
+  force: false
+  reconfigure:
+    componentName: mysql
+    configurations:
+    - keys:
+      - key: my.cnf
+        parameters:
+        - key: max_connections
+          value: "600"
+      name: mysql-replication-config
+  preConditionDeadlineSeconds: 0
+  type: Reconfiguring

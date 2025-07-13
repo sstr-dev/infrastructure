@@ -1,0 +1,42 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app kubeblocks-mariadb
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: mariadb
+      version: 1.0.0
+      interval: 30m
+      sourceRef:
+        kind: HelmRepository
+        name: kubeblocks
+  #dependsOn:
+  #  - name: rook-ceph-cluster
+  #    namespace: rook-ceph
+  #install:
+  #  remediation:
+  #    retries: -1
+  #upgrade:
+  #  cleanupOnFail: true
+  #  remediation:
+  #    retries: 3
+ # values:
+ #   ## @param autoInstalledAddons - the list of auto-installed addons when install and upgrade.
+ #   autoInstalledAddons:
+ #     - "apecloud-mysql"
+ #     - "etcd"
+ #     - "kafka"
+ #     - "mongodb"
+ #     - "mysql"
+ #     - "postgresql"
+ #     - "qdrant"
+ #     - "redis"
+ #     - "rabbitmq"
+ #     - "mariadb"
+ #     - "elasticsearch"
+ #     - "influxdb"
+ #     - "minio"

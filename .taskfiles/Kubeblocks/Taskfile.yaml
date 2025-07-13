@@ -1,0 +1,114 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+# cluster
+# .tmp
+#            if [ -d ".tmp/$name/" ]; then
+#              rm -rf .tmp/$name/
+#            fi
+env:
+  # Repository URL to clone (override with TASK_REPO_URL if needed)
+  REPO_URL: "https://github.com/apecloud/kubeblocks.git"
+  # Temporary clone directory
+  TMP_DIR: ".tmp/kubeblocks/"
+  BASEPATH: https://github.com/apecloud/kubeblocks/releases/download/
+  VERSION: "v0.9.3"
+  #FILE_LIST: "dataprotection.kubeblocks.io_storageproviders.yaml kubeblocks.yaml kubeblocks_crds.yaml snapshot.storage.k8s.yaml"
+  FILE_LIST: "kubeblocks_crds.yaml dataprotection.kubeblocks.io_storageproviders.yaml snapshot.storage.k8s.yaml"
+
+  # https://github.com/apecloud/kubeblocks/releases/download/v0.9.3/dataprotection.kubeblocks.io_storageproviders.yaml
+
+tasks:
+
+  update:
+    desc: "Update Kubeblocks CRD, storage provider and snapshop on the specified cluster"
+    requires:
+      vars:
+        - cluster
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+    cmds:
+      - rm -rf "{{.TMP_DIR}}"
+      - mkdir -p "{{.TMP_DIR}}"
+      - |
+        for fn in {{.FILE_LIST}}; do
+          file="{{.TMP_DIR}}$fn";
+          url="{{.BASEPATH}}{{.VERSION}}/$fn"
+          echo "⬇️ Downloading $url to $fn";
+          curl -fsSL "$url" -o "$file";
+
+          if kubectl --context {{.cluster}} get -f $file >/dev/null 2>&1; then
+            echo "♻️ Resource exists, replacing: $base";
+            kubectl --context {{.cluster}} replace -f $file
+          else
+            echo "✨ Creating: $base";
+            kubectl --context {{.cluster}} create -f $file
+          fi
+          #if kubectl --context {{.cluster}} create -f $file --save-config --dry-run=client >/dev/null 2>&1; then
+          #  echo "✨ Created: $file";
+          #else
+          #  echo "♻️ Resource exists, replacing: $file";
+          #  kubectl --context {{.cluster}} replace -f $file
+          #fi
+        done
+  remove:
+    desc: "Remove Kubeblocks CRD, storage provider and snapshop on the specified cluster"
+    requires:
+      vars:
+        - cluster
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+    cmds:
+      - rm -rf "{{.TMP_DIR}}"
+      - mkdir -p "{{.TMP_DIR}}"
+      - |
+        for fn in {{.FILE_LIST}}; do
+          file="{{.TMP_DIR}}$fn";
+          url="{{.BASEPATH}}{{.VERSION}}/$fn"
+          echo "⬇️ Downloading $url to $fn";
+          curl -fsSL "$url" -o "$file";
+
+          if kubectl --context {{.cluster}} get -f $file >/dev/null 2>&1; then
+            echo "♻️ Resource exists, delete: $base";
+            kubectl --context {{.cluster}} delete -f $file
+          #else
+          #  echo "✨ Creating: $base";
+          #  kubectl --context {{.cluster}} create -f $file
+          fi
+          #if kubectl --context {{.cluster}} create -f $file --save-config --dry-run=client >/dev/null 2>&1; then
+          #  echo "✨ Created: $file";
+          #else
+          #  echo "♻️ Resource exists, replacing: $file";
+          #  kubectl --context {{.cluster}} replace -f $file
+          #fi
+        done
+  #update-crds:
+  #  desc: "Clone repo, and create or replace CRD manifests on the specified cluster, then clean up"
+  #  silent: true
+  #  requires:
+  #    vars:
+  #      - cluster
+  #  preconditions:
+  #    - sh: kubectl config get-contexts {{.cluster}}
+  #      msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+  #  cmds:
+  #    - echo "🗑️ Cleaning up old temp directory '{{.TMP_DIR}}'..."
+  #    - rm -rf "{{.TMP_DIR}}"
+  #    - echo "📥 Cloning '{{.REPO_URL}}' into '{{.TMP_DIR}}'..."
+  #    - git clone "{{.REPO_URL}}" "{{.TMP_DIR}}"
+  #    - echo "🚀 Processing CRD files in '{{.TMP_DIR}}/deploy/helm/crds' for cluster '{{.cluster}}'..."
+  #    - |
+  #      find "{{.TMP_DIR}}/deploy/helm/crds" -maxdepth 1 -type f -name "*.yaml" | xargs -I {} bash -c '
+  #        base=$(basename "{}");
+  #        echo "🔄 Handling $base";
+  #        if kubectl --context {{.cluster}} create -f "{}" --save-config --dry-run=client >/dev/null 2>&1; then
+  #          echo "✨ Created: $base";
+  #        else
+  #          echo "♻️ Resource exists, replacing: $base";
+  #          kubectl --context {{.cluster}} replace -f "{}";
+  #        fi'
+  #    - echo "🧹 Removing temp directory '{{.TMP_DIR}}'..."
+  #    - rm -rf "{{.TMP_DIR}}"
+

@@ -1,6 +1,6 @@
 # 🛠️ Infrastructure
 
-This repository contains the **infrastructure as code** setup for my self-hosted environment.  
+This repository contains the **infrastructure as code** setup for my self-hosted environment.
 It uses GitOps principles to declaratively manage Kubernetes clusters, VMs, cloud services, and automation tooling.
 
 ---
@@ -21,8 +21,8 @@ It uses GitOps principles to declaratively manage Kubernetes clusters, VMs, clou
 
 ```txt
 infrastructure/
+├── .archive/          # Archived configs or legacy components
 ├── ansible/           # Playbooks and roles for automation
-├── archive/           # Archived configs or legacy components
 ├── bootstrap/         # Initial cluster & GitOps setup (e.g., flux install)
 ├── kubernetes/
 │   ├── apps/          # Application manifests (base, core apps, homelab stack)
@@ -134,7 +134,7 @@ Once bootstrapped, Flux will take over:
 
 ## 🔒 Secrets Management
 
-This repo uses [SOPS](https://github.com/mozilla/sops) with [age](https://github.com/FiloSottile/age) for secret encryption.  
+This repo uses [SOPS](https://github.com/mozilla/sops) with [age](https://github.com/FiloSottile/age) for secret encryption.
 Keys are not stored in the repo. CI/Flux decrypts secrets via external vaults.
 
 ---

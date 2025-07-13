@@ -1,0 +1,83 @@
+# special set chown on kafka volume:
+# chown -R 1001:1001 database-data-kafka-cluster-broker-0
+apiVersion: apps.kubeblocks.io/v1alpha1
+kind: Cluster
+metadata:
+  name: kafka-cluster
+  annotations:
+    "kubeblocks.io/extra-env": '{"KB_KAFKA_ENABLE_SASL":"false","KB_KAFKA_BROKER_HEAP":"-XshowSettings:vm -XX:MaxRAMPercentage=100 -Ddepth=64","KB_KAFKA_CONTROLLER_HEAP":"-XshowSettings:vm -XX:MaxRAMPercentage=100 -Ddepth=64","KB_KAFKA_PUBLIC_ACCESS":"false"}'
+spec:
+  terminationPolicy: Delete
+  componentSpecs:
+  - name: broker
+    componentDef: kafka-broker
+    tls: false
+    replicas: 1
+    affinity:
+      podAntiAffinity: Preferred
+      topologyKeys:
+      - kubernetes.io/hostname
+      tenancy: SharedNode
+    tolerations:
+    - key: kb-data
+      operator: Equal
+      value: 'true'
+      effect: NoSchedule
+    resources:
+      limits:
+        cpu: '0.5'
+        memory: 0.5Gi
+      requests:
+        cpu:    200m    # 0.2 CPU
+        memory: 512Mi  # 512 MiB
+    volumeClaimTemplates:
+    - name: data
+      spec:
+        # The name of the StorageClass required by the claim.
+        # If not specified, the StorageClass annotated with
+        # `storageclass.kubernetes.io/is-default-class=true` will be used by default
+        #storageClassName: "sc-fast"
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 20Gi
+    - name: metadata
+      spec:
+        storageClassName: "sc-fast"
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+  - name: controller
+    componentDefRef: controller
+    componentDef: kafka-controller
+    tls: false
+    replicas: 1
+    resources:
+      limits:
+        cpu: '0.5'
+        memory: 0.5Gi
+      requests:
+        cpu:    100m    # 0.1 CPU
+        memory: 256Mi  # 256 MiB
+    volumeClaimTemplates:
+    - name: metadata
+      spec:
+        storageClassName: "sc-fast"
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 20Gi
+  - name: metrics-exp
+    componentDef: kafka-exporter
+    replicas: 1
+    resources:
+      limits:
+        cpu: '0.5'
+        memory: 0.5Gi
+      requests:
+        cpu:    50m     # 0.05 CPU
+        memory: 128Mi  # 128 MiB
