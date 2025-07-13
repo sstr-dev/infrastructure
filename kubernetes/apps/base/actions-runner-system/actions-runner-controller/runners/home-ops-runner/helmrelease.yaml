@@ -35,7 +35,7 @@ spec:
       valuesKey: github_app_private_key
   values:
     # dynamic
-    githubConfigUrl: "${GH_CONFIGURL:=https://github.com/gznzeus/flux-ops}"
+    githubConfigUrl: "${GH_CONFIGURL:=https://github.com/sstr-dev/infrastructure}"
     # githubConfigSecret: actions-runner-controller-auth
     minRunners: ${minRunners:=1}
     maxRunners: ${maxRunners:=2} #Double total nodes

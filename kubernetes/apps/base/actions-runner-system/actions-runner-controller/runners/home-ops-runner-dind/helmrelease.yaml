@@ -13,7 +13,7 @@ spec:
     name: gha-runner-scale-set
   values:
     runnerScaleSetName: arc-runner-set-home-ops-dind
-    githubConfigUrl: "${GH_CONFIGURL:=https://github.com/gznzeus/flux-ops}"
+    githubConfigUrl: "${GH_CONFIGURL:=https://github.com/sstr-dev/infrastructure}"
     minRunners: ${minRunners:=1}
     maxRunners: ${maxRunners:=2} #Double total nodes
     containerMode:
