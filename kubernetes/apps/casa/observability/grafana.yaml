@@ -13,11 +13,13 @@ spec:
       namespace: security
   interval: 1h
   path: ./kubernetes/apps/base/observability/grafana
+  components:
+    - ../../../../components/gatus/guarded/base
   postBuild:
     substitute:
       APP: *app
-      INGRESSCLASS: "iot-base-nginx"
-      SUBDOMAIN: "home-grafana"
+      # INGRESSCLASS: "iot-base-nginx"
+      GATUS_SUBDOMAIN: "home-grafana"
       REPLICAS: "1"
     substituteFrom:
       - kind: ConfigMap

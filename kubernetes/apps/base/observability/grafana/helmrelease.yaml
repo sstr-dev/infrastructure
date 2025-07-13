@@ -45,7 +45,7 @@ spec:
       GF_SECURITY_ANGULAR_SUPPORT_ENABLED: true
       #GF_AUTH_ANONYMOUS_ENABLED: false
       #GF_SECURITY_COOKIE_SAMESITE: *app
-      #GF_SERVER_ROOT_URL: https://${SUBDOMAIN}.${SECRET_DOMAIN}
+      #GF_SERVER_ROOT_URL: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
       #GF_LOG_LEVEL: debug
       GF_LOG_MODE: console
       #GF_NEWS_NEWS_FEED_ENABLED: false
@@ -54,7 +54,7 @@ spec:
       - name: *app
     grafana.ini:
       server:
-        root_url: https://${SUBDOMAIN}.${SECRET_DOMAIN}
+        root_url: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
       analytics:
         check_for_updates: false
         check_for_plugin_updates: false
@@ -665,7 +665,7 @@ spec:
     route:
       main:
         enabled: true
-        hostnames: ["${SUBDOMAIN}.${SECRET_DOMAIN}"]
+        hostnames: ["${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}"]
         parentRefs:
           - name: base
             namespace: network
@@ -679,12 +679,12 @@ spec:
     #  enabled: true
     #  ingressClassName: "${INGRESSCLASS}"
     #  hosts:
-    #    - ${SUBDOMAIN}.${SECRET_DOMAIN}
+    #    - ${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
     #  path: /
     #  pathType: Prefix
     #  tls:
     #    - hosts:
-    #        - ${SUBDOMAIN}.${SECRET_DOMAIN}
+    #        - ${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
     persistence:
       enabled: false
     topologySpreadConstraints:
