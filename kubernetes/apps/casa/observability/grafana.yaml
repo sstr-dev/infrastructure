@@ -13,8 +13,8 @@ spec:
       namespace: security
   interval: 1h
   path: ./kubernetes/apps/base/observability/grafana
-  components:
-    - ../../../../components/gatus/external/base
+  #components:
+  #  - ../../../../components/gatus/external/base
   postBuild:
     substitute:
       APP: *app
