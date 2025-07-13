@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: cert-manager
+components:
+  - ../../../components/common
+  - ../../../vars/casa
+resources:
+  - ./cert-manager/ks.yaml
+  - ./cert-manager/issuer/ks.yaml
+  - ./cert-manager/issuer/internal/ks.yaml
+  - ./cert-manager/issuer/selfsign/ks.yaml

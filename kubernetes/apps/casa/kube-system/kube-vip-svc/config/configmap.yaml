@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubevip
+data:
+  allow-share-default: 'true'
+  allow-share-iot: 'true'
+  interface-global: eth0
+  interface-iot: iot
+  range-default: 192.168.0.222-192.168.0.240
+  range-iot: 192.168.188.235-192.168.188.245

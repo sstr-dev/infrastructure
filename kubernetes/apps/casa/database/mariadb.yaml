@@ -1,0 +1,73 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app mariadb
+  namespace: &namespace database
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  retryInterval: 2m
+  path: ./kubernetes/apps/base/database/mariadb
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+
+---
+# config.mariadbImage docker-registry1.mariadb.com/library/mariadb:11.4.5
+# config.maxscaleImage docker-registry2.mariadb.com/mariadb/maxscale:23.08.5
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app mariadb-cluster
+  namespace: &namespace database
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  retryInterval: 2m
+  path: ./kubernetes/apps/base/database/mariadb/cluster
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  dependsOn:
+    - name: mariadb
+      namespace: *namespace
+  postBuild:
+    substitute:
+      APP: cluster
+      S3_BUCKET: db-backups
+      IMAGE: mariadb:11.8.2
+      SIZE: 5Gi
+      STORAGECLASS: sc-fast
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+  #healthChecks:
+  #  - apiVersion: &mariaVersion k8s.mariadb.com/v1alpha1
+  #    kind: &mariaKind MariaDB
+  #    name: *app
+  #    namespace: *namespace
+  #healthCheckExprs:
+  #  - apiVersion: *mariaVersion
+  #    kind: *mariaKind
+  #    failed: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
+  #    current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
+  #components:
+  #  - ../../../../../components/mariadb
+

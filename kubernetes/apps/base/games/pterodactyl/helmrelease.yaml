@@ -1,0 +1,196 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app pterodactyl
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      pterodactyl:
+        replicas: ${REPLICAS:=1}
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: RollingUpdate
+        containers:
+          app:
+            image:
+              repository: ghcr.io/pterodactyl/panel
+              tag: v1.11.11@sha256:3ad185c83818944cfd4dba4dcefbca5ffb64655aaa63363f8f76ce41cd19873f
+            env:
+
+              DB_HOST: mariadb.database.svc.cluster.local
+              DB_PORT: 3306
+              DB_DATABASE: "pterodactyl"
+              DB_USERNAME: "pterodactyl"
+
+              REDIS_HOST: pterodactyl-redis.games.svc.cluster.local
+              CACHE_DRIVER: "redis"
+              SESSION_DRIVER: "redis"
+              QUEUE_DRIVER: "redis"
+
+              APP_SERVICE_AUTHOR: ${SECRET_SMTP_FROM_FULL}
+              MAIL_DRIVER: smtp
+              MAIL_HOST: smtp-relay.default.svc.cluster.local
+              MAIL_PORT: 25
+
+              APP_URL: "http://{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
+              #APP_ENV: "local" # production
+              APP_ENVIRONMENT_ONLY: "false"
+              APP_TIMEZONE: ${CLUSTER_TIMEZONE}
+              TRUSTED_PROXIES: "*"
+              PTERODACTYL_TELEMETRY_ENABLED: "false"
+              RECAPTCHA_ENABLED: "false"
+            envFrom:
+              - secretRef:
+                  name: *app
+
+            resources:
+              requests:
+                cpu: 50m
+                memory: 300M
+              limits:
+                memory: 500M
+      redis:
+        containers:
+          redis:
+            image:
+              repository: docker.io/valkey/valkey
+              tag: 8.1.3-alpine
+            resources:
+              requests:
+                cpu: 5m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+    #serviceMonitor:
+    #  app:
+    #    serviceName: *app
+    #    endpoints:
+    #      - port: http
+    #        scheme: http
+    #        path: /metrics
+    #        interval: 1m
+    #        scrapeTimeout: 10s
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: 80
+      redis:
+        controller: redis
+        ports:
+          http:
+            port: 6379
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
+        parentRefs:
+          - name: main
+            namespace: network
+            sectionName: http
+        rules:
+          - backendRefs:
+              - name: pterodactyl-app
+                port: 80
+        #annotations:
+        #  gethomepage.dev/enabled: "true"
+        #  gethomepage.dev/icon: pterodactyl.png
+        #  gethomepage.dev/name: Pterodactyl
+        #  gethomepage.dev/group: Infrastructure
+        #  gethomepage.dev/widget.type: pterodactyl
+        #  gethomepage.dev/widget.url: http://pterodactyl-app.games
+        #  gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_PTERODACTYL_KEY}}`}}"
+    #ingress:
+    #  app:
+    #    enabled: ${DEFAULTINGRESSEN:=true}
+    #    className: ${INGRESSCLASS}
+    #    annotations:
+    #      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    #      nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    #      nginx.ingress.kubernetes.io/enable-cors: "true"
+    #      nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, OPTIONS"
+    #      nginx.ingress.kubernetes.io/cors-allow-headers: "*"
+    #      nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    #      nginx.ingress.kubernetes.io/cors-max-age: "100"
+    #      nginx.ingress.kubernetes.io/configuration-snippet: |
+    #        more_set_input_headers X-Forwarded-Proto "https";
+    #        more_set_headers X-Forwarded-Proto "https";
+    #    hosts:
+    #      - host: &host "{{ .Release.Name }}.${DOMAIN}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: http
+    #    #tls:
+    #    #  - hosts:
+    #    #      - *host
+    #  iot:
+    #    enabled: ${IOTINGRESS:=false}
+    #    className: iot-nginx
+    #    annotations:
+    #      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    #      nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    #      #external-dns.alpha.kubernetes.io/target: external.${SECRET_DOMAIN}
+    #      nginx.ingress.kubernetes.io/enable-cors: "true"
+    #      nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, OPTIONS"
+    #      nginx.ingress.kubernetes.io/cors-allow-headers: "*"
+    #      nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    #      nginx.ingress.kubernetes.io/cors-max-age: "100"
+    #      nginx.ingress.kubernetes.io/configuration-snippet: |
+    #        more_set_input_headers X-Forwarded-Proto "https";
+    #        more_set_headers X-Forwarded-Proto "https";
+    #      gethomepage.dev/enabled: "true"
+    #      gethomepage.dev/icon: pterodactyl.png
+    #      gethomepage.dev/name: Pterodactyl
+    #      gethomepage.dev/group: Infrastructure
+    #      gethomepage.dev/widget.type: pterodactyl
+    #      gethomepage.dev/widget.url: http://pterodactyl-app.games
+    #      gethomepage.dev/widget.key: "{{`{{HOMEPAGE_VAR_PTERODACTYL_KEY}}`}}"
+    #      gethomepage.dev/pod-selector: >-
+    #        app.kubernetes.io/name=pterodactyl,
+    #        app.kubernetes.io/controller=pterodactyl
+    #    hosts:
+    #      - host: &host "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: http
+    #    #tls:
+    #    #  #- secretName: chart-example-tls
+    #    #  - hosts:
+    #    #    - *host
+
+    persistence:
+      data:
+        enabled: true
+        type: persistentVolumeClaim
+        existingClaim: *app
+        #storageClass: "sc-standard"
+        #accessMode: ReadWriteMany
+        #size: 5Gi
+        advancedMounts:
+          pterodactyl:
+            app:
+              - subPath: "data"
+                path: "/app/var"
+              - subPath: "nginx"
+                path: "/etc/nginx/http.d"
+              - subPath: "logs"
+                path: "/app/storage/logs"

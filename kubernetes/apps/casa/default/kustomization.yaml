@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+components:
+  - ../../../components/common
+  - ../../../vars/casa
+resources:
+  - ./certificate/internal/ks.yaml
+# seperate usecase domain secrets
+# main
+  - ./certificate/production/cert-main-secrets.sops.yaml
+  - ./certificate/production/cert-base-secrets.sops.yaml
+  - ./certificate/production/cert-dev-secrets.sops.yaml
+  - ./certificate/production/cert-game-secrets.sops.yaml
+  - ./certificate/production/ks.yaml
+  - ./smtp-relay/ks.yaml

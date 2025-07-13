@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: actions-runner-system
+components:
+  - ../../../components/common
+  - ../../../vars/casa
+resources:
+  - ./actions-runner-controller.yaml
+  - ./actions-runner-home-ops.yaml
+  - ./actions-runner-home-ops-dind.yaml
+  - ./actions-runner-organization.yaml

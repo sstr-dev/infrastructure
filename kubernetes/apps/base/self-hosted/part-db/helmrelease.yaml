@@ -1,0 +1,140 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app part-db
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      part-db:
+        replicas: ${REPLICAS:=1}
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: RollingUpdate
+        containers:
+          app:
+            image:
+              repository: jbtronics/part-db1
+              tag: v1.17.2
+            env:
+              DEFAULT_LANG: "en"
+              DEFAULT_TIMEZONE: ${CLUSTER_TIMEZONE}
+              BASE_CURRENCY: EUR
+              CHECK_FOR_UPDATES: 0
+              # The name of this installation. This will be shown as title in the browser and in the header of the website
+              INSTANCE_NAME: "Part-DB [${CLUSTER}]"
+              # Allow users to download attachments to the server by providing an URL
+              # This could be a potential security issue, as the user can retrieve any file the server has access to (via internet)
+              ALLOW_ATTACHMENT_DOWNLOADS: 0
+              # Use gravatars for user avatars, when user has no own avatar defined
+              USE_GRAVATAR: 0
+              # Override value if you want to show to show a given text on homepage.
+              # When this is empty the content of config/banner.md is used as banner
+              #- BANNER=This is a test banner<br>with a line break
+              # If you use a reverse proxy in front of Part-DB, you must configure the trusted proxies IP addresses here (see reverse proxy documentation for more information):
+              TRUSTED_PROXIES: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+              # - TRUSTED_PROXIES=127.0.0.0/8,::1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+            envFrom:
+              - secretRef:
+                  name: *app
+
+            resources:
+              requests:
+                cpu: 50m
+                memory: 300M
+              limits:
+                memory: 500M
+
+    #serviceMonitor:
+    #  app:
+    #    serviceName: *app
+    #    endpoints:
+    #      - port: http
+    #        scheme: http
+    #        path: /metrics
+    #        interval: 1m
+    #        scrapeTimeout: 10s
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: 80
+    ingress:
+      app:
+        enabled: ${DEFAULTINGRESSEN:=true}
+        className: ${INGRESSCLASS}
+        #annotations:
+        #  gethomepage.dev/enabled: "true"
+        #  gethomepage.dev/description: Swiss army knife for IT
+        #  gethomepage.dev/group: Home
+        #  gethomepage.dev/icon: it-tools.svg
+        #  gethomepage.dev/name: IT-Tools
+        #  gethomepage.dev/pod-selector: >-
+        #    app.kubernetes.io/name in (
+        #      it-tools
+        #    )
+        hosts:
+          - host: &host "{{ .Release.Name }}.${DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+        tls:
+          - hosts:
+              - *host
+      iot:
+        enabled: ${IOTINGRESS:=false}
+        className: iot-nginx
+        annotations:
+          # Homepage-Integration aktivieren
+          gethomepage.dev/enabled: "true"
+          # Gruppe im Dashboard
+          gethomepage.dev/group: "Home"
+          gethomepage.dev/name:       "Part-DB"
+          gethomepage.dev/description: "Part-DB Asset Management"
+          gethomepage.dev/icon:       "part-db.png"
+        hosts:
+          - host: &host "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+        tls:
+          - hosts:
+            - *host
+
+    persistence:
+      data:
+        enabled: true
+        type: persistentVolumeClaim
+        existingClaim: *app
+        #storageClass: "sc-standard"
+        #accessMode: ReadWriteMany
+        #size: 5Gi
+        advancedMounts:
+          part-db:
+            app:
+              - subPath: "uploads"
+                path: "/var/www/html/uploads"
+              - subPath: "public_media"
+                path: "/var/www/html/public/media"
+              - subPath: "db"
+                path: "/var/www/html/var/db"
+              - subPath: "logs"
+                path: "/var/www/html/var/log"

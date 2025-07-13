@@ -1,0 +1,200 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app minio
+spec:
+  interval: 60m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    controllers:
+      minio:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: quay.io/minio/minio
+              tag: RELEASE.2025-04-22T22-12-26Z
+
+            env:
+              TZ: ${CLUSTER_TIMEZONE}
+              MINIO_UPDATE: "off"
+              #MINIO_BROWSER_REDIRECT_URL: "https://minio.${SECRET_MAIN_DOMAIN_NAME}"
+              #MINIO_SERVER_URL: "https://s3.${SECRET_MAIN_DOMAIN_NAME}"
+              MINIO_API_CORS_ALLOW_ORIGIN: https://minio.${SECRET_MAIN_DOMAIN_NAME},https://s3.${SECRET_MAIN_DOMAIN_NAME}
+              #MINIO_AUTH_TYPE: public
+              MINIO_PROMETHEUS_JOB_ID: minio
+              MINIO_PROMETHEUS_URL: http://kube-prometheus-stack-prometheus.observability:9090
+              MINIO_PROMETHEUS_AUTH_TYPE: public
+              #MINIO_API_REQUESTS_MAX: "1600"
+            envFrom:
+              - secretRef:
+                  name: *app
+
+            args: ["server", "/data", "--console-address", ":9001"]
+
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /minio/health/live
+                    port: 9000
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 6
+              readiness: *probes
+
+            resources:
+              requests:
+                memory: 100Mi
+                cpu: 100m
+              limits:
+                memory: 4000Mi
+
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups: [2000]
+        seccompProfile: { type: RuntimeDefault }
+
+    service:
+      app:
+        controller: *app
+        # type: LoadBalancer
+        ports:
+          http:
+            port: &port-console 9001
+          api:
+            enabled: true
+            port: &port-api 9000
+
+    serviceMonitor:
+      app:
+        serviceName: *app
+        endpoints:
+          - port: s3
+            scheme: http
+            path: /minio/v2/metrics/cluster
+            interval: 1m
+            scrapeTimeout: 10s
+    #ingress:
+    #  app:
+    #    enabled: true
+    #    className: iot-nginx
+    #    annotations:
+    #      gethomepage.dev/enabled: "true"
+    #      gethomepage.dev/description: S3 storage
+    #      gethomepage.dev/group: Home
+    #      gethomepage.dev/icon: sh-minio.svg
+    #      gethomepage.dev/name: Minio
+    #      gethomepage.dev/app: minio
+    #    hosts:
+    #      - host: &host "minio.${SECRET_MAIN_DOMAIN_NAME}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: *port-console
+    #    tls:
+    #      - hosts:
+    #        - *host
+    #  s3:
+    #    enabled: true
+    #    className: iot-nginx
+    #    annotations:
+    #      nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+    #      nginx.ingress.kubernetes.io/proxy-body-size: 5000m
+    #      nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    #      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    #      nginx.ingress.kubernetes.io/configuration-snippet: |
+    #        chunked_transfer_encoding off;
+    #      # nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+    #    hosts:
+    #      - host: &host "s3.${SECRET_MAIN_DOMAIN_NAME}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: *port-api
+    #    tls:
+    #      - hosts:
+    #        - *host
+
+    route:
+      app:
+        hostnames: ["minio.${SECRET_MAIN_DOMAIN_NAME}"]
+        #annotations:
+        #  gethomepage.dev/enabled: "true"
+        #  gethomepage.dev/description: S3 storage
+        #  gethomepage.dev/group: Home
+        #  gethomepage.dev/icon: sh-minio.svg
+        #  gethomepage.dev/name: Minio
+        #  gethomepage.dev/app: minio
+        parentRefs:
+          - name: main
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port-console
+      s3:
+        hostnames: ["s3.${SECRET_MAIN_DOMAIN_NAME}"]
+        parentRefs:
+          - name: main
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port-api
+    #route:
+    #  app:
+    #    hostnames: ["minio.${SECRET_MAIN_DOMAIN_NAME}"]
+    #    parentRefs:
+    #      - name: internal
+    #        namespace: kube-system
+    #        sectionName: https
+    #    rules:
+    #      - backendRefs:
+    #          - identifier: app
+    #            port: *port-console
+    #  s3:
+    #    hostnames: ["s3.${SECRET_MAIN_DOMAIN_NAME}"]
+    #    parentRefs:
+    #      - name: internal
+    #        namespace: kube-system
+    #        sectionName: https
+    #    rules:
+    #      - backendRefs:
+    #          - identifier: app
+    #            port: *port-api
+
+    persistence:
+      config:
+        type: persistentVolumeClaim
+        existingClaim: *app
+        globalMounts:
+          - path: /data

@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: download
+components:
+  - ../../../components/namespace/vpn
+  - ../../../components/common_custom
+  #- ../../../components/namespace/vpn
+  - ../../../vars/casa
+resources:
+  - ./prowlarr.yaml
+  - ./sabnzbd.yaml
+  - ./readarr.yaml
+  #- ./lidarr.yaml
+  - ./radarr.yaml
+  - ./sonarr.yaml
+  - ./webhook.yaml
+  - ./calibre-downloader.yaml

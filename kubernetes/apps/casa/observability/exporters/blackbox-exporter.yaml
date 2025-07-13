@@ -1,0 +1,59 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app blackbox-exporter
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  #components:
+  #  - ../../../../../components/ext-auth
+  path: ./kubernetes/apps/base/observability/exporters/blackbox-exporter
+  prune: true
+  retryInterval: 2m
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: observability
+  timeout: 5m
+  wait: true
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app blackbox-exporter-probes
+spec:
+  targetNamespace: observability
+  dependsOn:
+    - name: blackbox-exporter
+  path: ./kubernetes/apps/casa/observability/config/blackbox-exporter-probes
+  prune: true
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  interval: 30m
+  retryInterval: 1m
+  timeout: 5m
+

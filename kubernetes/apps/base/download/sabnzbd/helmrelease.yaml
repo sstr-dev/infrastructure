@@ -1,0 +1,208 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app sabnzbd
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+
+    defaultPodOptions:
+      annotations:
+        setDownloadGateway: "true"
+
+    controllers:
+      sabnzbd:
+        replicas: ${REPLICAS:=1}
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1001
+            fsGroup: 1001
+            runAsNonRoot: true
+            fsGroupChangePolicy: OnRootMismatch
+            supplementalGroups:
+              - 100
+        strategy: RollingUpdate
+        containers:
+          app:
+            image:
+              repository: ghcr.io/home-operations/sabnzbd
+              tag: 4.5.2
+              pullPolicy: IfNotPresent
+            env:
+              TZ: ${CLUSTER_TIMEZONE}
+              SABNZBD__PORT: &port 8080
+              PUSHOVER_ENABLED: true
+              SABNZBD__HOST_WHITELIST_ENTRIES: >-
+                sabnzbd,
+                sabnzbd.{{ .Release.Namespace }},
+                sabnzbd.{{ .Release.Namespace }}.svc,
+                sabnzbd.{{ .Release.Namespace }}.svc.cluster,
+                sabnzbd.{{ .Release.Namespace }}.svc.cluster.local,
+                {{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME},
+                sab.${SECRET_MAIN_DOMAIN_NAME}
+            envFrom:
+              - secretRef:
+                  name: *app
+            #probes:
+            #  liveness: &probes
+            #    enabled: true
+            #    custom: true
+            #    spec:
+            #      httpGet:
+            #        path: /api?mode=version
+            #        port: *port
+            #      initialDelaySeconds: 0
+            #      periodSeconds: 10
+            #      timeoutSeconds: 1
+            #      failureThreshold: 3
+            #  readiness: *probes
+            resources:
+              requests:
+                cpu: 10m
+                memory: 100Mi
+              limits:
+                memory: 6Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+
+    #serviceMonitor:
+    #  app:
+    #    serviceName: *app
+    #    endpoints:
+    #      - port: http
+    #        scheme: http
+    #        path: /metrics
+    #        interval: 1m
+    #        scrapeTimeout: 10s
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+    #ingress:
+    #  app:
+    #    enabled: ${DEFAULTINGRESSEN:=true}
+    #    className: ${INGRESSCLASS}
+    #    #annotations:
+    #    #  gethomepage.dev/enabled: "true"
+    #    #  gethomepage.dev/description: Swiss army knife for IT
+    #    #  gethomepage.dev/group: Home
+    #    #  gethomepage.dev/icon: it-tools.svg
+    #    #  gethomepage.dev/name: IT-Tools
+    #    #  gethomepage.dev/pod-selector: >-
+    #    #    app.kubernetes.io/name in (
+    #    #      it-tools
+    #    #    )
+    #    hosts:
+    #      - host: &host "{{ .Release.Name }}.${DOMAIN}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: http
+    #    tls:
+    #      - hosts:
+    #          - *host
+    #  iot:
+    #    enabled: ${IOTINGRESS:=false}
+    #    className: iot-nginx
+    #    annotations:
+    #      # Homepage-Integration aktivieren
+    #      gethomepage.dev/enabled: "true"
+    #      gethomepage.dev/group: Downloads
+    #      gethomepage.dev/name: SABnzbd
+    #      gethomepage.dev/icon: sabnzbd.png
+    #      gethomepage.dev/description: NZB Download Client
+    #      gethomepage.dev/pod-selector: >-
+    #        app.kubernetes.io/name in (
+    #          sabnzbd
+    #        )
+    #      gethomepage.dev/widget.type: sabnzbd
+    #      gethomepage.dev/widget.url: http://{{ .Release.Name }}.{{ .Release.Namespace }}:8080
+    #      gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_SABNZBD_TOKEN}}` }}"
+    #    hosts:
+    #      - host: &host "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: http
+    #    tls:
+    #      #- secretName: chart-example-tls
+    #      - hosts:
+    #        - *host
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
+        parentRefs:
+          - name: main
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs: [{}]
+        annotations:
+          # Homepage-Integration aktivieren
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Downloads
+          gethomepage.dev/name: SABnzbd
+          gethomepage.dev/icon: sabnzbd.png
+          gethomepage.dev/description: NZB Download Client
+          gethomepage.dev/widget.type: sabnzbd
+          gethomepage.dev/widget.url: http://{{ .Release.Name }}.{{ .Release.Namespace }}:8080
+          gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_SABNZBD_TOKEN}}` }}"
+    persistence:
+      config:
+        enabled: true
+        existingClaim: *app
+        advancedMounts:
+          sabnzbd:
+            app:
+              - path: /config
+      media:
+        enabled: true
+        type: hostPath
+        hostPath: ${SHARED_MEDIA_PATH}
+        globalMounts:
+        - path: /downloads-multimedia
+          readOnly: false
+      datadownloads:
+        enabled: true
+        type: hostPath
+        hostPath: ${SHARED_DATA_PATH}/downloads
+        globalMounts:
+        - path: /downloads-data
+          readOnly: false
+      tmp:
+        type: emptyDir
+      logs:
+        type: emptyDir
+        globalMounts:
+          - path: /config/logs
+      downloads:
+        type: hostPath
+        hostPath: ${SHARED_DATA_PATH}/downloads-NZB
+        globalMounts:
+          - path: /downloads
+            readOnly: false

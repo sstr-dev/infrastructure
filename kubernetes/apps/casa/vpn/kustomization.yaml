@@ -1,0 +1,52 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: vpn
+components:
+  - ../../../components/namespace/vpn
+  - ../../../components/common_custom
+  - ../../../vars/casa
+resources: []
+  #- ./config/ks.yaml
+
+#patchesStrategicMerge:
+#  - |
+#    apiVersion: v1
+#    kind: Namespace
+#    metadata:
+#      name: vpn
+#      labels:
+#        routed-gateway: "true"
+#        downloads-routed-gateway: "true"
+#      annotations:
+#        vpn.home.arpa/routed-gateway: "true"
+#
+#patchesJson6902:
+#  - target:
+#      group: ""            # core API
+#      version: v1
+#      kind: Namespace
+#      name: vpn
+#    patch: |-
+#      [
+#        { "op": "add", "path": "/metadata/labels/routed-gateway",           "value": "true" },
+#        { "op": "add", "path": "/metadata/labels/downloads-routed-gateway", "value": "true" },
+#        { "op": "add", "path": "/metadata/annotations/vpn.home.arpa~1routed-gateway", "value": "true" }
+#      ]
+##patches:
+##   - # Add the labels to the namespace
+##     patch: |
+##       - op: add
+##         path: /metadata/labels
+##         value:
+##           routed-gateway: "true"
+##           downloads-routed-gateway: "true"
+##       - op: add
+##         path: /metadata/annotations
+##         value:
+##           vpn.home.arpa/routed-gateway: "true"
+##     target:
+##       kind: Namespace
+##
+#

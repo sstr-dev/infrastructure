@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "${CLAIM:-${APP}}"
+  labels:
+    app.kubernetes.io/name: "${APP}"
+  annotations:
+    helm.sh/resource-policy: "${VOL_RESOURCEPOLICY:=delete}"
+spec:
+  accessModes: ["${VOL_ACCESSMODES:-ReadWriteOnce}"]
+  resources:
+    requests:
+      storage: "${VOL_CAPACITY:=5Gi}"
+  storageClassName: "${VOL_STORAGECLASS:=sc-standard}"

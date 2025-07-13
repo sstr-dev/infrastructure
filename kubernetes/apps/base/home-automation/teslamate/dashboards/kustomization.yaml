@@ -1,0 +1,34 @@
+---
+# to get the liust of dashboards: for f in ./*.json; do echo "      - ${f}"; done
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+configMapGenerator:
+  - name: teslamate-dashboards
+    files:
+      - ./battery-health.json
+      - ./charge-level.json
+      - ./charges.json
+      - ./charging-stats.json
+      - ./database-info.json
+      - ./drive-stats.json
+      - ./drives.json
+      - ./efficiency.json
+      - ./locations.json
+      - ./mileage.json
+      - ./overview.json
+      - ./projected-range.json
+      - ./states.json
+      - ./statistics.json
+      - ./timeline.json
+      - ./trip.json
+      - ./updates.json
+      - ./vampire-drain.json
+      - ./visited.json
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    grafana_dashboard: "1"
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled
+    grafana_folder: "Teslamate"

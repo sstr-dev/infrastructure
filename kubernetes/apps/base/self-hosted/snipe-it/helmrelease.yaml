@@ -1,0 +1,160 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app snipe-it
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      snipe-it:
+        replicas: ${REPLICAS:=1}
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: RollingUpdate
+        containers:
+          app:
+            image:
+              repository: snipe/snipe-it
+              tag: v8.1.18
+            env:
+              APP_LOCALE: "en-GB"
+              APP_TIMEZONE: ${CLUSTER_TIMEZONE}
+              APP_URL: "https://inventory.${SECRET_MAIN_DOMAIN_NAME}"
+              # --------------------------------------------
+              # REQUIRED: OUTGOING MAIL SERVER SETTINGS
+              # --------------------------------------------
+              MAIL_MAILER: smtp
+              MAIL_HOST: smtp-relay.default.svc.cluster.local
+              MAIL_PORT: "25"
+              MAIL_TLS_VERIFY_PEER: 'false'
+              MAIL_FROM_ADDR: "${SECRET_SMTP_FROM_FULL}"
+              MAIL_FROM_NAME: "Inventory [${CLUSTER}]"
+              MAIL_REPLYTO_ADDR: "${SECRET_SMTP_FROM_FULL}"
+              MAIL_REPLYTO_NAME: "Inventory [${CLUSTER}]"
+              # --------------------------------------------
+              # REQUIRED: DATA PROTECTION
+              # --------------------------------------------
+              #ALLOW_BACKUP_DELETE: false
+              #ALLOW_DATA_PURGE: false
+              # --------------------------------------------
+              # OPTIONAL: SECURITY HEADER SETTINGS
+              # --------------------------------------------
+              APP_TRUSTED_PROXIES: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+              ALLOW_IFRAMING: 'true'
+              # --------------------------------------------
+              # OPTIONAL: SESSION SETTINGS
+              # --------------------------------------------
+              SESSION_DOMAIN: .${SECRET_MAIN_DOMAIN_NAME}
+              SESSION_SECURE_COOKIE: true
+              SESSION_SAMESITE: None
+              BS_TABLE_STORAGE: localStorage
+              DB_CONNECTION: 'mysql'
+
+              APP_ENV: production
+              DB_HOST: mariadb.database.svc.cluster.local
+              DB_PORT: 3306
+              DB_DATABASE: "snipeit"
+              DB_USERNAME: "snipeit"
+            envFrom:
+              - secretRef:
+                  name: *app
+
+            resources:
+              requests:
+                cpu: 50m
+                memory: 300M
+              limits:
+                memory: 500M
+
+    #serviceMonitor:
+    #  app:
+    #    serviceName: *app
+    #    endpoints:
+    #      - port: http
+    #        scheme: http
+    #        path: /metrics
+    #        interval: 1m
+    #        scrapeTimeout: 10s
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: 80
+    #ingress:
+    #  iot:
+    #    enabled: ${IOTINGRESS:=false}
+    #    className: iot-nginx
+    #    annotations:
+    #      # Homepage-Integration aktivieren
+    #      gethomepage.dev/enabled: "true"
+    #      # Gruppe im Dashboard
+    #      gethomepage.dev/group: "Home"
+    #      # Anzeigename
+    #      gethomepage.dev/name: "Snipe-IT"
+    #      # Beschreibung / Tooltip
+    #      gethomepage.dev/description: "Asset-Management mit Snipe-IT"
+    #      # Icon (muss in /app/public/icons liegen)
+    #      gethomepage.dev/icon: "snipe-it.png"
+    #    hosts:
+    #      - host: &host "inventory.${SECRET_MAIN_DOMAIN_NAME}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: http
+    #    tls:
+    #      #- secretName: chart-example-tls
+    #      - hosts:
+    #        - *host
+    route:
+      app:
+        hostnames:
+          - "inventory.${SECRET_MAIN_DOMAIN_NAME}"
+        parentRefs:
+          - name: main
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: 80
+        #annotations:
+        #  # Homepage-Integration aktivieren
+        #  gethomepage.dev/enabled: "true"
+        #  # Gruppe im Dashboard
+        #  gethomepage.dev/group: "Home"
+        #  # Anzeigename
+        #  gethomepage.dev/name: "Snipe-IT"
+        #  # Beschreibung / Tooltip
+        #  gethomepage.dev/description: "Asset-Management mit Snipe-IT"
+        #  # Icon (muss in /app/public/icons liegen)
+        #  gethomepage.dev/icon: "snipe-it.png"
+
+
+    persistence:
+      data:
+        enabled: true
+        type: persistentVolumeClaim
+        existingClaim: *app
+        #storageClass: "sc-standard"
+        #accessMode: ReadWriteMany
+        #size: 5Gi
+        advancedMounts:
+          snipe-it:
+            app:
+              - subPath: "data"
+                path: "/var/lib/snipeit"

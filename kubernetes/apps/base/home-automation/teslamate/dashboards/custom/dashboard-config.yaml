@@ -1,0 +1,17 @@
+dashboard:
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/
+  files:
+    - AmortizationTracker.json
+    - ChargingCostsStats.json
+    - ChargingCurveStats.json
+    - ContinuousTrips.json
+    - CurrentChargeView.json
+    - CurrentDriveView.json
+    - CurrentState.json
+    - DCChargingCurvesByCarrier.json
+    - IncompleteData.json
+    - MileageStats.json
+    - RangeDegradation.json
+    - SpeedRates.json
+    - SpeedTemperature.json
+    - TrackingDrives.json

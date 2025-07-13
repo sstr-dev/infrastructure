@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: not-used
+  labels:
+    downloads-routed-gateway: "true"
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+    routed-gateway: "true"
+    vpn.home.arpa/routed-gateway: "true"

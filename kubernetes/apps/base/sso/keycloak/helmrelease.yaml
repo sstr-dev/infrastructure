@@ -1,0 +1,159 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app keycloak
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      keycloak:
+        replicas: ${REPLICAS:=1}
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: Recreate
+        containers:
+          app:
+            image:
+              # Keycloak image repository
+              repository: quay.io/keycloak/keycloak
+              # Keycloak image tag
+              tag: "26.3.1"
+            env:
+              TZ: ${CLUSTER_TIMEZONE}
+              KC_HOSTNAME_URL: "https://${SECRET_SSO_DOMAIN}"
+              KC_HOSTNAME_ADMIN_URL: "https://sso-console.${DOMAIN}"
+              KC_DB: postgres
+              KC_DB_URL: jdbc:postgresql://pg-cluster-postgresql.database.svc.cluster.local:5432/keycloak
+              KC_DB_USERNAME: keycloak
+              KC_DB_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: keycloak
+                    key: KC_DB_PASSWORD
+              #KC_FEATURES: impersonation,passkeys
+              #KC_FEATURES: preview
+              KC_FEATURES: passkeys,scripts,update-email
+              KC_SPI_CORS_ENABLED: "true"
+              KC_SPI_CORS_ORIGINS: "*"
+              KC_SPI_CORS_METHODS: "GET,HEAD,OPTIONS,POST,PUT,DELETE"
+              KC_SPI_CORS_HEADERS: "Authorization,Content-Type,Accept,Origin,X-Requested-With"
+              KC_SPI_CORS_EXPOSED_HEADERS: "Content-Disposition,Content-Length,Content-Type"
+              KC_SPI_CORS_ALLOW_CREDENTIALS: "true"
+              KC_SPI_CORS_MAX_AGE: "3600"
+            # -- Override the command(s) for the containers
+            command:
+              - "/opt/keycloak/bin/kc.sh"
+            # -- Override the args for the containers
+            args:
+              - "start"
+              - "--http-enabled=true"
+              - "--proxy-headers=xforwarded"
+              - "--hostname=https://${SECRET_SSO_DOMAIN}"  # Explicitly set the external hostname
+              - "--hostname-admin=https://sso-console.${DOMAIN}"
+              - "--spi-connections-http-client-default-disable-trust-manager=true"
+              #- "--import-realm"
+              #KC_BOOTSTRAP_ADMIN_USERNAME:
+              #  valueFrom:
+              #    secretKeyRef:
+              #      name: keycloak
+              #      key: KC_BOOTSTRAP_ADMIN_USERNAME
+              #KC_BOOTSTRAP_ADMIN_PASSWORD:
+              #  valueFrom:
+              #    secretKeyRef:
+              #      name: keycloak
+              #      key: KC_BOOTSTRAP_ADMIN_PASSWORD
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: 1000m
+                memory: 1Gi
+            ports:
+              - name: http
+                containerPort: &port 8080
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+            targetPort: http
+    #ADMIN_INGRESSCLASS: internal-nginx
+    #SSO_INGRESSCLASS: "iot-base-nginx"
+    # &host "{{ .Release.Name }}.${DOMAIN}"
+
+    ingress:
+      sso:
+        enabled: true
+        className: ${SSO_INGRESSCLASS}
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/icon: keycloak.png
+          gethomepage.dev/name: Keycloak
+          gethomepage.dev/group: Infrastructure
+          gethomepage.dev/app: keycloak
+          gethomepage.dev/description: OIDC User Management
+          nginx.ingress.kubernetes.io/proxy-buffer-size: 128k
+          nginx.ingress.kubernetes.io/server-snippet: |
+            location ~* /realms/[^/]+/metrics {
+                return 403;
+            }
+            location ~* /admin {
+              allow ${LOCAL_CIDR_1}
+              allow ${LOCAL_CIDR_2}
+              deny all;
+            }
+        hosts:
+          - host: &host "${SECRET_SSO_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+        tls:
+          - hosts:
+              - *host
+      admin:
+        enabled: true
+        className: ${ADMIN_INGRESSCLASS}
+        annotations:
+          nginx.ingress.kubernetes.io/proxy-buffer-size: 128k
+        hosts:
+          - host: &host 'sso-console.${DOMAIN}'
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+        tls:
+          - hosts:
+            - *host
+
+    #persistence:
+    #  config:
+    #    enabled: true
+    #    type: persistentVolumeClaim
+    #    existingClaim: *app
+    #persistence:
+    #  data:
+    #    enabled: true
+    #    type: persistentVolumeClaim
+    #    existingClaim: *app
+    #    advancedMounts:
+    #      keycloak:
+    #        app:
+    #          - path: /home/app/.local/share/keycloak

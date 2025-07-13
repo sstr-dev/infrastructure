@@ -1,0 +1,27 @@
+---
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Backup
+metadata:
+  name: mariadb-backup
+spec:
+  mariaDbRef:
+    name: mariadb
+    namespace: database
+  schedule:
+    cron: "0 * * * *"
+    suspend: false
+  maxRetention: 720h # 30 days
+  storage:
+    s3:
+      bucket: ${S3_BUCKET}
+      prefix: mariadb
+      endpoint: minio-backup.network.svc:9000
+      region: home
+      accessKeyIdSecretKeyRef:
+        name: mariadb-secret
+        key: access-key-id
+      secretAccessKeySecretKeyRef:
+        name: mariadb-secret
+        key: secret-access-key
+      tls:
+        enabled: false

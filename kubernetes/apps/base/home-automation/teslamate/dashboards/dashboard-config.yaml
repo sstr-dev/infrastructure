@@ -1,0 +1,61 @@
+dashboards:
+  #- charge-details:
+  #  url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/internal/charge-details.json
+  #- drive-details:
+  #  url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/internal/drive-details.json
+
+
+    battery-health:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/battery-health.json
+    charge-level:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/charge-level.json
+    charges:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/charges.json
+    charging-stats:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/charging-stats.json
+    database-info:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/database-info.json
+    drive-stats:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/drive-stats.json
+    drives:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/drives.json
+    efficiency:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/efficiency.json
+    locations:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/locations.json
+    mileage:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/mileage.json
+    overview:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/overview.json
+    projected-range:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/projected-range.json
+    states:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/states.json
+    statistics:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/statistics.json
+    timeline:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/timeline.json
+    trip:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/trip.json
+    updates:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/updates.json
+    vampire-drain:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/vampire-drain.json
+    visited:
+      url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/visited.json
+
+
+      #teslamateinternal:
+      #  charge-details:
+      #    url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/internal/charge-details.json
+      #    datasource: TeslaMate
+      #  drive-details:
+      #    url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/internal/drive-details.json
+      #    datasource: TeslaMate
+      #  home:
+      #    url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/internal/home.json
+      #    datasource: TeslaMate
+      #teslamatereports:
+      #  dutch-tax:
+      #    url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/reports/dutch-tax.json
+      #    datasource: TeslaMate

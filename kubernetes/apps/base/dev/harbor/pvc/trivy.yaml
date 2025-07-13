@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: harbor-trivy-v2
+  labels:
+    app.kubernetes.io/name: harbor-trivy
+    app.kubernetes.io/instance: harbor
+spec:
+  storageClassName: sc-standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi

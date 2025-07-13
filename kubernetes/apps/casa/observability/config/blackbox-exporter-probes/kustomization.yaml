@@ -1,0 +1,7 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./devices-v4.yaml
+  - ./devices-v6.yaml
+  - ./services.yaml

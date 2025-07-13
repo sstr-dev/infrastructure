@@ -1,0 +1,151 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app dragonfly-authentik
+  namespace: &namespace sso
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  retryInterval: 2m
+  path: ./kubernetes/apps/base/sso/authentik/cluster
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  dependsOn:
+    - name: dragonfly
+      namespace: database
+  postBuild:
+    substitute:
+      APP: authentik
+      DRAGONFLY_REQUESTS_MEMORY: 256Mi
+  components:
+    - ../../../../../components/dragonfly
+  #components:
+  #  - ../../../../components/dragonfly
+  healthChecks:
+    - apiVersion: &dragonflyVersion dragonflydb.io/v1alpha1
+      kind: &dragonflyKind Dragonfly
+      name: *app
+      namespace: *namespace
+  healthCheckExprs:
+    - apiVersion: *dragonflyVersion
+      kind: *dragonflyKind
+      failed: status.phase != 'ready'
+      current: status.phase == 'ready'
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app authentik-storage
+  namespace: &namespace sso
+spec:
+  targetNamespace: *namespace
+  interval: 10m
+  path: ./kubernetes/apps/base/sso/authentik/storage
+  prune: true
+  postBuild:
+    substitute:
+      APP: *app
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: true
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app authentik
+  namespace: &namespace sso
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  retryInterval: 2m
+  path: ./kubernetes/apps/base/sso/authentik
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  dependsOn:
+    - name: postgres-cluster
+      namespace: database
+    - name: dragonfly-authentik
+      namespace: *namespace
+    - name: authentik-storage
+      namespace: *namespace
+  postBuild:
+    substitute:
+      APP: *app
+      SSO_INGRESSCLASS: "iot-base-nginx"
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app authentik-routes
+  namespace: &namespace sso
+spec:
+  targetNamespace: *namespace
+  interval: 10m
+  path: ./kubernetes/apps/base/sso/authentik/routes
+  prune: true
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+  dependsOn:
+    - name: authentik
+      namespace: *namespace
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: true
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app authentik-references
+  namespace: &namespace sso
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  retryInterval: 2m
+  path: ./kubernetes/apps/base/sso/authentik/references
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  postBuild:
+    substitute:
+      AUTH_SVC: ak-outpost-authentik-embedded-outpost

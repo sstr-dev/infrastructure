@@ -1,0 +1,105 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: downloads-gateway
+  namespace: vpn-gateway
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: pod-gateway
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  # Egress: allow WireGuard + DNS, plus ALL protocols back to Pod-CIDR
+  egress:
+    - to:
+        - ipBlock: { cidr: 0.0.0.0/0 }
+      ports:
+        - protocol: UDP
+          port: 51820
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 1637
+        - protocol: UDP
+          port: 8472
+        - protocol: UDP
+          port: 4789
+    - to:
+        - ipBlock:
+            cidr: ${NETWORK_K8S_CLUSTER_CIDR}
+        - ipBlock:
+            cidr: ${NETWORK_K8S_SERVICE_CIDR}
+      # ← no ports: “allow any protocol” (ICMP, etc.)
+
+  # Ingress: allow ALL protocols from Pod-CIDR (so echo replies pass)
+  ingress:
+    - from:
+      - ipBlock:
+          cidr: ${NETWORK_K8S_CLUSTER_CIDR}
+      - ipBlock:
+          cidr: ${NETWORK_K8S_SERVICE_CIDR}
+      # ← no ports: allow any protocol (ICMP included)
+
+#---
+#apiVersion: networking.k8s.io/v1
+#kind: NetworkPolicy
+#metadata:
+#  name: downloads-gateway-egress
+#  namespace: vpn-gateway
+#spec:
+#  podSelector:
+#    matchLabels:
+#      app.kubernetes.io/instance: downloads-gateway
+#      app.kubernetes.io/name: downloads-gateway
+#  policyTypes:
+#    - Egress
+#  egress:
+#    # 1) WireGuard (UDP 51820) out to any IP
+#    - to:
+#        - ipBlock:
+#            cidr: 0.0.0.0/0
+#      ports:
+#        - protocol: UDP
+#          port: 51820
+#        - protocol: UDP
+#          port: 53
+#    # 2) In-cluster traffic (all protocols) to any Pod in any namespace
+#    - to:
+#        # Allow traffic within K8S - change if your K8S cluster uses a different CIDR
+#        - ipBlock:
+#            cidr: ${NETWORK_K8S_CLUSTER_CIDR}
+#        - ipBlock:
+#            cidr: ${NETWORK_K8S_SERVICE_CIDR}
+#        - namespaceSelector: {}    # all namespaces
+#          podSelector: {}          # all Pods
+#      # <— No ports: means allow ALL protocols (incl. ICMP)
+#---
+#apiVersion: networking.k8s.io/v1
+#kind: NetworkPolicy
+#metadata:
+#  name: downloads-gateway-vxlan
+#  namespace: vpn-gateway
+#spec:
+#  podSelector:
+#    matchLabels:
+#      app.kubernetes.io/instance: downloads-gateway
+#      app.kubernetes.io/name: downloads-gateway
+#  policyTypes:
+#    - Ingress
+#    - Egress
+#
+#  # Allow incoming VXLAN encapsulation (UDP 8472)
+#  ingress:
+#    - ports:
+#        - protocol: UDP
+#          port: 8472
+#
+#  # Allow outgoing VXLAN encapsulation (UDP 8472)
+#  egress:
+#    - ports:
+#        - protocol: UDP
+#          port: 8472
+#

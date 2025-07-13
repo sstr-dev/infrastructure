@@ -1,0 +1,30 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: downloads-gateway
+  labels:
+    app.kubernetes.io/name: downloads-gateway
+    app.kubernetes.io/instance: downloads-gateway
+  annotations:
+    cert-manager.io/inject-ca-from: "vpn-gateway/downloads-gateway-webhook-tls"
+webhooks:
+  - name: downloads-gateway.svc.cluster.local
+    clientConfig:
+      service:
+        name: downloads-gateway-webhook
+        namespace: vpn-gateway
+        path: "/wh/mutating/setgateway"
+    rules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["pods"]
+        scope: "Namespaced"
+    failurePolicy: Fail
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 5
+    namespaceSelector:
+      matchLabels:
+        downloads-routed-gateway: "true"

@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: &name node-exporter
+spec:
+  staticConfigs:
+    - targets:
+        - casa-pve01.lokis-casa.internal:9100
+  metricsPath: /metrics
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: *name
+    # All creds to https://a-cup-of.coffee/blog/prometheus/#relabeling
+    - sourceLabels: [__address__]
+      regex: '(.*):[0-9]+'
+      replacement: '$${1}'
+      targetLabel: instance

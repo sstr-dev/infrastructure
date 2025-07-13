@@ -1,0 +1,82 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app local-path-provisioner-shared
+  namespace: &namespace storage-system
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  path: ./kubernetes/apps/base/storage-system/local-path-provisioner/shared
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app local-path-provisioner-standard-default
+  namespace: &namespace storage-system
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  path: ./kubernetes/apps/base/storage-system/local-path-provisioner/sc-standard-default
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  postBuild:
+    substitute:
+      APP: *app
+      REPLICAS: "1"
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+  timeout: 5m
+  dependsOn:
+    - name: local-path-provisioner-shared
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app local-path-provisioner-fast
+  namespace: &namespace storage-system
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  path: ./kubernetes/apps/base/storage-system/local-path-provisioner/sc-fast
+  prune: true
+  retryInterval: 2m
+  postBuild:
+    substitute:
+      APP: *app
+      REPLICAS: "1"
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  dependsOn:
+    - name: local-path-provisioner-shared

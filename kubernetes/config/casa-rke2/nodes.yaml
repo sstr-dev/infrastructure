@@ -1,0 +1,32 @@
+qb01:
+  label:
+    - 'topology.kubernetes.io/region=homelab'
+    - 'topology.kubernetes.io/zone=ct'
+    - 'homelab.k8s.io/type=ct'
+qb02:
+  label:
+    - 'topology.kubernetes.io/region=homelab'
+    - 'topology.kubernetes.io/zone=ct'
+    - 'homelab.k8s.io/type=ct'
+qb03:
+  label:
+    - 'topology.kubernetes.io/region=homelab'
+    - 'topology.kubernetes.io/zone=ct'
+    - 'homelab.k8s.io/type=ct'
+qb04:
+  label:
+    - 'topology.kubernetes.io/region=homelab'
+    - 'topology.kubernetes.io/zone=ct'
+    - 'homelab.k8s.io/type=ct'
+qb05:
+  label:
+    - 'topology.kubernetes.io/region=homelab'
+    - 'topology.kubernetes.io/zone=ct'
+    - 'homelab.k8s.io/type=ct'
+qb06:
+  taints:
+    - 'homelab.k8s.io/type=vm:NoExecute'
+  label:
+    - 'topology.kubernetes.io/region=homelab'
+    - 'topology.kubernetes.io/zone=vm'
+    - 'homelab.k8s.io/type=vm'

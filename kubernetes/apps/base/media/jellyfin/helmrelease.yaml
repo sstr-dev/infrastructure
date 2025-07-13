@@ -1,0 +1,198 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app jellyfin
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+    controllers:
+      jellyfin:
+        replicas: ${REPLICAS:=1}
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: RollingUpdate
+        containers:
+          app:
+            image:
+              repository: ghcr.io/jellyfin/jellyfin
+              tag: 10.10.7
+              pullPolicy: IfNotPresent
+            env:
+              TZ: ${CLUSTER_TIMEZONE}
+              PUID: 1000
+              PGID: 1000
+              DOTNET_SYSTEM_IO_DISABLEFILELOCKING: "true"
+
+              #JELLYFIN_FFmpeg__probesize: 50000000
+              #JELLYFIN_FFmpeg__analyzeduration: 50000000
+              #JELLYFIN_PublishedServerUrl: "https://{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8096
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probe
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8096
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 30
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 6000Mi
+
+    #serviceMonitor:
+    #  app:
+    #    serviceName: *app
+    #    endpoints:
+    #      - port: http
+    #        scheme: http
+    #        path: /metrics
+    #        interval: 1m
+    #        scrapeTimeout: 10s
+
+    service:
+      app:
+        controller: *app
+        type: LoadBalancer
+        annotations:
+          kube-vip.io/pool: iot
+          kube-vip.io/serviceInterface: iot
+          kube-vip.io/loadbalancerIPs: ${LB_V4_JELLIFIN_IOT}
+        ports:
+          http:
+            port: 8096
+          discovery:
+            port: 7359
+            protocol: UDP
+    route:
+      app:
+        hostnames: ["{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"]
+        parentRefs:
+          - name: main
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: jellyfin
+                port: 8096
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Jellyfin"
+          gethomepage.dev/group: "Media"
+          gethomepage.dev/icon: "jellyfin"
+          gethomepage.dev/description: "Open-source Media Server"
+    #ingress:
+    #  app:
+    #    enabled: ${DEFAULTINGRESSEN:=true}
+    #    className: ${INGRESSCLASS}
+    #    hosts:
+    #      - host: &host "{{ .Release.Name }}.${DOMAIN}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: http
+    #    tls:
+    #      - hosts:
+    #          - *host
+    #  iot:
+    #    enabled: ${IOTINGRESS:=false}
+    #    className: iot-nginx
+    #    annotations:
+    #      gethomepage.dev/enabled: "true"
+    #      gethomepage.dev/name: "Jellyfin"
+    #      gethomepage.dev/group: "Media"
+    #      gethomepage.dev/icon: "jellyfin"
+    #      gethomepage.dev/description: "Open-source Media Server"
+    #      gethomepage.dev/pod-selector: >-
+    #        app.kubernetes.io/name in (
+    #          jellyfin
+    #        )
+    #      #gethomepage.dev/widget.type: jellyfin
+    #      #gethomepage.dev/widget.url: http://{{ .Release.Name }}.{{ .Release.Namespace }}:8096
+    #      #gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_JELLYFIN_TOKEN}}` }}"
+    #    hosts:
+    #      - host: &host "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: http
+    #    tls:
+    #      #- secretName: chart-example-tls
+    #      - hosts:
+    #        - *host
+    persistence:
+      config:
+        enabled: true
+        existingClaim: *app
+        globalMounts:
+          - path: /config
+      transcode:
+        enabled: true
+        existingClaim: jellyfin-transcode
+        globalMounts:
+          - path: /config/transcodes
+      config-cache:
+        existingClaim: jellyfin-cache
+        globalMounts:
+          - path: /config/metadata
+      media:
+        enabled: true
+        type: hostPath
+        hostPath: ${SHARED_MEDIA_PATH}
+        globalMounts:
+          - path: /media
+      tmpfs:
+        type: emptyDir
+        advancedMounts:
+          jellyfin:
+            app:
+              - path: /cache
+                subPath: cache
+              - path: /config/log
+                subPath: log
+              - path: /tmp
+                subPath: tmp

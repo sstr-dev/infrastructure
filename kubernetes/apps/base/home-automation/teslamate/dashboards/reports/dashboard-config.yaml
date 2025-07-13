@@ -1,0 +1,4 @@
+dashboards:
+  dutch-tax:
+    url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/reports/dutch-tax.json
+

@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: self-hosted
+components:
+  - ../../../components/common
+  - ../../../vars/casa
+resources:
+  - ../../../vars/casa/ns/security-secrets.sops.yaml
+  - ./it-tools/ks.yaml
+  #- ./openspeedtest/ks.yaml
+  - ./cyberchef/ks.yaml
+  #- ./photon/ks.yaml
+  - ./homepage/ks.yaml
+  - ./snipe-it/ks.yaml
+  - ./drawio/ks.yaml
+  #- ./part-db/ks.yaml # mysql not work, remove it
+  - ./paperless/gotenberg/ks.yaml
+  - ./paperless/tika/ks.yaml
+  - ./paperless/ks.yaml
+  #- ./tandoor/ks.yaml
+  - ./mealie/ks.yaml
+  #- ./phpldapadmin/ks.yaml
+  - ./opencloud/ks.yaml
+  #- ./ocis/ks.yaml
+  - ./convertx/ks.yaml
+  - ./change-detection/ks.yaml
+  - ./privatebin/ks.yaml

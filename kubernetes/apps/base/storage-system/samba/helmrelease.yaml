@@ -1,0 +1,100 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app samba
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      samba:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/crazy-max/samba
+              tag: 4.21.4@sha256:75f5037770eab774b82f298268305af8a18a01a1daad679f8d2d17c54059c847
+            env:
+              TZ: ${CLUSTER_TIMEZONE}
+              SAMBA_HOSTS_ALLOW: "127.0.0.0/8 10.0.0.0/8 172.16.0.0/12 172.22.0.0/15 192.168.0.0/16 192.168.188.0/24"
+              # SAMBA_SERVER_STRING: &serverstring "smb.${SECRET_MAIN_DOMAIN_NAME}"
+              WSDD2_ENABLE: "1"
+            resources:
+              requests:
+                cpu: 5m
+                memory: 32Mi
+              limits:
+                memory: 2G
+
+    service:
+      app:
+        controller: *app
+        type: LoadBalancer
+        annotations:
+          kube-vip.io/pool: iot
+          kube-vip.io/serviceInterface: iot
+          kube-vip.io/loadbalancerIPs: ${LB_V4_SMB_IOT}
+        ports:
+          samba:
+            enabled: true
+            port: 445
+            targetPort: 445
+          samba-udp:
+            enabled: true
+            protocol: UDP
+            port: 445
+            targetPort: 445
+          wsdd:
+            enabled: true
+            port: 3702
+            targetPort: 3702
+          wsdd-udp:
+            enabled: true
+            protocol: UDP
+            port: 3702
+            targetPort: 3702
+          llmnr:
+            enabled: true
+            port: 5355
+            targetPort: 5355
+          llmnr-udp:
+            enabled: true
+            protocol: UDP
+            port: 5355
+            targetPort: 5355
+
+    persistence:
+      config:
+        enabled: true
+        type: secret
+        name: samba
+        globalMounts:
+          - path: /data/config.yml
+            subPath: samba.yaml
+            readOnly: true
+      media:
+        enabled: true
+        type: hostPath
+        hostPath: ${SHARED_MEDIA_PATH}
+        globalMounts:
+        - path: /shares/media
+          readOnly: false
+      data:
+        enabled: true
+        type: hostPath
+        hostPath: ${SHARED_DATA_PATH}
+        globalMounts:
+        - path: /shares/data
+          readOnly: false

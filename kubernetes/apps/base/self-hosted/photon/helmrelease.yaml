@@ -1,0 +1,115 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app photon
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      photon:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        #pod:
+        #  securityContext:
+        #    runAsUser: 1000
+        #    runAsGroup: 100
+        #    fsGroup: 100
+        #    fsGroupChangePolicy: "OnRootMismatch"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/rtuszik/photon-docker
+              tag: 0.7.2
+            env:
+              APP_LOCALE: "en-GB"
+              APP_TIMEZONE: ${CLUSTER_TIMEZONE}
+              APP_URL: "https://{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
+              # UPDATE_STRATEGY = Controls how index updates are handled
+              # PARALLEL: Downloads new index in background, then swaps with minimal downtime, requires 2x index space (Default)
+              # SEQUENTIAL: Stops Photon, deletes the existing index files, downloads the new index, then restarts
+              # DISABLED: No automatic updates
+              UPDATE_STRATEGY: "PARALLEL"
+              # UPDATE_INTERVAL = How often to check for updates (e.g., "24h", "60m", "3600s")
+              UPDATE_INTERVAL: 24h
+              # LOG_LEVEL = Logging verbosity ("DEBUG", "INFO", "ERROR")
+              LOG_LEVEL: INFO
+              # FORCE_UPDATE = Forces an index update on container startup, regardless of UPDATE_STRATEGY setting ("TRUE", "FALSE")
+              # FORCE_UPDATE: TRUE
+              # COUNTRY_CODE = Optional country code for smaller index (see available codes) Please note, that you may only specify a single country code. Specifying multiple country codes will make the script default to the full planet index. This is a limitation with the public data dumps provided by graphhopper.
+              # COUNTRY_CODE: de
+              APP_TRUSTED_PROXIES: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+            #resources:
+            #  requests:
+            #    cpu: 5m
+            #    memory: 32Mi
+            #  limits:
+            #    memory: 256Mi
+            #securityContext:
+            #  allowPrivilegeEscalation: false
+            #  readOnlyRootFilesystem: true
+            #  capabilities: { drop: ["ALL"] }
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: &port 2322
+    ingress:
+      app:
+        enabled: ${DEFAULTINGRESSEN:=true}
+        className: ${INGRESSCLASS}
+        hosts:
+          - host: &host "{{ .Release.Name }}.${DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: *port
+        tls:
+          - hosts:
+              - *host
+      iot:
+        enabled: ${IOTINGRESS:=false}
+        className: iot-nginx
+        hosts:
+          - host: &host "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: *port
+        tls:
+          - hosts:
+            - *host
+    #route:
+    #  app:
+    #    hostnames: ["{{ .Release.Name }}.${DOMAIN}"]
+    #    parentRefs:
+    #      - name: external
+    #        namespace: kube-system
+    #        sectionName: https
+    #    rules:
+    #      - backendRefs:
+    #          - name: *app
+    #            port: *port
+    persistence:
+      data:
+        enabled: true
+        type: hostPath
+        hostPath: ${SHARED_DATAPACK_PATH}/photon_data
+        advancedMounts:
+          photon:
+            app:
+              - path: /photon/photon_data

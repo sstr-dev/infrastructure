@@ -1,0 +1,122 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app it-tools
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      it-tools:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 100
+            fsGroup: 100
+            fsGroupChangePolicy: "OnRootMismatch"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/home-operations/it-tools
+              tag: 2024.10.22@sha256:7f26ae8d7a4a58b8d70b685cba5cbaa54d7df876d9f8bae702207f45b06d9b7c
+            env:
+              TZ: ${CLUSTER_TIMEZONE}
+            resources:
+              requests:
+                cpu: 5m
+                memory: 32Mi
+              limits:
+                memory: 256Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: &port 8080
+    #ingress:
+    #  app:
+    #    enabled: ${DEFAULTINGRESSEN:=true}
+    #    className: ${INGRESSCLASS}
+    #    #annotations:
+    #    #  gethomepage.dev/enabled: "true"
+    #    #  gethomepage.dev/description: Swiss army knife for IT
+    #    #  gethomepage.dev/group: Home
+    #    #  gethomepage.dev/icon: it-tools.svg
+    #    #  gethomepage.dev/name: IT-Tools
+    #    #  gethomepage.dev/pod-selector: >-
+    #    #    app.kubernetes.io/name in (
+    #    #      it-tools
+    #    #    )
+    #    hosts:
+    #      - host: &host "{{ .Release.Name }}.${DOMAIN}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: *port
+    #    tls:
+    #      - hosts:
+    #          - *host
+    #  iot:
+    #    enabled: ${IOTINGRESS:=false}
+    #    className: iot-nginx
+    #    annotations:
+    #      gethomepage.dev/enabled: "true"
+    #      gethomepage.dev/description: Swiss army knife for IT
+    #      gethomepage.dev/group: Home
+    #      gethomepage.dev/icon: it-tools.svg
+    #      gethomepage.dev/name: IT-Tools
+    #      gethomepage.dev/pod-selector: >-
+    #        app.kubernetes.io/name in (
+    #          it-tools
+    #        )
+    #    hosts:
+    #      - host: &host "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: *port
+    #    tls:
+    #      - hosts:
+    #        - *host
+
+
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.${SECRET_DEV_DOMAIN}"
+        parentRefs:
+          - name: dev
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
+        #annotations:
+        #  gethomepage.dev/enabled: "true"
+        #  gethomepage.dev/description: Swiss army knife for IT
+        #  gethomepage.dev/group: Home
+        #  gethomepage.dev/icon: it-tools.svg
+        #  gethomepage.dev/name: IT-Tools
+    persistence:
+      tmp:
+        type: emptyDir

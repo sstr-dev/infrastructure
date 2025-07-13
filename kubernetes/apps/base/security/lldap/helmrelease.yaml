@@ -1,0 +1,149 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+# special command for postgres; GRANT USAGE ON SCHEMA public TO lldap;
+# GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO lldap;
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app lldap
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+
+    defaultPodOptions:
+      #annotations:
+      #  setDownloadGateway: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+    controllers:
+      lldap:
+        replicas: ${REPLICAS:=1}
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: RollingUpdate
+        containers:
+          app:
+            image:
+              repository: ghcr.io/lldap/lldap
+              tag: 2025-05-19-alpine-rootless
+              pullPolicy: IfNotPresent
+            env:
+              TZ: ${CLUSTER_TIMEZONE}
+              LLDAP_HTTP_PORT: &port 80
+              LLDAP_HTTP_URL: https://{{ .Release.Name }}.${DOMAIN}
+              LLDAP_LDAP_PORT: &ldapPort 389
+              LLDAP_LDAP_BASE_DN: dc=home,dc=arpa
+              LLDAP_SMTP_OPTIONS__PORT: 25
+              LLDAP_SMTP_OPTIONS__SMTP_ENCRYPTION: NONE
+              LLDAP_SMTP_OPTIONS__ENABLE_PASSWORD_RESET: true
+              LLDAP_SMTP_OPTIONS__FROM: LLDAP Admin <lldap@${DOMAIN}>
+              LLDAP_SMTP_OPTIONS__SERVER: smtp-relay.default.svc.cluster.local
+            envFrom:
+              - secretRef:
+                  name: *app
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            resources:
+              requests:
+                cpu: 5m
+                memory: 36M
+              limits:
+                memory: 128M
+        pod:
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: *app
+    #serviceMonitor:
+    #  app:
+    #    serviceName: *app
+    #    endpoints:
+    #      - port: http
+    #        scheme: http
+    #        path: /metrics
+    #        interval: 1m
+    #        scrapeTimeout: 10s
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+            primary: true
+          ldap:
+            port: *ldapPort
+    #ingress:
+    #  app:
+    #    enabled: ${DEFAULTINGRESSEN:=true}
+    #    className: ${INGRESSCLASS}
+    #    annotations:
+    #      gethomepage.dev/enabled: "true"
+    #      gethomepage.dev/description: "Lightweight LDAP interface for authentication"
+    #      gethomepage.dev/group: Infrastructure
+    #      gethomepage.dev/icon: mdi-account-lock
+    #      gethomepage.dev/name: lldap
+    #    #  gethomepage.dev/pod-selector: >-
+    #    #    app.kubernetes.io/name in (
+    #    #      it-tools
+    #    #    )
+    #    hosts:
+    #      - host: &host "{{ .Release.Name }}.${DOMAIN}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: http
+    #    tls:
+    #      - hosts:
+    #          - *host
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.${DOMAIN}"
+        parentRefs:
+          - name: internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
+        #annotations:
+        #  gethomepage.dev/enabled: "true"
+        #  gethomepage.dev/description: "Lightweight LDAP interface for authentication"
+        #  gethomepage.dev/group: Infrastructure
+        #  gethomepage.dev/icon: mdi-account-lock
+        #  gethomepage.dev/name: lldap
+    persistence:
+      data:
+        type: emptyDir

@@ -1,0 +1,24 @@
+{
+  "timezone": "${CLUSTER_TIMEZONE}",
+  "logLevel": "info",
+  "webPortalConfig": {
+    "baseUrl": "https://epic.${SECRET_MAIN_DOMAIN_NAME}"
+  },
+  "accounts": [
+    {
+      "email": "{{ .EPICGAMES_EMAIL_1 }}",
+      "notifiers": [
+        {
+          "type": "discord",
+          "webhookUrl": "{{ .EPICGAMES_DISCORD_WEBHOOK }}",
+          "mentionedUsers": ["{{ .EPICGAMES_DISCORD_USER_1 }}"]
+        },
+        {
+          "type": "pushover",
+          "token": "{{ .EPICGAMES_PUSHHOVER_TOKEN }}",
+          "userKey": "{{ .EPICGAMES_PUSHHOVER_USER }}"
+        }
+      ]
+    }
+  ]
+}

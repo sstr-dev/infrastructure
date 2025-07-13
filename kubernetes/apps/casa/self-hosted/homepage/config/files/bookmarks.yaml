@@ -1,0 +1,82 @@
+---
+- Communicate:
+    - Discord:
+        - icon: discord.png
+          href: 'https://discord.com/app'
+    - Gmail:
+        - icon: gmail.png
+          href: 'http://gmail.com'
+    - Google Calendar:
+        - icon: google-calendar.png
+          href: 'https://calendar.google.com'
+- Media:
+    - YouTube:
+        - icon: youtube.png
+          href: 'https://youtube.com/feed/subscriptions'
+    - Spotify:
+        - icon: spotify.png
+          href: 'http://open.spotify.com'
+    - Disney+:
+        - icon: disney-plus-light
+          href: https://www.disneyplus.com/
+- Reading:
+    - Reddit:
+        - icon: reddit.png
+          href: 'https://reddit.com'
+    - Hacker News:
+        - icon: hacker-news.png
+          href: "https://news.ycombinator.com/"
+    - The Verge:
+      - href: "https://theverge.com/"
+    - Arstechnica:
+      - href: "https://www.arstechnica.com/"
+- Infrastructure:
+    - kubesearch:
+      - icon: kubernetes-dashboard.png
+        href: 'https://kubesearch.dev/'
+    - bjw-s Helm Charts:
+        - icon: si-github
+          href: https://bjw-s-labs.github.io/helm-charts/docs/
+    - kubernetes.io:
+        - icon: kubernetes
+          href: https://kubernetes.io/
+    - home-flux-ops:
+      - icon: github.png
+        href: "https://github.com/gznzeus/flux-ops/"
+    - ChatGPT:
+      - icon: openai.png
+        href: "https://chat.openai.com/"
+- Dev:
+    - gitmoji:
+        - icon: mdi-sticker-emoji
+          href: https://gitmoji.dev/
+    - devhints.io:
+        - icon: mdi-code-block-tags
+          href: https://devhints.io/
+    # offline
+    #- labs4grabs:
+    #    - icon: kubernetes
+    #      href: https://labs4grabs.io
+    - stackoverflow:
+        - icon: si-stackoverflow
+          href: https://stackoverflow.com/
+    - devdocs:
+      - href: "https://devdocs.io"
+- Icons:
+    - Simple Icons:
+        - icon: si-simpleicons
+          href: https://simpleicons.org/
+    - MDI:
+        - icon: https://pictogrammers.com/images/libraries/mdi.svg
+          href: https://materialdesignicons.com/
+    - Heroicons:
+        - icon: mdi-shield-outline
+          href: https://heroicons.com/
+    - Dashboard Icons:
+        - icon: si-github
+          href: https://github.com/walkxcode/dashboard-icons/blob/main/ICONS.md
+#- Applications:
+#    - IT Tools:
+#        icon: it-tools.png
+#        href: https://it-tools.${SECRET_MAIN_DOMAIN_NAME}
+#        description: Swiss army knife for IT

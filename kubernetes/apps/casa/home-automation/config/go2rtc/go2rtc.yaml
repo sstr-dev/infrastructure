@@ -1,0 +1,43 @@
+---
+api:
+  listen: :80
+rtsp:
+  listen: :554
+#webrtc:
+#  listen: :8555
+#  candidates:
+#    - 192.168.20.9:8555
+#    - stun:8555
+#  ice_servers:
+#    - urls:
+#        - stun:stun.cloudflare.com:3478
+log:
+  output: 'stdout'
+streams:
+  #scrypted_test1: rtsp://scrypted.home-automation.svc.cluster.local:34136/ID
+  #scrypted_test2: rtsp://scrypted.home-automation.svc.cluster.local:34135/ID
+  #scrypted_test1: rtsp://scrypted.home-automation.svc.cluster.local:34135/d7f1babb4c71bf73
+  #scrypted_test2: rtsp://scrypted.home-automation.svc.cluster.local:34136/c16e11aa86b69b96
+  #scrypted_test3: rtsp://scrypted.home-automation.svc.cluster.local:34136/d7f1babb4c71bf73
+
+  printer_k1c: rtsp://scrypted.home-automation.svc.cluster.local:34136/1af37771fdb3be8d
+  printer_ender3v2: rtsp://scrypted.home-automation.svc.cluster.local:34135/c16e11aa86b69b96
+
+  #cam1_stream0:
+  #  - onvif://${GO2RTC_STREAMS_CAM1_USER}:${GO2RTC_STREAMS_CAM1_PW}@${GO2RTC_STREAMS_CAM1_IP}?subtype=Profile000
+  #cam1_stream1:
+  #  - onvif://${GO2RTC_STREAMS_CAM1_USER}:${GO2RTC_STREAMS_CAM1_PW}@${GO2RTC_STREAMS_CAM1_IP}?subtype=Profile001
+  #  #/cam/realmonitor?channel=1&subtype=1&unicast=true&proto=Onvif
+  #cam1:
+  #  - rtsp://${GO2RTC_STREAMS_CAM1_USER}:${GO2RTC_STREAMS_CAM1_PW}@${GO2RTC_STREAMS_CAM1_IP}:554/cam/realmonitor?channel=1&subtype=1
+  #  - ffmpeg:cam1#video=mjpeg
+  #  # then in moonraker:
+  #  # stream: http://{moonraker_ip}/api/stream.mjpeg?src=cam1
+  #  # snapshot: http://{moonraker_ip}/api/frame.jpeg?src=cam1
+  #  # and in obico (if more then 1 cam):
+  #  #[webcam cam1]
+  #  #disable_video_streaming = False
+  #printer_k1c:
+  #  - http://${GO2RTC_STREAMS_K1C_IP}/webcam/?action=stream
+  #printer_ender3v2:
+  #  - http://${GO2RTC_STREAMS_E3V2_IP}/webcam/?action=stream

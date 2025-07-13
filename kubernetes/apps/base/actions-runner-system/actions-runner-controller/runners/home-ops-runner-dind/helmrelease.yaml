@@ -1,0 +1,123 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app ${APP}
+spec:
+  interval: 30m
+  driftDetection:
+    mode: enabled
+  chartRef:
+    kind: OCIRepository
+    name: gha-runner-scale-set
+  values:
+    runnerScaleSetName: arc-runner-set-home-ops-dind
+    githubConfigUrl: "${GH_CONFIGURL:=https://github.com/gznzeus/flux-ops}"
+    minRunners: ${minRunners:=1}
+    maxRunners: ${maxRunners:=2} #Double total nodes
+    containerMode:
+      type: dind
+    listenerMetrics:
+      counters:
+        gha_started_jobs_total:
+          labels:
+            [
+              "repository",
+              "organization",
+              "enterprise",
+              "job_name",
+              "event_name",
+            ]
+        gha_completed_jobs_total:
+          labels:
+            [
+              "repository",
+              "organization",
+              "enterprise",
+              "job_name",
+              "event_name",
+              "job_result",
+            ]
+      gauges:
+        gha_assigned_jobs:
+          labels:
+            ["name", "namespace", "repository", "organization", "enterprise"]
+        gha_running_jobs:
+          labels:
+            ["name", "namespace", "repository", "organization", "enterprise"]
+        gha_registered_runners:
+          labels:
+            ["name", "namespace", "repository", "organization", "enterprise"]
+        gha_busy_runners:
+          labels:
+            ["name", "namespace", "repository", "organization", "enterprise"]
+        gha_min_runners:
+          labels:
+            ["name", "namespace", "repository", "organization", "enterprise"]
+        gha_max_runners:
+          labels:
+            ["name", "namespace", "repository", "organization", "enterprise"]
+        gha_desired_runners:
+          labels:
+            ["name", "namespace", "repository", "organization", "enterprise"]
+        gha_idle_runners:
+          labels:
+            ["name", "namespace", "repository", "organization", "enterprise"]
+      histograms:
+        gha_job_startup_duration_seconds:
+          labels:
+            [
+              "repository",
+              "organization",
+              "enterprise",
+              "job_name",
+              "event_name",
+            ]
+        gha_job_execution_duration_seconds:
+          labels:
+            [
+              "repository",
+              "organization",
+              "enterprise",
+              "job_name",
+              "event_name",
+              "job_result",
+            ]
+    template:
+      spec:
+        containers:
+          - name: runner
+            image: ghcr.io/home-operations/actions-runner:2.326.0@sha256:547f2c0253322b518538d3ea4e9fc39c90fbb456f48895c2d6f1dcc3d87f56e5
+            command: ["/home/runner/run.sh"]
+    controllerServiceAccount:
+      name: actions-runner-controller
+      namespace: actions-runner-system
+  valuesFrom:
+    - kind: Secret
+      name: ${APP}-auth
+      valuesKey: github_app_id
+      targetPath: githubConfigSecret.github_app_id
+    - kind: Secret
+      name: ${APP}-auth
+      valuesKey: github_app_installation_id
+      targetPath: githubConfigSecret.github_app_installation_id
+    - kind: Secret
+      name: ${APP}-auth
+      valuesKey: github_app_private_key
+      targetPath: githubConfigSecret.github_app_private_key
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: &app ${APP}
+spec:
+  selector:
+    matchLabels:
+      helm.toolkit.fluxcd.io/name: *app
+  podMetricsEndpoints:
+    - port: metrics
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 5s

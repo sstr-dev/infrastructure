@@ -1,0 +1,105 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app envoy-gateway
+  namespace: &namespace network
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  path: ./kubernetes/apps/base/network/envoy-gateway
+  prune: true
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 15m
+---
+
+# internal   default/cluster-internal-production-tls    LB_V4_GATEWAY_INTERNAL
+# iot   default/main-tls    LB_V4_GATEWAY_MAIN     SECRET_MAIN_DOMAIN_NAME
+# base   default/base-tls    LB_V4_GATEWAY_BASE    SECRET_DOMAIN
+# iot-dev  default/dev-tls     LB_V4_GATEWAY_DEV    SECRET_DEV_DOMAIN
+
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app envoy-gateway-config
+  namespace: &namespace network
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: internal-cluster-certificate
+      namespace: default
+    - name: envoy-gateway
+      namespace: network
+  interval: 1h
+  path: ./kubernetes/apps/casa/network/config/envoy-gateway
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+  timeout: 15m
+  healthChecks:
+    - &healthCheck
+      apiVersion: &gatewayVersion gateway.networking.k8s.io/v1
+      kind: &gatewayKind Gateway
+      name: internal
+      namespace: *namespace
+    - <<: *healthCheck
+      name: main
+    - <<: *healthCheck
+      name: base
+    - <<: *healthCheck
+      name: dev
+    - &healthCheck
+      apiVersion: &envoyVersion gateway.envoyproxy.io/v1alpha1
+      kind: &clientKind ClientTrafficPolicy
+      name: client
+      namespace: *namespace
+    - <<: *healthCheck
+      kind: &backendKind BackendTrafficPolicy
+      name: backend
+  healthCheckExprs:
+    - apiVersion: *gatewayVersion
+      kind: *gatewayKind
+      current: |-
+        status.listeners.exists(l,
+          l.conditions.filter(e, e.type == 'Accepted').exists(e, e.status == 'True') &&
+          l.conditions.filter(e, e.type == 'Programmed').exists(e, e.status == 'True') &&
+          l.conditions.filter(e, e.type == 'OverlappingCertificates').all(e, e.status == 'False'))
+      failed: |-
+        status.listeners.exists(l,
+          l.conditions.filter(e, e.type == 'Accepted').exists(e, e.status == 'False') ||
+          l.conditions.filter(e, e.type == 'Programmed').exists(e, e.status == 'False') ||
+          l.conditions.filter(e, e.type == 'OverlappingCertificates').exists(e, e.status == 'True'))
+    - &expr
+      apiVersion: *envoyVersion
+      kind: *clientKind
+      current: status.ancestors.exists(e, e.conditions.filter(e, e.type == 'Accepted').exists(e, e.status == 'True'))
+      failed: status.ancestors.exists(e, e.conditions.filter(e, e.type == 'Accepted').exists(e, e.status == 'False'))
+    - <<: *expr
+      kind: *backendKind

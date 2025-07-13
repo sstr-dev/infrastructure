@@ -1,0 +1,15 @@
+---
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Grant
+metadata:
+  name: ${DATABASE:=${APP}}
+spec:
+  mariaDbRef:
+    name: mariadb
+    namespace: database
+  privileges:
+    - "ALL"
+  database: "${DATABASE:=${APP}}"
+  table: "*"
+  username: ${DATABASE:=${APP}}
+  host: "%"

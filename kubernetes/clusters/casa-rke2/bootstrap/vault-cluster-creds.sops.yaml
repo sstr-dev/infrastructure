@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: vault-cluster-creds
+    namespace: security
+stringData:
+    password: ENC[AES256_GCM,data:ABWUP6Bo1HD8N8SrFnzgAGMFp0HXttF5oEQBeu/A1Og=,iv:3AunAssjDIa0yymQWcm/cTf2LIHRnOZymgFqDOHjIPk=,tag:Zmti1AwaK+aQdmqQEQyX/A==,type:str]
+sops:
+    age:
+        - recipient: age13x3gvqpe83vx0rcmcdcqnt202c4rsq3sax8s5q2p5t2lcjflpsvqgng8s3
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOL1p4MUJYQkk3VVA3R0pJ
+            Y1lnT2hnaThSb3dGVHZuQ29jQ3Ura01LaGhzCjE3anI1cnlXWE5PMjlFQ2VqZFZP
+            eGEzOE8veFpmbFhEanVHellGMGluY3cKLS0tIGcvVnF5YnpSMnBvVDJiYWhMWUxH
+            dmUxeVptaDMvRHBSeE9EYS9nSE52NGcKyUiWpW5fzIFvsuyyXpxBlaXIsHGxEojq
+            3D7O0OlHXUOHrKXubAUsJsL/cMPYeG/TvdzHhDGce4GYmfXUGdxbWw==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2025-05-20T20:15:06Z"
+    mac: ENC[AES256_GCM,data:efuh6BHJpWOcoIv81A0tT29caPHFGRcdCcJuGZS7GldzAoA3hrJKortTBKTxKI1bA3Z5EXf37ipIxV+NpkwJrkiEBUge95AZzTdPP0ancBhCldzLIyx5lewHASnXUp8NTuNU+Q6tqIbA5CeAWZk3tUHFLhRSRGGhRleLudL4qBY=,iv:UV641XYUYcsyGnBb3JqfX1p/uYdlBCUmP3H1+8aNAw4=,tag:j2qIGHbskqX9l+Q2MZD8Sw==,type:str]
+    encrypted_regex: ^(data|stringData)$
+    version: 3.10.2

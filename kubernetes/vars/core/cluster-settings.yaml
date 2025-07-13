@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-settings
+data:
+  CLUSTER_TIMEZONE: "Europe/Berlin"
+  CLUSTER: core
+  DOMAIN: core.lokis-casa.internal
+  SERVICE_LB_RANGE: 192.168.0.171-192.168.0.180
+  # range lan: 192.168.0.171-192.168.0.180
+  LB_V4_K8SGATEWAY: 192.168.0.172
+  #CLUSTER_LB_SMTP_RELAY: 192.168.169.102
+  LB_V4_NGINX_INTERNAL: 192.168.0.171

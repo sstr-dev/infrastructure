@@ -1,0 +1,75 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/k8s.mariadb.com/mariadb_v1alpha1.json
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: MariaDB
+metadata:
+  name: mariadb
+spec:
+  rootPasswordSecretKeyRef:
+    name: mariadb-secret
+    key: rootPassword
+    generate: false
+
+  image: "${IMAGE:=mariadb:11.8.2}"
+
+  env:
+    - name: TZ
+      value: ${CLUSTER_TIMEZONE}
+
+  storage:
+    size: ${SIZE:=2Gi}
+    storageClassName: ${STORAGECLASS:=sc-standard}
+    #resizeInUseVolumes: true
+    #waitForVolumeResize: true
+
+  service:
+    type: LoadBalancer
+    metadata:
+      annotations:
+        kube-vip.io/pool: default
+        kube-vip.io/loadbalancerIPs: ${LB_V4_MARIADB}
+
+  podSecurityContext:
+    runAsUser: 0
+  securityContext:
+    allowPrivilegeEscalation: false
+
+  podDisruptionBudget:
+    maxUnavailable: 33%
+
+  updateStrategy:
+    autoUpdateDataPlane: true
+    type: RollingUpdate
+
+  myCnf: |
+    [mariadb]
+    bind-address=*
+    default_storage_engine=InnoDB
+    binlog_format=row
+    innodb_autoinc_lock_mode=2
+    max_allowed_packet=256M
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 1Gi
+
+  metrics:
+    enabled: true
+
+  #bootstrapFrom:
+  #  s3:
+  #    bucket: ${S3_BUCKET}
+  #    prefix: mariadb
+  #    endpoint: minio-backup.network.svc:9000
+  #    region: home
+  #    accessKeyIdSecretKeyRef:
+  #      name: mariadb-secret
+  #      key: access-key-id
+  #    secretAccessKeySecretKeyRef:
+  #      name: mariadb-secret
+  #      key: secret-access-key
+  #    tls:
+  #      enabled: false

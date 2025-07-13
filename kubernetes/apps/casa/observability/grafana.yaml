@@ -1,0 +1,57 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app grafana
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: external-secrets
+      namespace: security
+  interval: 1h
+  path: ./kubernetes/apps/base/observability/grafana
+  postBuild:
+    substitute:
+      APP: *app
+      INGRESSCLASS: "iot-base-nginx"
+      SUBDOMAIN: "home-grafana"
+      REPLICAS: "1"
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: observability
+  timeout: 5m
+  #wait: false
+  #patches:
+  #- target:
+  #    kind: HelmRelease
+  #    name: grafana
+  #  patch: |-
+  #    apiVersion: helm.toolkit.fluxcd.io/v2
+  #    kind: HelmRelease
+  #    metadata:
+  #      name: grafana
+  #    spec:
+  #      values:
+  #        ingress:
+  #          annotations:
+  #            gethomepage.dev/enabled: "true"
+  #            gethomepage.dev/icon: grafana.png
+  #            gethomepage.dev/name: Grafana
+  #            gethomepage.dev/group: Observability
+  #            gethomepage.dev/description: Monitoring Dashboards
+  #            # gethomepage.dev/widget.type: grafana
+  #            # gethomepage.dev/widget.url: http://grafana.observability
+  #            # gethomepage.dev/widget.username: '{{`{{HOMEPAGE_VAR_GRAFANA_USERNAME}}`}}'
+  #            # gethomepage.dev/widget.password: '{{`{{HOMEPAGE_VAR_GRAFANA_PASSWORD}}`}}'

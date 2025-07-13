@@ -1,0 +1,113 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app dbgate
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      dbgate:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: dbgate/dbgate
+              tag: 6.5.5-alpine
+            #env:
+            #  #TZ: ${CLUSTER_TIMEZONE}
+            #  LOGIN:
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: dbgate-secret
+            #       key: user
+            #  PASSWORD:
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: dbgate-secret
+            #       key: password
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: &port 3000
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            resources:
+              requests:
+                cpu: 100m
+              limits:
+                memory: 1Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+
+    #defaultPodOptions:
+    #  securityContext:
+    #    runAsNonRoot: true
+    #    runAsUser: 1000
+    #    runAsGroup: 1001
+    #    fsGroup: 1001
+    #    fsGroupChangePolicy: OnRootMismatch
+    #    seccompProfile: { type: RuntimeDefault }
+
+    service:
+      app:
+        controller: dbgate
+        ports:
+          http:
+            port: *port
+    #ingress:
+    #  echo:
+    #    className: ${INGRESSCLASS}
+    #    hosts:
+    #      - host: &host "{{ .Release.Name }}.${DOMAIN}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: http
+    #    tls:
+    #      - hosts:
+    #          - *host
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.${DOMAIN}"
+        parentRefs:
+          - name: internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
+
+    persistence:
+      config:
+        type: persistentVolumeClaim
+        storageClass: "sc-standard"
+        accessMode: ReadWriteMany
+        size: 1Gi
+        globalMounts:
+          - path: /root/.dbgate
+            readOnly: false

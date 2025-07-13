@@ -1,0 +1,183 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app paperless
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      *app :
+        labels:
+          nfsMount: "true"
+          postgres: "true"
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/paperless-ngx/paperless-ngx
+              tag: 2.17.1
+            env:
+              # Application
+              PAPERLESS_URL: https://dms.${SECRET_MAIN_DOMAIN_NAME}
+              PAPERLESS_PORT: &port "8000"
+              PAPERLESS_TIME_ZONE: ${CLUSTER_TIMEZONE}
+
+              PAPERLESS_WEBSERVER_WORKERS: "2"
+              PAPERLESS_TASK_WORKERS: "2"
+              # Folder Importer
+              PAPERLESS_CONSUMER_POLLING: "60"
+              PAPERLESS_CONSUMER_RECURSIVE: "true"
+              PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: "true"
+              PAPERLESS_CONSUMER_DELETE_DUPLICATES: "true"
+              # Database
+              PAPERLESS_DBENGINE: postgresql
+              PAPERLESS_DBPORT: "5432"
+              PAPERLESS_DBNAME: *app
+              PAPERLESS_DBHOST: postgres-cluster-rw.database.svc.cluster.local
+              PAPERLESS_DBUSER: *app
+              # Folders
+              PAPERLESS_CONSUMPTION_DIR: /data/df/incoming
+              PAPERLESS_DATA_DIR: /data/local/data
+              PAPERLESS_EXPORT_DIR: /data/df/export
+              PAPERLESS_MEDIA_ROOT: /data/local/media
+              # OCR
+              PAPERLESS_OCR_LANGUAGES: deu+eng
+              PAPERLESS_OCR_LANGUAGE: deu
+              # Configure format
+              # https://paperless-ngx.readthedocs.io/en/latest/advanced_usage.html#advanced-file-name-handling
+              #PAPERLESS_FILENAME_FORMAT: "{created_year}/{correspondent}/{title}"
+              #PAPERLESS_FILENAME_FORMAT: "{{ created_year }}/{{ correspondent }}/{{ title }}" # {created_year}/{correspondent}/{title}
+              PAPERLESS_FILENAME_FORMAT: "{{ `{{ created_year }}/{{ correspondent }}/{{ title }}` }}"
+              #PAPERLESS_FILENAME_FORMAT: "{{ created_year }}/{{ correspondent }}/{{ title }}" # {created_year}/{correspondent}/{title}
+              # Configure tika and gotenberg (optional integrations)
+              PAPERLESS_TIKA_ENABLED: 1
+              PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg.self-hosted.svc.cluster.local:3000
+              PAPERLESS_TIKA_ENDPOINT: http://tika.self-hosted.svc.cluster.local:9998
+              # Configure redis integration
+              PAPERLESS_REDIS: redis://dragonfly-cluster.database.svc.cluster.local:6379/1
+              # Configure user permissions
+              USERMAP_UID: 1000
+              USERMAP_GID: 1000
+              # Configure SSO
+              PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
+              PAPERLESS_ACCOUNT_ALLOW_SIGNUPS: 'false'
+              PAPERLESS_SOCIALACCOUNT_ALLOW_SIGNUPS: 'true'
+              PAPERLESS_DISABLE_REGULAR_LOGIN: 'true'
+              PAPERLESS_OCR_USER_ARGS: '{"invalidate_digital_signatures": true}'
+            envFrom:
+              - secretRef:
+                  name: *app
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 5
+            resources:
+              requests:
+                cpu: 100m
+                memory: 768Mi
+              limits:
+                memory: 2Gi
+    service:
+      app:
+        primary: true
+        controller: *app
+        ports:
+          http:
+            port: *port
+    #ingress:
+    #  app:
+    #    enabled: true
+    #    className: iot-nginx
+    #    annotations:
+    #      nginx.ingress.kubernetes.io/proxy-body-size: 4G
+    #      nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    #      gethomepage.dev/enabled: "true"
+    #      gethomepage.dev/group: Home
+    #      gethomepage.dev/name: Paperless
+    #      gethomepage.dev/icon: paperless-ngx.png
+    #      gethomepage.dev/description: Document OCR Software
+    #      gethomepage.dev/widget.type: paperlessngx
+    #      gethomepage.dev/widget.url: "http://{{ .Release.Name }}.{{ .Release.Namespace }}:8000"
+    #      gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}` }}"
+    #      gethomepage.dev/pod-selector: >-
+    #        app.kubernetes.io/name in (
+    #          paperless
+    #        )
+    #    hosts:
+    #      - host: &host "dms.${SECRET_MAIN_DOMAIN_NAME}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: http
+    #    tls:
+    #      - hosts:
+    #        - *host
+    route:
+      app:
+        hostnames:
+          - "dms.${SECRET_MAIN_DOMAIN_NAME}"
+        parentRefs:
+          - name: main
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
+        annotations:
+          nginx.ingress.kubernetes.io/proxy-body-size: 4G
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+          #gethomepage.dev/enabled: "true"
+          #gethomepage.dev/group: Home
+          #gethomepage.dev/name: Paperless
+          #gethomepage.dev/icon: paperless-ngx.png
+          #gethomepage.dev/description: Document OCR Software
+          #gethomepage.dev/widget.type: paperlessngx
+          #gethomepage.dev/widget.url: "http://{{ .Release.Name }}.{{ .Release.Namespace }}:8000"
+          #gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}` }}"
+
+    persistence:
+      data:
+        enabled: true
+        type: hostPath
+        hostPath: ${DMS_DATA_PATH}/paperless
+        advancedMounts:
+          *app :
+            app:
+              - path: /data/local
+      export:
+        enabled: true
+        type: hostPath
+        hostPath: ${SHARED_DATA_PATH}/dms_export
+        advancedMounts:
+          *app :
+            app:
+              - path: /data/df/export
+      incoming:
+        enabled: true
+        type: hostPath
+        hostPath: ${SHARED_DATA_PATH}/dms_import
+        advancedMounts:
+          *app :
+            app:
+              - path: /data/df/incoming
+

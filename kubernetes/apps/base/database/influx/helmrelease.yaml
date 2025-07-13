@@ -1,0 +1,114 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app influx
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      influx:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: docker.io/library/influxdb
+              tag: 2.7-alpine@sha256:ef14203d7014ac9a0df4f087d186901ea7d19993410b35782f6c3c421738eb25
+            resources:
+              requests:
+                cpu: 100m
+                memory: 128M
+              limits:
+                memory: 384M
+            probes:
+              liveness: &health
+                enabled: true
+                custom: true
+                spec:
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+                  httpGet:
+                    path: /health
+                    port: 8086
+              readiness: *health
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  initialDelaySeconds: 0
+                  timeoutSeconds: 1
+                  periodSeconds: 5
+                  failureThreshold: 30
+                  httpGet:
+                    path: /health
+                    port: 8086
+    service:
+      app:
+        controller: *app
+        type: LoadBalancer
+        annotations:
+          kube-vip.io/pool: iot
+          kube-vip.io/serviceInterface: iot
+          kube-vip.io/loadbalancerIPs: ${LB_V4_SHARED}
+        #type: LoadBalancer
+        #annotations:
+        #  #external-dns.alpha.kubernetes.io/hostname: *hostname
+        #  kube-vip.io/pool: iot
+        #  kube-vip.io/serviceInterface: iot
+        #  kube-vip.io/loadbalancerIPs: ${LB_V4_SHARED}
+        ports:
+          http:
+            enabled: false
+            port: 8080
+          influx:
+            enabled: true
+            port: &port 8086
+    #ingress:
+    #  echo:
+    #    className: ${INGRESSCLASS}
+    #    hosts:
+    #      - host: &host "{{ .Release.Name }}.${DOMAIN}"
+    #        paths:
+    #          - path: /
+    #            service:
+    #              identifier: app
+    #              port: http
+    #    tls:
+    #      - hosts:
+    #          - *host
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.${DOMAIN}"
+        parentRefs:
+          - name: internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
+
+    persistence:
+      config:
+        enabled: true
+        existingClaim: *app
+        globalMounts:
+          - path: /var/lib/influxdb2
+            subPath: var
+          - path: /etc/influxdb2/
+            subPath: etc

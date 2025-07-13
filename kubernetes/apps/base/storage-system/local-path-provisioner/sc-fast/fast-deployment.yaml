@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sc-fast-provisioner
+  namespace: storage-system
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  revisionHistoryLimit: 0
+  replicas: ${REPLICAS:=1}
+  selector:
+    matchLabels:
+      app: sc-fast-provisioner
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: sc-fast-provisioner
+    spec:
+      serviceAccountName: local-path-provisioner-service-account
+      containers:
+        - name: local-path-provisioner
+          image: rancher/local-path-provisioner:v0.0.31
+          imagePullPolicy: IfNotPresent
+          command:
+            - local-path-provisioner
+            - '--debug'
+            - start
+            - '--config'
+            - /etc/config/config.json
+            - '--service-account-name'
+            - local-path-provisioner-service-account
+            - '--provisioner-name'
+            - cluster.local/sc-fast-provisioner
+            - '--helper-image'
+            - busybox:latest
+            - '--configmap-name'
+            - sc-fast-local-path-config
+          volumeMounts:
+            - name: sc-fast-config-volume
+              mountPath: /etc/config/
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: CONFIG_MOUNT_PATH
+              value: /etc/config/
+      volumes:
+        - name: sc-fast-config-volume
+          configMap:
+            name: sc-fast-local-path-config
+            defaultMode: 420

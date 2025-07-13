@@ -1,0 +1,349 @@
+---
+
+
+
+
+#- Network:
+#    - Cloudflared:
+#        href: https://dash.cloudflare.com/
+#        icon: cloudflare-zero-trust.png
+#        description: Cloudflared Tunnel Status
+#        widget:
+#          type: cloudflared
+#          accountid: {{HOMEPAGE_VAR_CLOUDFLARED_ACCOUNTID}}
+#          tunnelid: {{HOMEPAGE_VAR_CLOUDFLARED_TUNNELID}}
+#          key: {{HOMEPAGE_VAR_CLOUDFLARED_API_TOKEN}}
+#          fields: ["status"]
+
+- Calendar:
+    - Agenda:
+        widget:
+          type: calendar
+          view: agenda # optional - possible values monthly, agenda
+          maxEvents: 7 # optional - defaults to 10
+          integrations: # optional
+            - type: sonarr # active widget type that is currently enabled on homepage - possible values: radarr, sonarr>
+              service_group: Downloads # group name where widget exists
+              service_name: Sonarr # service name for that widget
+            - type: radarr # active widget type that is currently enabled on homepage - possible values: radarr, sonarr>
+              service_group: Downloads # group name where widget exists
+              service_name: Radarr # service name for that widget
+
+- Infrastructure:
+    - Fritz!Box:
+        icon: avm-fritzbox     # optional: your icon file in /static/icons
+        href: http://${SECRET_FRITZ_IP}/   # URL when you click the tile
+        description: FRITZ!Box Router Management
+        widget:
+          type: fritzbox
+          url: http://${SECRET_FRITZ_IP}
+          fields:
+              - connectionStatus      # e.g. “connected” / “disconnected”
+              - uptime                # router uptime
+              - down                  # download speed
+              - up                    # upload speed
+    - Pterodactyl:
+        icon: pterodactyl.png
+        href: http://pterodactyl.${SECRET_MAIN_DOMAIN_NAME}
+        description: Gamer server platform
+        app: pterodactyl
+        namespace: games
+        widget:
+          type: pterodactyl
+          url: http://pterodactyl-app.games
+          key: '{{HOMEPAGE_VAR_PTERODACTYL_KEY}}'
+    ### no widgets at bottom of list
+    - OPNSense Firewall:
+        icon: opnsense
+        href: https://${SECRET_OPNSENSE_IP}
+        description: OPNSense Firewall Management
+        # ping
+        siteMonitor: https://${SECRET_OPNSENSE_IP}
+        # widget:
+        #   type: opnsense
+        #   url: https://${SECRET_OPNSENSE_IP}
+        #   username: "{{HOMEPAGE_VAR_OPNSENSE_API_KEY}}"
+        #   password: "{{HOMEPAGE_VAR_OPNSENSE_SECRET}}"
+
+    - Hashicorp Vault:
+        icon: vault
+        href: ${VAULT_SERVER}
+        description: Hashicorp Vault Secrets Management
+        # ping
+        siteMonitor: ${VAULT_SERVER}
+    - Brother MFC:
+        icon: brother
+        href: http://192.168.188.42
+        description: MFC-L3770CDW Printer Management
+        # ping
+        # siteMonitor: http://192.168.188.42
+#    - PVE-1:
+#        widget:
+#          type: proxmox
+#          url: https://pve.local
+#          username: {{HOMEPAGE_VAR_PVE_USER}}
+#          password: {{HOMEPAGE_VAR_PVE_PASS}}
+#          node: pve
+#    - PBS:
+#        href: https://pbs.local
+#        description: Proxmox Backup Server
+#        widget:
+#          type: proxmoxbackupserver
+#          url: https://pbs.local
+#          username: {{HOMEPAGE_VAR_PBS_USER}}
+#          password: {{HOMEPAGE_VAR_PBS_PASS}}
+    - LLDAP:
+        description: Lightweight LDAP interface for authentication
+        href: https://lldap.${DOMAIN}
+        icon: mdi-account-lock
+        app: lldap
+        namespace: security
+    - Registry (Harbor):
+        description: Container Registry
+        href: https://registry.${SECRET_DEV_DOMAIN}
+        icon: harbor.png
+        app: harbor
+        namespace: dev
+        pod-selector: "app.kubernetes.io/name=harbor,app.kubernetes.io/component=core"
+    - Minio (Backup):
+        description: Backup S3 storage
+        href: https://minio-backup.${DOMAIN}
+        icon: sh-minio.svg
+    - pgAdmin:
+        description: Web-based administration for PostgreSQL
+        href: https://pg.${DOMAIN}
+        icon: pgadmin.svg
+        siteMonitor: http://pgadmin.database.svc.cluster.local
+    - DbGate:
+        description: Powerful and easy to use (no)SQL database client
+        href: https://dbgate.${DOMAIN}
+        icon: sh-dbgate
+        app: dbgate
+        namespace: database
+
+- Home:
+    - Mealie:
+        icon: mealie.png
+        href: https://home-mealie.${SECRET_DOMAIN}
+        description: Recipe management for the modern household.
+        app: mealie
+        namespace: self-hosted
+        widget:
+          type: mealie
+          url: http://mealie.self-hosted:9000
+          key: '{{HOMEPAGE_VAR_MEALIE_API_KEY}}'
+          version: "2"
+          fields: '["recipes", "users", "categories", "tags"]'
+    - Paperless:
+        icon: paperless-ngx.png
+        href: https://dms.${SECRET_MAIN_DOMAIN_NAME}
+        description: Document OCR Software
+        app: paperless
+        namespace: self-hosted
+        widget:
+          type: paperlessngx
+          url: http://paperless.self-hosted:8000
+          key: '{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}'
+    ### no widgets at bottom of list
+    - SSO:
+        description: SSO solution for the homelab
+        href: https://${SECRET_SSO_DOMAIN}
+        icon: authentik.png
+        app: authentik
+        namespace: sso
+    - Drawio:
+        description: Diagramming Tool
+        href: https://drawio.${SECRET_MAIN_DOMAIN_NAME}
+        icon: draw-io.png
+        app: drawio
+        namespace: self-hosted
+    - IT-Tools:
+        description: Swiss army knife for IT
+        href: https://it-tools.${SECRET_DEV_DOMAIN}
+        icon: it-tools.svg
+        app: it-tools
+        namespace: self-hosted
+    - Inventory:
+        description: Asset-Management with Snipe-IT
+        href: https://inventory.${SECRET_MAIN_DOMAIN_NAME}
+        icon: snipe-it.png
+        app: snipe-it
+        namespace: self-hosted
+    - OpenCloud:
+        description: File sharing and collaboration solution
+        href: https://home-files.${SECRET_DOMAIN}
+        icon: open-cloud.png
+        app: opencloud
+        namespace: self-hosted
+    - Minio:
+        description: S3 storage
+        href: https://minio.${SECRET_MAIN_DOMAIN_NAME}
+        icon: sh-minio.svg
+        app: minio
+        namespace: storage-system
+    - CyberChef:
+        description: CyberChef Data Transformation
+        href: https://cyberchef.${SECRET_MAIN_DOMAIN_NAME}
+        icon: cyberchef.png
+        app: cyberchef
+        namespace: self-hosted
+    - ConvertX:
+        description: Self-hosted online file converter
+        href: https://convertx.${SECRET_MAIN_DOMAIN_NAME}
+        icon: si-convertio
+        app: convertx
+        namespace: self-hosted
+    - n8n:
+        description: Flexible AI workflow automation
+        href: https://n8n.${SECRET_MAIN_DOMAIN_NAME}
+        icon: n8n
+        app: n8n
+        namespace: automation
+    - Change Detection:
+        description: Detect website content changes and perform meaningful actions
+        href: https://change-detection.${SECRET_MAIN_DOMAIN_NAME}
+        icon: changedetection.svg
+        app: change-detection
+        namespace: self-hosted
+    - Privatebin:
+        description: Pastebin services
+        href: https://privatebin.${SECRET_DEV_DOMAIN}
+        icon: privatebin.png
+    - Scrypted:
+        description: NVR
+        href: https://scrypted.${SECRET_MAIN_DOMAIN_NAME}
+        icon: scrypted.png
+        app: scrypted
+        namespace: home-automation
+    - go2rtc:
+        href: https://go2rtc.${SECRET_MAIN_DOMAIN_NAME}
+        icon: go2rtc.webp
+        app: go2rtc
+        namespace: home-automation
+    - TeslaMate:
+        description: Vehicle Stats
+        href: https://teslamate.${SECRET_MAIN_DOMAIN_NAME}
+        icon: teslamate
+        app: teslamate
+        namespace: home-automation
+    #- Epic Games Free:
+    #    description: Free Epic Games Aggregator
+    #    href: https://epic.${SECRET_MAIN_DOMAIN_NAME}
+    #    icon: si-epicgames
+    #    app: epicgames
+    #    namespace: games
+
+#- Media:
+    #- Jellyfin:
+    #    icon: jellyfin.png
+    #    href: https://jellyfin.${SECRET_EXTERNAL_DOMAIN}
+    #    description: Media Server
+    #    widget:
+    #        type: jellyfin
+    #        url: http://jellyfin.default.svc.cluster.local.:8096
+    #        key: {{HOMEPAGE_VAR_JELLYFIN_TOKEN}}
+    #        enableNowPlaying: true
+    #- Plex:
+    #    href: http://192.168.188.205:32400
+    #    icon: plex
+    #    description: Mediaserver
+    #    widget:
+    #      type: plex
+    #      url: http://plex.media.svc.cluster.local:32400
+    #      key: {{HOMEPAGE_VAR_PLEX_TOKEN}}
+    #- Prowlarr:
+    #    href: https://prowlarr.${SECRET_MAIN_DOMAIN_NAME}
+    #    icon: prowlarr.png
+    #    description: Sync arr indexers
+    #    widget:
+    #        type: prowlarr
+    #        url: http://prowlarr.download.svc.cluster.local
+    #        key: {{HOMEPAGE_VAR_PROWLARR_TOKEN}}
+    #- Sonarr:
+    #    href: https://sonarr.${SECRET_MAIN_DOMAIN_NAME}
+    #    icon: sonarr.png
+    #    description: TV Shows
+    #    widget:
+    #        type: sonarr
+    #        url: http://sonarr.media.svc.cluster.local.:8989
+    #        key: {{HOMEPAGE_VAR_SONARR_TOKEN}}
+    #- Radarr:
+    #    href: https://radarr.${SECRET_MAIN_DOMAIN_NAME}
+    #    icon: radarr.png
+    #    description: Movies
+    #    widget:
+    #        type: radarr
+    #        url: http://radarr.media.svc.cluster.local.:7878
+    #        key: {{HOMEPAGE_VAR_RADARR_TOKEN}}
+    #- Lidarr:
+    #    href: https://lidarr.${SECRET_MAIN_DOMAIN_NAME}
+    #    icon: lidarr.png
+    #    description: Music
+    #    widget:
+    #        type: lidarr
+    #        url: http://lidarr.default.svc.cluster.local.:8080
+    #        key: {{HOMEPAGE_VAR_LIDARR_TOKEN}}
+    #- Bazarr:
+    #    icon: bazarr.png
+    #    href: https://bazarr.${SECRET_MAIN_DOMAIN_NAME}
+    #    description: Subtitles Management
+    #    widget:
+    #        type: bazarr
+    #        url: http://bazarr.default.svc.cluster.local.:6767
+    #        key: {{HOMEPAGE_VAR_BAZARR_TOKEN}}
+    #- SABnzbd:
+    #    icon: sabnzbd.png
+    #    href: https://sabnzbd.${SECRET_MAIN_DOMAIN_NAME}
+    #    description: SABnzbd
+    #    #widget:
+    #    #  type: sabnzbd
+    #    #  url: http://sabnzbd.download.svc
+    #    #  key: {{HOMEPAGE_VAR_SABNZBD_TOKEN}}
+#- Observability:
+#    - Grafana:
+#        icon: grafana.png
+#        href: https://grafana.${SECRET_MAIN_DOMAIN_NAME}
+#        description: Dashboard
+#
+#    - Prometheus:
+#        icon: prometheus.png
+#        href: https://prometheus.${SECRET_MAIN_DOMAIN_NAME}
+#        description: Prometheus
+#        #widget:
+#        #  type: prometheus
+#        #  url: http://prometheus-operated.monitoring.svc:9090
+#
+#    - Alert Manager:
+#        icon: alertmanager.png
+#        href: https://alertmanager.${SECRET_MAIN_DOMAIN_NAME}
+#        description: Alert Manager
+
+    #- Speed Tracker:
+    #    icon: speedtest-tracker.png
+    #    href: https://speedtest.${SECRET_MAIN_DOMAIN_NAME}
+    #    description: Speedtest
+    #    widget:
+    #      type: speedtest
+    #      url: http://speedtest-tracker.monitoring.svc
+
+    #- Uptime Kuma:
+    #    icon: uptime-kuma.png
+    #    href: https://uptime.home.adityathebe.com/status/overview
+    #    description: Uptime tracker
+    #    widget:
+    #      type: uptimekuma
+    #      url: http://uptime-kuma.monitoring.svc:3001
+    #      slug: overview
+#- Calendar:
+#    - Agenda:
+#        widget:
+#          type: calendar
+#          view: agenda # optional - possible values monthly, agenda
+#          maxEvents: 5 # optional - defaults to 10
+#          integrations: # optional
+#            - type: sonarr # active widget type that is currently enabled on homepage - possible values: radarr, sonarr>
+#              service_group: Media # group name where widget exists
+#              service_name: Sonarr # service name for that widget
+#            #- type: radarr # active widget type that is currently enabled on homepage - possible values: radarr, sonarr>
+#            #  service_group: Media # group name where widget exists
+#            #  service_name: Radarr # service name for that widget
