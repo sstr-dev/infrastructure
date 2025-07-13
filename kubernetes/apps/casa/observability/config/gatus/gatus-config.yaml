@@ -10,6 +10,13 @@ debug: false
 ui:
   title: Status | Gatus
   header: Status
+  link: https://github.com/sstr-dev
+  logo: https://avatars.githubusercontent.com/u/219523549
+  buttons:
+    - name: Github
+      link: https://github.com/sstr-dev
+    - name: Homelab
+      link: https://github.com/sstr-dev/infrastructure
 alerting:
   pushover:
     title: Gatus (Kubernetes)
