@@ -15,7 +15,7 @@ ui:
   buttons:
     - name: Github
       link: https://github.com/sstr-dev
-    - name: Homelab
+    - name: Infrastructure
       link: https://github.com/sstr-dev/infrastructure
 alerting:
   pushover:
