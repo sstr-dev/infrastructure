@@ -9,5 +9,5 @@ components:
 resources:
   - ./actions-runner-controller.yaml
   - ./actions-runner-home-ops.yaml
-  - ./actions-runner-home-ops-dind.yaml
+  #- ./actions-runner-home-ops-dind.yaml
   - ./actions-runner-organization.yaml
