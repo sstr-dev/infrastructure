@@ -8,22 +8,21 @@ components:
   - ../../../vars/casa
 resources:
   - ../../../vars/casa/ns/security-secrets.sops.yaml
-  - ./it-tools/ks.yaml
+  - ./it-tools.yaml
   #- ./openspeedtest/ks.yaml
-  - ./cyberchef/ks.yaml
+  - ./cyberchef.yaml
   #- ./photon/ks.yaml
-  - ./homepage/ks.yaml
-  - ./snipe-it/ks.yaml
-  - ./drawio/ks.yaml
-  #- ./part-db/ks.yaml # mysql not work, remove it
-  - ./paperless/gotenberg/ks.yaml
-  - ./paperless/tika/ks.yaml
-  - ./paperless/ks.yaml
-  #- ./tandoor/ks.yaml
-  - ./mealie/ks.yaml
-  #- ./phpldapadmin/ks.yaml
-  - ./opencloud/ks.yaml
-  #- ./ocis/ks.yaml
-  - ./convertx/ks.yaml
-  - ./change-detection/ks.yaml
-  - ./privatebin/ks.yaml
+  - ./homepage.yaml
+  - ./snipe-it.yaml
+  - ./drawio.yaml
+  #- ./part-db.yaml # mysql not work, remove it
+  - ./paperless-gotenberg.yaml
+  - ./paperless-tika.yaml
+  - ./paperless.yaml
+  #- ./tandoor.yaml
+  - ./mealie.yaml
+  - ./opencloud.yaml
+  #- ./ocis.yaml
+  - ./convertx.yaml
+  - ./change-detection.yaml
+  - ./privatebin.yaml

@@ -9,7 +9,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 1h
-  path: ./kubernetes/apps/casa/self-hosted/homepage/config
+  path: ./kubernetes/apps/casa/self-hosted/config/homepage
   postBuild:
     substitute:
       APP: *app

@@ -12,6 +12,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_SUBDOMAIN: "registry"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
@@ -22,6 +23,8 @@ spec:
       namespace: database
     - name: external-secrets
       namespace: security
+  components:
+    - ../../../../components/gatus/external/dev
   prune: true
   retryInterval: 2m
   sourceRef:

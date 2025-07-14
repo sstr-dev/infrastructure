@@ -29,20 +29,33 @@ alerting:
       failure-threshold: 3
       success-threshold: 3
 security:
-    oidc:
-        issuer-url: $${OIDC_ISSUER}
-        client-id: $${OIDC_CLIENT_ID}
-        client-secret: $${OIDC_CLIENT_SECRET}
-        redirect-url: https://$${GATUS_DOMAIN}/authorization-code/callback
-        scopes: [openid]
+  oidc:
+    issuer-url: $${OIDC_ISSUER}
+    client-id: $${OIDC_CLIENT_ID}
+    client-secret: $${OIDC_CLIENT_SECRET}
+    redirect-url: https://$${GATUS_DOMAIN}/authorization-code/callback
+    scopes: [openid]
 connectivity:
   checker:
     target: 1.1.1.1:53
     interval: 1m
 endpoints:
-  - name: flux-webhook
+  - name: flux-webhook (casa)
     group: external
     url: https://${FLUX_WEBHOOK_EXTERNAL}
+    interval: 1m
+    #ui:
+    #  hide-url: true
+    #  hide-hostname: true
+    client:
+      dns-resolver: tcp://1.1.1.1:53
+    conditions:
+      - "[STATUS] == 404"
+    alerts:
+      - type: pushover
+  - name: flux-webhook (core)
+    group: external
+    url: https://${FLUX_WEBHOOK_CORE_EXTERNAL}
     interval: 1m
     #ui:
     #  hide-url: true
