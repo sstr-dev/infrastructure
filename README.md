@@ -1,30 +1,32 @@
 # 🛠️ Infrastructure
 
-This repository contains the **infrastructure as code** setup for my self-hosted environment.
-It uses GitOps principles to declaratively manage Kubernetes clusters, VMs, cloud services, and automation tooling.
+This repository contains the **Infrastructure-as-Code (IaC)** setup for my self-hosted environment. It follows the **GitOps** principle to declaratively manage Kubernetes clusters, VMs, cloud services, and automation tooling.
 
 ---
 
 ## ⚙️ Stack Overview
 
-| Tool       | Purpose                                      |
-|------------|----------------------------------------------|
-| **FluxCD** | GitOps-driven deployment of K8s resources    |
-| **Terraform** | Cloud & networking provisioning (e.g., DNS, servers) |
-| **Ansible** | Configuration management & system automation |
-| **Kubernetes** | Workload orchestration                    |
-| **Containers** | App delivery via OCI-compatible images    |
+| Tool           | Purpose                                                 |
+|----------------|---------------------------------------------------------|
+| **FluxCD**     | GitOps-driven deployment of K8s resources               |
+| **Terraform**  | Cloud & networking provisioning (e.g., DNS, servers)    |
+| **Ansible**    | Configuration management & system automation            |
+| **Kubernetes** | Workload orchestration                                  |
+| **Containers** | App delivery via OCI-compatible images                  |
+| **Taskfile**   | Automating repetitive shell commands                    |
+| **SOPS**       | Encryption of sensitive configuration data              |
+| **direnv**     | Automatic environment variable management               |
 
 ---
 
-## 🌐 Structure
+## 📁 Project Structure
 
 ```txt
 infrastructure/
 ├── .archive/          # Archived configs or legacy components
 ├── ansible/           # Playbooks and roles for automation
 ├── bootstrap/         # Initial cluster & GitOps setup (e.g., flux install)
-├── kubernetes/
+├── kubernetes/        # K8s resources, organized by environment/namespace
 │   ├── apps/          # Application manifests (base, core apps, homelab stack)
 │   │   ├── base/
 │   │   ├── core/
@@ -34,7 +36,9 @@ infrastructure/
 │   ├── config/        # Cluster-level overlays and Kustomize configuration
 │   └── vars/          # Cluster-specific variable definitions
 ├── scripts/           # Helper scripts and automation tools
-└── README.md         # You're here!
+├── terraform/         # Infrastructure provisioning
+├── Taskfile.yaml      # Automation tasks
+└── README.md          # You're here!
 ```
 
 ---
@@ -42,8 +46,6 @@ infrastructure/
 ## 🚀 Usage
 
 This infrastructure is managed via GitOps (Flux) and operationalized using `task`, `helmfile`, and supporting tools.
-
-> Note: Secrets are encrypted with SOPS and age. Access requires correct key setup.
 
 ---
 
@@ -60,6 +62,9 @@ task workstation:venv
 
 # Install helm-diff plugin (required by helmfile)
 helm plugin install https://github.com/databus23/helm-diff
+
+# Setup Ansible
+task ansible:deps
 ```
 
 Make sure the following tools are available in your `$PATH`:
@@ -77,10 +82,10 @@ Make sure the following tools are available in your `$PATH`:
 
 ### 🧪 2. Verify Your Secrets (optional)
 
-Make sure SOPS can decrypt your cluster secrets:
+Make sure SOPS can decrypt your cluster (e.g.: core) secrets:
 
 ```bash
-sops -d kubernetes/secrets/cluster.yaml
+sops -d kubernetes/vars/core/cluster-secrets.sops.yaml
 ```
 
 If you’re using `direnv`, private keys can be loaded automatically from `.envrc`.
@@ -134,8 +139,25 @@ Once bootstrapped, Flux will take over:
 
 ## 🔒 Secrets Management
 
-This repo uses [SOPS](https://github.com/mozilla/sops) with [age](https://github.com/FiloSottile/age) for secret encryption.
-Keys are not stored in the repo. CI/Flux decrypts secrets via external vaults.
+* Sensitive data is encrypted using **[SOPS](https://github.com/mozilla/sops)**.
+* Configuration is managed via `.sops.yaml`.
+* You need [age](https://github.com/FiloSottile/age) keys to decrypt.
+* CI/Flux decrypts secrets via external vaults.
+
+---
+
+## 🧪 Useful Tasks
+
+```bash
+# Check all deployments
+task status
+
+# Force cluster sync
+task sync
+
+# Encrypt secrets
+task secrets:encrypt
+```
 
 ---
 
@@ -160,9 +182,16 @@ Keys are not stored in the repo. CI/Flux decrypts secrets via external vaults.
 
 ---
 
-## 📜 License
+## 🧾 License
 
-MIT unless stated otherwise.
+[MIT License](./LICENSE)
+
+---
+
+## 📎 Notes
+
+* Disabled components are moved to the `.archive/` directory.
+* Replace all secrets and domains with your own for production use.
 
 ---
 

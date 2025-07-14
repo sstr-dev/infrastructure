@@ -6,34 +6,15 @@ This namespace contains a curated set of tools and operators for managing databa
 
 ## 📦 Included Components
 
-### 🐘 Crunchy Postgres
-- **Purpose:** Production-ready PostgreSQL operator from Crunchy Data.
-- **Features:** Backup/restore, replication, HA, and monitoring.
-- **Use case:** Stateful workloads requiring relational databases with enterprise support.
-- **Docs:** https://access.crunchydata.com/documentation/postgres-operator/
-
----
-
-### 📊 dbgate
-- **Purpose:** Web-based database management GUI.
-- **Use case:** Lightweight database browser and query runner, useful for development and testing.
-- **Supports:** PostgreSQL, MySQL, MongoDB, and others.
-- **Docs:** https://github.com/dbgate/dbgate
-
----
-
-### 🐉 Dragonfly
-- **Purpose:** High-performance Redis-compatible in-memory data store.
-- **Use case:** Acts as a drop-in replacement for Redis in caching, pub/sub, and session storage.
-- **Docs:** https://www.dragonflydb.io/
-
----
-
-### 🧱 KubeBlocks
-- **Purpose:** Declarative database lifecycle manager for Kubernetes.
-- **Supports:** MySQL, PostgreSQL, MongoDB, Redis, Kafka, etc.
-- **Use case:** Operator to simplify deployment and management of multiple database engines using CRDs and addons.
-- **Docs:** https://kubeblocks.io/docs/
+| Application                                 | Description                             | Links                                                                                                                    |
+|---------------------------------------------|-----------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| [**cnpg**](./cnpg/)                         | CloudNativePG – a PostgreSQL operator   | [Vendor](https://cloudnative-pg.io/)                                                                                     |
+| [**crunchy-postgres**](./crunchy-postgres/) | PostgreSQL by CrunchyData (legacy/test) | [Vendor](https://www.crunchydata.com/developers) [Docs](https://access.crunchydata.com/documentation/postgres-operator/) |
+| [**dbgate**](./dbgate/)                     | Web-based database client UI            | [Vendor](https://dbgate.org/) [GitHub](https://github.com/dbgate/dbgate)                                                 |
+| [**dragonfly**](./dragonfly/)               | High-performance in-memory data store   | [Vendor](https://dragonflydb.io/)                                                                                        |
+| [**influx**](./influx/)                     | Time-series database for metrics/logs   | [Vendor](https://www.influxdata.com/)                                                                                    |
+| [**mariadb**](./mariadb/)                   | Lightweight MySQL-compatible database   | [Vendor](https://mariadb.org/)                                                                                           |
+| [**mongo**](./mongo/)                       | Document-oriented NoSQL database        | [Vendor](https://www.mongodb.com/)                                                                                       |
 
 ---
 
