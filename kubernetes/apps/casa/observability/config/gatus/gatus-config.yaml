@@ -44,9 +44,9 @@ endpoints:
     group: external
     url: https://${FLUX_WEBHOOK_EXTERNAL}
     interval: 1m
-    ui:
-      hide-url: true
-      hide-hostname: true
+    #ui:
+    #  hide-url: true
+    #  hide-hostname: true
     client:
       dns-resolver: tcp://1.1.1.1:53
     conditions:

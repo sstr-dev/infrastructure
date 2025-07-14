@@ -3,9 +3,9 @@ endpoints:
     group: "${GATUS_GROUP:=external}"
     url: "https://${GATUS_SUBDOMAIN:=${APP}}.${SECRET_DEV_DOMAIN}${GATUS_PATH:=/}"
     interval: "${GATUS_INTERVAL:=1m}"
-    ui:
-      hide-hostname: true
-      hide-url: true
+    #ui:
+    #  hide-hostname: true
+    #  hide-url: true
     client:
       dns-resolver: tcp://1.1.1.1:53
     conditions:
