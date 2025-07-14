@@ -149,14 +149,11 @@ Once bootstrapped, Flux will take over:
 ## 🧪 Useful Tasks
 
 ```bash
-# Check all deployments
-task status
+# List available tasks
+task --list
 
-# Force cluster sync
-task sync
-
-# Encrypt secrets
-task secrets:encrypt
+# Monitor deployment for cluster casa-rke2
+task flux:monitor cluster=casa-rke2
 ```
 
 ---
