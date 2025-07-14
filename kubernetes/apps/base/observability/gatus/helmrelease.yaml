@@ -48,6 +48,7 @@ spec:
               TZ: ${CLUSTER_TIMEZONE}
               GATUS_CONFIG_PATH: /config
               GATUS_DELAY_START_SECONDS: 5
+              GATUS_DOMAIN: "${GATUS_SUBDOMAIN:=${APP}}.${SECRET_DEV_DOMAIN}"
               WEB_PORT: &port 80
             envFrom:
               - secretRef:
