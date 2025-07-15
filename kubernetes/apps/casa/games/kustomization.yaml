@@ -7,4 +7,4 @@ components:
   - ../../../vars/casa
 resources:
   - ./pterodactyl.yaml
-  - ./epicgames.yaml
+  #- ./epicgames.yaml
