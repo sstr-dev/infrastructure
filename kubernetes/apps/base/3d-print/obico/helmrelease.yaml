@@ -1,0 +1,76 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1beta2.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: obico
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: 0.6.0
+  url: oci://ghcr.io/gabe565/charts/obico
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app obico
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: obico
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  values:
+    server:
+      image:
+        repository: ghcr.io/gabe565/obico/web
+        tag: latest@sha256:7796f83e6356feae2b85e1dc7e25d08848d796b14e18f1733d4ba9d3cf72ce57
+      # -- Server environment variables. [[ref]](https://github.com/TheSpaghettiDetective/obico-server/blob/master/dotenv.example)
+      env:
+        TZ: ${CLUSTER_TIMEZONE}
+        DEFAULT_FROM_EMAIL: "${SECRET_SMTP_FROM_FULL}"
+        EMAIL_HOST: smtp-relay.default.svc.cluster.local
+        EMAIL_PORT: "25"
+        EMAIL_USE_TLS: 'False'
+        SITE_USES_HTTPS: 'True'
+        SITE_IS_PUBLIC: 'True'
+      envFrom:
+        - secretRef:
+            name: *app
+      persistence:
+        data:
+          enabled: true
+          existingClaim: obico-data
+        media:
+          enabled: true
+          existingClaim: obico-media
+      # todo: ingress/tls migration to route
+    ml-api:
+      image:
+        repository: ghcr.io/gabe565/obico/ml-api
+        tag: latest@sha256:ffaf877f2b59d6e80e3b43d360e31c3798d63ff000ea1ad344277fe2dc95a120
+      env:
+        DEBUG: "False"
+    # -- Enable and configure redis subchart under this key. [[ref]](https://github.com/bitnami/charts/tree/main/bitnami/redis)
+    # @default -- See [values.yaml](./values.yaml)
+    redis:
+      enabled: true
+      auth:
+        enabled: true
+      master:
+        persistence:
+          enabled: false
+      replica:
+        replicaCount: 0
