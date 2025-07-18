@@ -8,3 +8,4 @@ components:
   - ../../../vars/casa
 resources:
   - ./harbor.yaml
+  - ./postgres-dev-cluster.yaml
