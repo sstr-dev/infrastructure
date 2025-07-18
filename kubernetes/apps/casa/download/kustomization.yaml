@@ -16,4 +16,4 @@ resources:
   - ./radarr.yaml
   - ./sonarr.yaml
   - ./webhook.yaml
-  - ./calibre-downloader.yaml
+  #- ./calibre-downloader.yaml
