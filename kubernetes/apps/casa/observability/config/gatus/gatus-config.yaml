@@ -26,7 +26,7 @@ alerting:
     default-alert:
       description: health-check failed
       send-on-resolved: true
-      failure-threshold: 3
+      failure-threshold: 4
       success-threshold: 3
 security:
   oidc:
