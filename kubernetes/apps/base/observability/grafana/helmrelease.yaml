@@ -33,6 +33,12 @@ spec:
     remediation:
       retries: 3
   values:
+    extraInitContainers:
+      - name: init-db
+        image: ghcr.io/sstr-dev/postgres-init:17.5@sha256:986cd1e2db890910875af90e00db7da64984330f4984bfd2804eaf43b085f310
+        envFrom:
+          - secretRef:
+              name: &secret grafana
     replicas: ${REPLICAS:=1}
     podAnnotations:
       configmap.reloader.stakater.com/reload: *app
@@ -51,7 +57,7 @@ spec:
       #GF_NEWS_NEWS_FEED_ENABLED: false
 
     envFromSecrets:
-      - name: *app
+      - name: *secret
     grafana.ini:
       server:
         root_url: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
