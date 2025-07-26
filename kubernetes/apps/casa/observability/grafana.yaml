@@ -11,6 +11,7 @@ spec:
   dependsOn:
     - name: external-secrets
       namespace: security
+    #- name: postgres-observability
   interval: 1h
   path: ./kubernetes/apps/base/observability/grafana
   components:
