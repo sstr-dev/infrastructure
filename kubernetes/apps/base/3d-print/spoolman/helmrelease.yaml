@@ -30,62 +30,43 @@ spec:
               tag: 0.22.1
             env:
               TZ: ${CLUSTER_TIMEZONE}
-
+              SPOOLMAN_METRICS_ENABLED: "true"
+              SPOOLMAN_PORT: &port 8000
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 5
             resources:
               requests:
                 cpu: 25m
-                memory: 500M
-
+                memory: 256Mi
 
     service:
       app:
         controller: *app
         ports:
           http:
-            port: 8000
+            port: *port
 
-    #ingress:
-    #  app:
-    #    enabled: ${DEFAULTINGRESSEN:=true}
-    #    className: ${INGRESSCLASS}
-    #    hosts:
-    #      - host: &host "{{ .Release.Name }}.${DOMAIN}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      - hosts:
-    #          - *host
-    #  iot:
-    #    enabled: ${IOTINGRESS:=false}
-    #    className: iot-nginx
-    #    annotations:
-    #      gethomepage.dev/enabled: "true"
-    #      gethomepage.dev/icon: spoolman.png
-    #      # Gruppierung im Dashboard
-    #      gethomepage.dev/group: "3D Printing"
-    #      # Anzeigename
-    #      gethomepage.dev/name: "SpoolMan"
-    #      # Tooltip / Beschreibung
-    #      gethomepage.dev/description: "Manage your filament spools"
-    #      gethomepage.dev/widget.type: spoolman
-    #      gethomepage.dev/widget.url: http://{{ .Release.Name }}.{{ .Release.Namespace }}:8000
-    #      #gethomepage.dev/pod-selector: >-
-    #      #  app.kubernetes.io/name=pterodactyl,
-    #      #  app.kubernetes.io/controller=pterodactyl
-    #    hosts:
-    #      - host: &host "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      #- secretName: chart-example-tls
-    #      - hosts:
-    #        - *host
+    serviceMonitor:
+      spoolman:
+        serviceName: *app
+        endpoints:
+          - port: http
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 10s
+            metricRelabelings:
+              - action: labeldrop
+                regex: (pod)
+
     route:
       app:
         hostnames: ["{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"]
@@ -96,7 +77,7 @@ spec:
         rules:
           - backendRefs:
               - name: *app
-                port: 8000
+                port: *port
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/icon: spoolman.png
