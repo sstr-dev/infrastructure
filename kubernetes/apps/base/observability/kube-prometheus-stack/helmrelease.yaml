@@ -109,6 +109,7 @@ spec:
               sourceLabels: ["__meta_kubernetes_pod_node_name"]
               targetLabel: kubernetes_node
     prometheus-node-exporter:
+      enabled: false
       fullnameOverride: node-exporter
       tolerations:
         - effect: NoSchedule
@@ -124,7 +125,7 @@ spec:
         - --no-collector.nvme
       prometheus:
         monitor:
-          enabled: true
+          enabled: false
           relabelings:
             - action: replace
               regex: (.*)
