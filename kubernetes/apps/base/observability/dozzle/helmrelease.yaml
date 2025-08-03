@@ -35,6 +35,7 @@ spec:
               DOZZLE_AUTH_HEADER_USER: x-authentik-username
               DOZZLE_AUTH_HEADER_EMAIL: x-authentik-email
               DOZZLE_AUTH_HEADER_NAME: x-authentik-name
+              DOZZLE_LEVEL: debug
             probes:
               liveness:
                 enabled: true
