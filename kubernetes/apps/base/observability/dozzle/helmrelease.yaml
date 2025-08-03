@@ -32,9 +32,9 @@ spec:
               DOZZLE_NO_ANALYTICS: true
               DOZZLE_HOSTNAME: "${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN}"
               DOZZLE_AUTH_PROVIDER: forward-proxy
-              #DOZZLE_AUTH_HEADER_USER: Cf-Access-Authenticated-User-Email
-              #DOZZLE_AUTH_HEADER_EMAIL: Cf-Access-Authenticated-User-Email
-              #DOZZLE_AUTH_HEADER_NAME: Cf-Access-Authenticated-User-Email
+              DOZZLE_AUTH_HEADER_USER: X-authentik-username
+              DOZZLE_AUTH_HEADER_EMAIL: X-authentik-email
+              DOZZLE_AUTH_HEADER_NAME: X-authentik-name
             probes:
               liveness:
                 enabled: true
