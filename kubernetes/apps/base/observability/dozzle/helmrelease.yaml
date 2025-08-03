@@ -31,11 +31,11 @@ spec:
               DOZZLE_ENABLE_ACTIONS: true
               DOZZLE_NO_ANALYTICS: true
               DOZZLE_HOSTNAME: "${GATUS_SUBDOMAIN:=${APP}}.${DOMAIN}"
-              DOZZLE_AUTH_PROVIDER: forward-proxy
-              DOZZLE_AUTH_HEADER_USER: x-authentik-username
-              DOZZLE_AUTH_HEADER_EMAIL: x-authentik-email
-              DOZZLE_AUTH_HEADER_NAME: x-authentik-name
-              DOZZLE_LEVEL: debug
+              #DOZZLE_AUTH_PROVIDER: forward-proxy
+              #DOZZLE_AUTH_HEADER_USER: x-authentik-username
+              #DOZZLE_AUTH_HEADER_EMAIL: x-authentik-email
+              #DOZZLE_AUTH_HEADER_NAME: x-authentik-name
+              #DOZZLE_LEVEL: debug
             probes:
               liveness:
                 enabled: true
