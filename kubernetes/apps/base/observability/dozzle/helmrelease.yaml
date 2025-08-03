@@ -81,11 +81,11 @@ spec:
           type: ClusterRole
           rules:
           - apiGroups: [""]
-            resources: ["pods", "pods/log", "nodes", "nodes/proxy"]
-            verbs: ["get", "list", "watch"]
+            resources: ["pods", "pods/log", "nodes", "nodes/proxy", "pods/exec"]
+            verbs: ["get", "list", "watch" ,"create"]
           - apiGroups: ["metrics.k8s.io"]
             resources: ["pods"]
-            verbs: ["get", "list", "exec"]
+            verbs: ["get", "list"]
 
       bindings:
         dozzle:
