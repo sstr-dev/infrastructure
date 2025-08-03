@@ -30,8 +30,15 @@ spec:
             probes:
               liveness:
                 enabled: true
-              readiness:
-                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /dozzle
+                      - healthcheck
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities: { drop: ["ALL"] }
             resources:
               requests:
                 cpu: 10m
@@ -41,6 +48,13 @@ spec:
           identifier: dozzle
     serviceAccount:
       dozzle: {}
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
     service:
       app:
         controller: dozzle
