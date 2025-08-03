@@ -18,8 +18,8 @@ spec:
         name: cluster-settings
       - kind: Secret
         name: cluster-secrets
-  #components:
-  #  - ../../../../components/ext-auth
+  components:
+    - ../../../../components/ext-auth
   prune: true
   retryInterval: 2m
   sourceRef:
