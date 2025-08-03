@@ -9,6 +9,7 @@ components:
 resources:
   - ./postgres-observability-cluster.yaml
   - ./gatus.yaml
+  - ./dozzle.yaml
   - ./grafana.yaml
   - ./kube-prometheus-stack.yaml
   - ./config/kube-prometheus-stack
