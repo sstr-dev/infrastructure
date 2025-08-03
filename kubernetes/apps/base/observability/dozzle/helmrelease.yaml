@@ -27,6 +27,12 @@ spec:
             env:
               TZ: ${CLUSTER_TIMEZONE}
               DOZZLE_MODE: k8s
+              DOZZLE_ENABLE_SHELL: true
+              DOZZLE_ENABLE_ACTIONS: true
+              #DOZZLE_AUTH_PROVIDER: forward-proxy
+              #DOZZLE_AUTH_HEADER_USER: Cf-Access-Authenticated-User-Email
+              #DOZZLE_AUTH_HEADER_EMAIL: Cf-Access-Authenticated-User-Email
+              #DOZZLE_AUTH_HEADER_NAME: Cf-Access-Authenticated-User-Email
             probes:
               liveness:
                 enabled: true
