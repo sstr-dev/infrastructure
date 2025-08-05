@@ -1,0 +1,96 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app ocsinventory
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      ocsinventory:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: RollingUpdate
+        containers:
+          app:
+            image:
+              repository: ocsinventory/ocsinventory-docker-image
+              tag: 2.12.3
+            env:
+              OCS_DB_SERVER: mariadb.database.svc.cluster.local
+              OCS_DB_PORT: 3306
+              OCS_DB_NAME: "ocsinventory"
+              OCS_DB_USER: "ocsinventory"
+              OCS_SSL_ENABLED: "0"
+              OCS_DBI_PRINT_ERROR: "0"
+            envFrom:
+              - secretRef:
+                  name: *app
+
+            resources:
+              requests:
+                cpu: 50m
+                memory: 300M
+              limits:
+                memory: 500M
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: 80
+
+    route:
+      app:
+        hostnames:
+          - "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
+        parentRefs:
+          - name: main
+            namespace: network
+            sectionName: https
+
+    configMaps:
+      config:
+        enabled: true
+        data:
+          ocsinventory.ini: |
+            upload_max_filesize = 200M
+            post_max_size = 201M
+            max_execution_time = -1
+            max_input_time = -1
+    persistence:
+      data:
+        enabled: true
+        type: persistentVolumeClaim
+        existingClaim: *app
+        advancedMounts:
+          ocsinventory:
+            app:
+              - subPath: "perlcomdata"
+                path: "/etc/ocsinventory-server"
+              - subPath: "ocsreportsdata"
+                path: "/usr/share/ocsinventory-reports/ocsreports/extensions"
+              - subPath: "varlibdata"
+                path: "/var/lib/ocsinventory-reports"
+              - subPath: "httpdconfdata"
+                path: "/etc/apache2/conf-available"
+      config:
+        type: configMap
+        name: *app
+        advancedMounts:
+          ocsinventory:
+            ocsinventory.ini:
+              - path: /etc/php/8.1/apache2/conf.d/ocsinventory.ini
+                readOnly: true
