@@ -34,6 +34,7 @@ spec:
               OCS_DB_USER: "ocsinventory"
               OCS_SSL_ENABLED: "0"
               OCS_DBI_PRINT_ERROR: "0"
+              APACHE_SERVER_NAME: "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
             envFrom:
               - secretRef:
                   name: *app
@@ -86,6 +87,8 @@ spec:
                 path: "/var/lib/ocsinventory-reports"
               - subPath: "httpdconfdata"
                 path: "/etc/apache2/conf-available"
+              - subPath: "profilesconfdata"
+                path: "/usr/share/ocsinventory-reports/ocsreports/config/profiles"
       config:
         type: configMap
         name: *app
