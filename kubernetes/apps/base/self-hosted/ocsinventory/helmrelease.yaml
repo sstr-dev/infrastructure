@@ -66,15 +66,15 @@ spec:
               - name: *app
                 port: *port
 
-    #configMaps:
-    #  config:
-    #    enabled: true
-    #    data:
-    #      ocsinventory.ini: |
-    #        upload_max_filesize = 200M
-    #        post_max_size = 201M
-    #        max_execution_time = -1
-    #        max_input_time = -1
+    configMaps:
+      config:
+        enabled: true
+        data:
+          ocsinventory.ini: |
+            upload_max_filesize = 200M
+            post_max_size = 201M
+            max_execution_time = -1
+            max_input_time = -1
     persistence:
       data:
         enabled: true
@@ -93,11 +93,11 @@ spec:
                 path: "/etc/apache2/conf-available"
               - subPath: "profilesconfdata"
                 path: "/usr/share/ocsinventory-reports/ocsreports/config/profiles"
-      #config:
-      #  type: configMap
-      #  name: *app
-      #  advancedMounts:
-      #    ocsinventory:
-      #      ocsinventory.ini:
-      #        - path: /etc/php/8.1/apache2/conf.d/ocsinventory.ini
-      #          readOnly: true
+      config:
+        type: configMap
+        name: *app
+        advancedMounts:
+          ocsinventory:
+            ocsinventory.ini:
+              - path: /etc/php/8.1/apache2/conf.d/ocsinventory.ini
+                readOnly: true
