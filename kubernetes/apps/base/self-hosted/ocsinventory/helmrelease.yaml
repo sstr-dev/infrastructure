@@ -38,7 +38,6 @@ spec:
             envFrom:
               - secretRef:
                   name: *app
-
             resources:
               requests:
                 cpu: 50m
@@ -51,7 +50,7 @@ spec:
         controller: *app
         ports:
           http:
-            port: 80
+            port: &port 80
 
     route:
       app:
