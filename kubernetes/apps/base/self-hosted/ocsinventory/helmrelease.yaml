@@ -34,6 +34,7 @@ spec:
               OCS_DB_USER: "ocsinventory"
               OCS_SSL_ENABLED: 0
               OCS_DBI_PRINT_ERROR: 0
+              TZ: ${CLUSTER_TIMEZONE}
               #APACHE_SERVER_NAME: "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
             envFrom:
               - secretRef:
@@ -44,6 +45,48 @@ spec:
                 memory: 300M
               limits:
                 memory: 500M
+      # ocsinventory-job
+      # cron: 0 0 * * *
+      # ghcr.io/sstr-dev/kubectl:1.33.3@sha256-4ab498f9ad398c572e15ccf479276e0067fcd90832a2dffb77cd634aa29cd0f0
+      # cmd: cd /usr/share/ocsinventory-reports/ocsreports/crontab && php cron_all_software.php
+      ocsinventory-job:
+        type: cronjob
+        cronjob:
+          schedule: "0 0 * * *"
+          concurrencyPolicy: "Replace"
+          backoffLimit: 0
+          failedJobsHistory: 1
+          successfulJobsHistory: 0
+        pod:
+          restartPolicy: OnFailure
+          securityContext:
+            runAsUser: 65534
+            runAsGroup: 65534
+            runAsNonRoot: true
+        containers:
+          app:
+            image:
+              repository: ghcr.io/sstr-dev/kubectl
+              tag: 1.33.3@sha256-4ab498f9ad398c572e15ccf479276e0067fcd90832a2dffb77cd634aa29cd0f0
+            command:
+              - /bin/sh
+              - -c
+              - |
+                POD=$(kubectl get pod -l app.kubernetes.io/name=ocsinventory -o jsonpath="{.items[0].metadata.name}")
+                kubectl exec -n default $POD -c app -- \
+                  sh -c 'cd /usr/share/ocsinventory-reports/ocsreports/crontab && php cron_all_software.php'
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+              limits:
+                memory: 1Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
 
     service:
       app:
@@ -100,3 +143,19 @@ spec:
             ocsinventory.ini:
               - path: /etc/php/8.1/apache2/conf.d/ocsinventory.ini
                 readOnly: true
+    rbac:
+      roles:
+        ocsinventory-job:
+          type: ClusterRole
+          rules:
+          - apiGroups: [""]
+            resources: ["pods", "pods/exec"]
+            verbs: ["get", "list", "create", "delete"]
+
+      bindings:
+        ocsinventory-job:
+          type: ClusterRoleBinding
+          roleRef:
+            identifier: ocsinventory-job
+          subjects:
+            - identifier: ocsinventory-job
