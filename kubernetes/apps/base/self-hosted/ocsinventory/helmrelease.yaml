@@ -63,6 +63,8 @@ spec:
             runAsUser: 65534
             runAsGroup: 65534
             runAsNonRoot: true
+        serviceAccount:
+          identifier: ocsinventory-job
         containers:
           app:
             image:
