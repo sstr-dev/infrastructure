@@ -48,9 +48,13 @@ spec:
               - /bin/sh
               - -c
               - |
+                echo "Waiting 10 seconds before executing..."
+                sleep 10
                 POD=$(kubectl get pod -l app.kubernetes.io/name=ocsinventory -n self-hosted -o jsonpath="{.items[0].metadata.name}")
                 kubectl exec -n self-hosted $POD -c app -- \
                   sh -c 'cd /usr/share/ocsinventory-reports/ocsreports/crontab && php cron_all_software.php'
+                echo "Waiting 10 seconds after executing..."
+                sleep 10
             resources:
               requests:
                 cpu: 10m
