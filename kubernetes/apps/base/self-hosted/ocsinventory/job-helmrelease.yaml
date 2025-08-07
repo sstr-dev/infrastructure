@@ -48,8 +48,8 @@ spec:
               - /bin/sh
               - -c
               - |
-                POD=$(kubectl get pod -l app.kubernetes.io/name=ocsinventory -n {{ .Release.Namespace }} -o jsonpath="{.items[0].metadata.name}")
-                kubectl exec -n {{ .Release.Namespace }} $POD -c app -- \
+                POD=$(kubectl get pod -l app.kubernetes.io/name=ocsinventory -n self-hosted -o jsonpath="{.items[0].metadata.name}")
+                kubectl exec -n self-hosted $POD -c app -- \
                   sh -c 'cd /usr/share/ocsinventory-reports/ocsreports/crontab && php cron_all_software.php'
             resources:
               requests:
