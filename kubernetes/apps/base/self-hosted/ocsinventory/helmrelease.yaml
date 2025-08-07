@@ -87,7 +87,8 @@ spec:
               capabilities:
                 drop:
                   - ALL
-
+    serviceAccount:
+      ocsinventory-job: {}
     service:
       app:
         controller: *app
