@@ -48,14 +48,11 @@ spec:
               - /bin/sh
               - -c
               - |
-                echo "[INFO] Waiting 10 seconds before starting..."
-                sleep 10
                 POD=$(kubectl get pod -l app.kubernetes.io/name=ocsinventory -n self-hosted -o jsonpath="{.items[0].metadata.name}")
                 if [ -z "$POD" ]; then
                   echo "[ERROR] No ocsinventory pod found. Exiting."
                   exit 1
                 fi
-                echo "[INFO] Found Pod: $POD"
                 kubectl exec -n self-hosted $POD -c app -- \
                   sh -c 'cd /usr/share/ocsinventory-reports/ocsreports/crontab && php cron_all_software.php'
                 if [ $? -ne 0 ]; then
@@ -63,7 +60,6 @@ spec:
                   exit 2
                 fi
                 echo "[SUCCESS] Script executed successfully in $POD."
-                sleep 10
             resources:
               requests:
                 cpu: 10m
