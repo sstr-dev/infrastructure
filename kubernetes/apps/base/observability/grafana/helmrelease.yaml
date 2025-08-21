@@ -35,7 +35,7 @@ spec:
   values:
     extraInitContainers:
       - name: init-db
-        image: ghcr.io/sstr-dev/postgres-init:17.5@sha256:986cd1e2db890910875af90e00db7da64984330f4984bfd2804eaf43b085f310
+        image: ghcr.io/sstr-dev/postgres-init:17.6@sha256:92ee930b84945373845093eab96de722b400afa1a6267c87847512b1d74b3f94
         envFrom:
           - secretRef:
               name: &secret grafana
