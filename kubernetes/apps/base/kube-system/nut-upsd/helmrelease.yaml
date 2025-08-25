@@ -22,6 +22,16 @@ spec:
   values:
     controllers:
       nut-upsd:
+        pod:
+          annotations:
+            configmap.reloader.stakater.com/reload: &config nut-upsd-configmap
+          nodeSelector:
+            ups.feature.node.kubernetes.io/apc: "true"
+          tolerations:
+            - key: "homelab.k8s.io/type"
+              operator: "Equal"
+              value: "vm"
+              effect: "NoExecute"
         containers:
           app:
             image:
@@ -48,14 +58,7 @@ spec:
             envFrom:
               - secretRef:
                   name: *app
-        pod:
-          nodeSelector:
-            ups.feature.node.kubernetes.io/apc: "true"
-          tolerations:
-            - key: "homelab.k8s.io/type"
-              operator: "Equal"
-              value: "vm"
-              effect: "NoExecute"
+
     service:
       app:
         type: LoadBalancer
@@ -71,7 +74,7 @@ spec:
     persistence:
       config-file:
         type: configMap
-        name: nut-upsd-configmap
+        name: *config
         globalMounts:
           - path: /etc/nut/local/ups.conf
             subPath: ups.conf
