@@ -37,9 +37,14 @@ spec:
                 memory: 256Mi
             env:
               TZ: ${CLUSTER_TIMEZONE}
-              DRIVER: "usbhid-ups"
-              DESCRIPTION: "Back-UPS BX1200MI"
-              SERIAL: "9B2518A00511"
+              #DRIVER: "usbhid-ups"
+              #DESCRIPTION: "Back-UPS BX1200MI"
+              #SERIAL: "9B2518A00511"
+              #VENDORID: "051d"
+              #idProduct: "0002"
+              ## /etc/nut/local/ups.conf
+
+              # nut-upsd-configmap
             envFrom:
               - secretRef:
                   name: *app
@@ -63,3 +68,11 @@ spec:
           http:
             port: 3493
             protocol: TCP
+    persistence:
+      config-file:
+        type: configMap
+        name: nut-upsd-configmap
+        globalMounts:
+          - path: /etc/nut/local/ups.conf
+            subPath: ups.conf
+            readOnly: true

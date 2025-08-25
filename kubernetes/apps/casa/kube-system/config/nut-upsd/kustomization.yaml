@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+configMapGenerator:
+  - name: nut-upsd-configmap
+    files:
+      # /etc/nut/local/ups.conf
+      - ups.conf=./ups.conf
+      #- upsd.conf=./upsd.conf
+      #- upsd.users=./upsd.users
+generatorOptions:
+  disableNameSuffixHash: true
