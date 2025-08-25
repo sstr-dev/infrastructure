@@ -30,3 +30,4 @@ qb06:
     - 'topology.kubernetes.io/region=homelab'
     - 'topology.kubernetes.io/zone=vm'
     - 'homelab.k8s.io/type=vm'
+    - 'ups.feature.node.kubernetes.io/apc=true'
