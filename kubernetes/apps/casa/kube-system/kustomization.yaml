@@ -8,4 +8,4 @@ components:
   - ../../../vars/casa
 resources:
   - ./kube-vip-svc/ks.yaml
-  - ./nut-upsd.yaml
+  #- ./nut-upsd.yaml
