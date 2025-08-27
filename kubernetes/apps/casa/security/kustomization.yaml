@@ -8,5 +8,5 @@ components:
   - ../../../vars/casa
 resources:
   - ../../../vars/casa/ns/security-secrets.sops.yaml
-  - ./external-secrets/ks.yaml
-  - ./lldap/ks.yaml
+  - ./external-secrets.yaml
+  - ./lldap.yaml
