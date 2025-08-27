@@ -38,8 +38,8 @@ spec:
   healthCheckExprs:
     - apiVersion: *dragonflyVersion
       kind: *dragonflyKind
-      failed: status.phase != 'ready'
-      current: status.phase == 'ready'
+      failed: status.phase != 'Ready'
+      current: status.phase == 'Ready'
 ---
 # yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
