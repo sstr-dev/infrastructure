@@ -23,7 +23,7 @@ resources:
   - ./mealie.yaml
   - ./opencloud.yaml
   #- ./ocis.yaml
-  - ./convertx.yaml
+  #- ./convertx.yaml
   - ./change-detection.yaml
   - ./privatebin.yaml
   - ./ocsinventory.yaml
