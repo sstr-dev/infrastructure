@@ -9,9 +9,9 @@ components:
 resources:
   - ./cnpg.yaml
   #- ./crunchy-postgres.yaml
-  - ./dragonfly/ks.yaml
-  - ./dragonfly/cluster/ks.yaml
-  - ./mongodb/ks.yaml
+  - ./dragonfly.yaml
+  - ./dragonfly-cluster.yaml
+  - ./mongodb.yaml
   - ./mariadb.yaml
   #- ./mongodb/cluster/ks.yaml
   #- ./kubeblocks/ks.yaml
