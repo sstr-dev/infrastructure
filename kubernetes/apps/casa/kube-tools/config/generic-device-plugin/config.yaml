@@ -1,0 +1,31 @@
+---
+devices:
+  - name: tun
+    groups:
+      - count: 1000
+        paths:
+          - path: /dev/net/tun
+
+  #- name: gpio
+  #  groups:
+  #    - paths:
+  #        - path: /dev/ttyAMA0
+  #- name: thread
+  #  groups:
+  #    - paths:
+  #        - path: /dev/serial/by-id/usb-Nordic_Semiconductor_nRF528xx_OpenThread_Device_*
+  #- name: zigbee
+  #  groups:
+  #    - paths:
+  #        - path: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_*
+  #- name: video
+  #  groups:
+  #    - paths:
+  #        - path: /dev/video0
+  #
+  #- name: apc
+  #  groups:
+  #    - count: 2
+  #      usb:
+  #        - vendor: 051D
+  #          product: 0002
