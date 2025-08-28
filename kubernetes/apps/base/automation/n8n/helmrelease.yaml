@@ -38,7 +38,7 @@ spec:
           app:
             image:
               repository: ghcr.io/n8n-io/n8n
-              tag: 1.109.0
+              tag: 1.109.1
               pullPolicy: IfNotPresent
             env:
               GENERIC_TIMEZONE: ${CLUSTER_TIMEZONE}
