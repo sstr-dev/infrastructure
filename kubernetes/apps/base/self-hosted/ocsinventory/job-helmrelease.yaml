@@ -42,7 +42,7 @@ spec:
           app:
             image:
               repository: ghcr.io/sstr-dev/kubectl
-              tag: 1.33.4@sha256:36bd85b8c8c15a2fbb23bd51c009b863eee2bbb7b66c229da7dfc270b281c291
+              tag: 1.34.0@sha256:d8c66e25383b9fe24f2da2802bf986d9b7448aae531a995965d9e296f55fe294
               pullPolicy: IfNotPresent
             command:
               - /bin/sh
