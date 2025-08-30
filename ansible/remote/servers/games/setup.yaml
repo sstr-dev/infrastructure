@@ -1,0 +1,47 @@
+---
+- name: Test sops
+  hosts: servers:&games
+  tasks:
+    - ansible.builtin.debug: var=group_names
+    - ansible.builtin.debug: var=inventory_hostname
+    - name: Show decrypted test vars
+      ansible.builtin.debug:
+        msg:
+          - "testkey = {{ testkey | default('<UNSET – set via group_vars or prompt>')  }}"
+          - "testlist  = {{ testlist | default('<UNSET – set via group_vars or prompt>')  }}"
+
+
+    # - name: Update APT configuration
+    #   ansible.builtin.include_role:
+    #     name: configure_apt
+    # - name: Install utilities
+    #   ansible.builtin.apt:
+    #     name:
+    #       - curl
+    #       - htop
+    #       - net-tools
+    #       - tree
+    #       - dhcpdump
+    #       - jq
+    #     state: present
+    #     update_cache: true
+    #     cache_valid_time: 600
+    #     autoclean: true
+    #     autoremove: true
+
+    # - name: Remove subscription nag
+    #   ansible.builtin.replace:
+    #     path: /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+    #     regexp: "res === null \\|\\| res === undefined \\|\\| \\!res \\|\\| res\\n\\t\\t\\t.data.status.toLowerCase\\(\\) \\!== 'active'"
+    #     replace: "false"
+    #     backup: yes
+    #   register: web_js
+    # - name: Restart the web GUI service
+    #   ansible.builtin.service:
+    #     name: pveproxy
+    #     state: restarted
+    #   when: web_js.changed
+
+    # - name: Install exporters
+    #   ansible.builtin.include_role:
+    #     name: install_exporters

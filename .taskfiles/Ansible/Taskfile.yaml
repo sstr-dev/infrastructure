@@ -11,7 +11,7 @@ vars:
 env:
   ANSIBLE_COLLECTIONS_PATH: "{{.VIRTUAL_ENV}}/galaxy"
   ANSIBLE_ROLES_PATH: "{{.VIRTUAL_ENV}}/galaxy/ansible_roles"
-  ANSIBLE_VARS_ENABLED: "host_group_vars"
+  ANSIBLE_VARS_ENABLED: "host_group_vars,community.sops.sops"
   ANSIBLE_LOCALHOST_WARNING: "False"
   ANSIBLE_INVENTORY_UNPARSED_WARNING: "False"
 

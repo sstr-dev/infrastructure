@@ -1,0 +1,7 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+tasks:
+  config:
+    cmds:
+      - "{{.VIRTUAL_ENV}}/bin/ansible-playbook --inventory {{.ANSIBLE_INVENTORY_FILE}} {{ .ROOT_DIR }}/ansible/remote/servers/games/setup.yaml {{.CLI_ARGS}}"
