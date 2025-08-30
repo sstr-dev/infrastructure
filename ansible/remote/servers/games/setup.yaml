@@ -2,14 +2,19 @@
 - name: Test sops
   hosts: servers:&games
   tasks:
-    - ansible.builtin.debug: var=group_names
-    - ansible.builtin.debug: var=inventory_hostname
-    - name: Show decrypted test vars
+    - name: Install Pterodactyl Panel
+      # ansible.builtin.include_role:
+      #   name: maxhoesel.pterodactyl.pterodactyl_panel
       ansible.builtin.debug:
-        msg:
-          - "testkey = {{ testkey | default('<UNSET – set via group_vars or prompt>')  }}"
-          - "testlist  = {{ testlist | default('<UNSET – set via group_vars or prompt>')  }}"
+        msg: "run_game_panel"
+      when: run_game_panel | default(false)
 
+    - name: Install Pterodactyl Wings Daemon
+      # ansible.builtin.include_role:
+      #   name: maxhoesel.pterodactyl.pterodactyl_wings
+      ansible.builtin.debug:
+        msg: "run_game_node = {{ testkey }}"
+      when: run_game_node | default(false)
 
     # - name: Update APT configuration
     #   ansible.builtin.include_role:
