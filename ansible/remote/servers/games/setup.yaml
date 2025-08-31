@@ -2,12 +2,17 @@
 - name: Test sops
   hosts: servers:&games
   tasks:
-    - name: Install Pterodactyl Panel
+
+    - name: Deploy TLS certificates
+      ansible.builtin.include_role:
+        name: certs
+
+    - name: Install games panel
       # ansible.builtin.include_role:
       #   name: maxhoesel.pterodactyl.pterodactyl_panel
       ansible.builtin.debug:
-        msg: "run_game_panel"
-      when: run_game_panel | default(false)
+        msg: "run_games_panel"
+      when: run_games_panel | default(false)
 
     - name: Install Pterodactyl Wings Daemon
       # ansible.builtin.include_role:

@@ -1,0 +1,26 @@
+---
+- name: Ensure certificate directory exists
+  ansible.builtin.file:
+    path: "{{ certs_target_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+
+- name: Write fullchain.pem
+  ansible.builtin.copy:
+    dest: "{{ certs_target_dir }}/fullchain.pem"
+    content: "{{ cert_fullchain }}"
+    owner: root
+    group: root
+    mode: "0644"     # certificate chain is fine to be world-readable
+  no_log: true
+
+- name: Write privkey.pem
+  ansible.builtin.copy:
+    dest: "{{ certs_target_dir }}/privkey.pem"
+    content: "{{ cert_privkey }}"
+    owner: root
+    group: root
+    mode: "0600"     # private key must be strictly protected
+  no_log: true
