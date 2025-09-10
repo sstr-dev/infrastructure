@@ -27,7 +27,7 @@ spec:
           app:
             image:
               repository: jbtronics/part-db1
-              tag: v2.1.1
+              tag: v2.1.2
             env:
               DEFAULT_LANG: "en"
               DEFAULT_TIMEZONE: ${CLUSTER_TIMEZONE}
