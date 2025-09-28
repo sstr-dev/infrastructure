@@ -26,7 +26,7 @@ spec:
           app:
             image:
               repository: docker.io/jgraph/drawio
-              tag: 28.2.3
+              tag: 28.2.5
             env:
               TZ: ${CLUSTER_TIMEZONE}
             resources:
