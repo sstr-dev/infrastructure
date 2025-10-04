@@ -19,7 +19,7 @@ releases:
     namespace: security
     atomic: true
     chart: oci://ghcr.io/external-secrets/charts/external-secrets
-    version: 0.20.1
+    version: 0.20.2
     values: ['{{ requiredEnv "shared_apps" }}/security/external-secrets/helm/values.yaml']
     hooks:
       - # Wait for external-secrets CRDs to be available
