@@ -50,7 +50,7 @@ spec:
     substitute:
       APP: cluster
       S3_BUCKET: db-backups
-      IMAGE: mariadb:11.8.3
+      IMAGE: mariadb:12.0.2
       SIZE: 5Gi
       STORAGECLASS: sc-fast
     substituteFrom:
