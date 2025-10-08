@@ -33,7 +33,7 @@ spec:
       - kind: Secret
         name: cluster-secrets
   components:
-    - ../../../../../components/dragonfly
+    - ../../../../components/dragonfly
   healthCheckExprs:
     - apiVersion: dragonflydb.io/v1alpha1
       kind: Dragonfly
