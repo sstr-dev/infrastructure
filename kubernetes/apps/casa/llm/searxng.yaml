@@ -34,14 +34,9 @@ spec:
         name: cluster-secrets
   components:
     - ../../../../../components/dragonfly
-  healthChecks:
-    - apiVersion: &dragonflyVersion dragonflydb.io/v1alpha1
-      kind: &dragonflyKind Dragonfly
-      name: *app
-      namespace: *namespace
   healthCheckExprs:
-    - apiVersion: *dragonflyVersion
-      kind: *dragonflyKind
-      failed: status.phase != 'Ready'
-      current: status.phase == 'Ready'
+    - apiVersion: dragonflydb.io/v1alpha1
+      kind: Dragonfly
+      failed: status.phase != 'ready'
+      current: status.phase == 'ready'
 
