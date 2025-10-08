@@ -21,8 +21,8 @@ spec:
   timeout: 5m
   wait: false
   dependsOn:
-    - name: dragonfly
-      namespace: *namespace
+    - name: external-secrets
+      namespace: security
   postBuild:
     substitute:
       APP: *app
