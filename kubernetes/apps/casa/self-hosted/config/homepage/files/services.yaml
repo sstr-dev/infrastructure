@@ -145,6 +145,12 @@
           url: http://paperless.self-hosted:8000
           key: '{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}'
     ### no widgets at bottom of list
+    - SearXNG Search:
+        icon: searxng.svg
+        href: https://search.${SECRET_MAIN_DOMAIN_NAME}
+        description: Search services
+        app: searxng
+        namespace: llm
     - SSO:
         description: SSO solution for the homelab
         href: https://${SECRET_SSO_DOMAIN}
