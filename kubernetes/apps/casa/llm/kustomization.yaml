@@ -7,5 +7,6 @@ components:
   - ../../../components/common
   - ../../../vars/casa
 resources:
+  - ./dragonfly-llm-cluster.yaml
   - ./searxng.yaml
   #- ./postgres-llm-cluster.yaml
