@@ -9,4 +9,4 @@ components:
 resources:
   - ./dragonfly-llm-cluster.yaml
   - ./searxng.yaml
-  #- ./postgres-llm-cluster.yaml
+  - ./postgres-llm-cluster.yaml
