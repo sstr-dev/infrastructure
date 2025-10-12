@@ -11,4 +11,4 @@ resources:
   - ./searxng.yaml
   - ./postgres-llm-cluster.yaml
   - ./open-webui.yaml
-  - ./paperless-ai.yaml
+  # - ./paperless-ai.yaml
