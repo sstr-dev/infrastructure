@@ -27,7 +27,7 @@ spec:
               PROCESS_PREDEFINED_DOCUMENTS: no
               ADD_AI_PROCESSED_TAG: yes
               AI_PROCESSED_TAG_NAME: ai-processed
-              USE_PROMPT_TAGS: no
+              USE_PROMPT_TAGS: yes
               OLLAMA_API_URL: http://${SECRET_AI1_IP}:11434
               # llama3.2 or phi4
               OLLAMA_MODEL: llama3.2:3b
