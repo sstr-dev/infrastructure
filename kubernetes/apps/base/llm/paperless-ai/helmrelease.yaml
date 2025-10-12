@@ -24,7 +24,7 @@ spec:
               PAPERLESS_API_URL: http://paperless.self-hosted.svc.cluster.local:8000/api
               AI_PROVIDER: ollama
               SCAN_INTERVAL: "*/30 * * * *"
-              PROCESS_PREDEFINED_DOCUMENTS: no
+              PROCESS_PREDEFINED_DOCUMENTS: yes
               ADD_AI_PROCESSED_TAG: yes
               AI_PROCESSED_TAG_NAME: ai-processed
               USE_PROMPT_TAGS: yes
