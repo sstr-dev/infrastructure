@@ -33,7 +33,7 @@ spec:
               USE_EXISTING_DATA: yes
               OLLAMA_API_URL: http://${SECRET_AI1_IP}:11434
               # llama3.2 or phi4
-              OLLAMA_MODEL: llama3.2:3b
+              OLLAMA_MODEL: phi4-mini:3.8b
               RESTRICT_TO_EXISTING_TAGS: yes
               RESTRICT_TO_EXISTING_DOCUMENT_TYPES: yes
             envFrom:
