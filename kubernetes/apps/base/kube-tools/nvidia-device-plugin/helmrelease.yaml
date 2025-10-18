@@ -43,7 +43,7 @@ spec:
         operator: Exists
         effect: NoSchedule
     nodeSelector:
-      gpu: true
+      gpu: "true"
     affinity: []
     #config:
     #  map:
