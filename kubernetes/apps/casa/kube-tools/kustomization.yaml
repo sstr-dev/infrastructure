@@ -13,6 +13,7 @@ resources:
   #- ./spegel/ks.yaml
   - ./system-upgrade-controller.yaml
   - ./generic-device-plugin.yaml
+  - ./nvidia-device-plugin.yaml
 configMapGenerator:
   - name: versions
     env: ../../base/kube-tools/system-upgrade-controller/versions.env
