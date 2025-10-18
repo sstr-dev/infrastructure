@@ -108,7 +108,7 @@ spec:
       internal:
         image:
           repository: ghcr.io/octohelm/harbor/redis-photon
-          tag: v2.13.0
+          tag: v2.14.0
       podAnnotations: {}
     exporter:
       replicas: 1
