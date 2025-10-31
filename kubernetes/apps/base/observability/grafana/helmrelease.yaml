@@ -642,7 +642,7 @@ spec:
       image:
         registry: ghcr.io
         repository: home-operations/k8s-sidecar
-        tag: 2.0.3@sha256:7978b5a757b1cb4f1b0d1c61cf135030b9353a9841457d81c8106eb1cdfe3b4b
+        tag: 1.30.6@sha256:ee7efa82ce53089e6a0644d16fbf1263020510b938794a0e3da373972dbbdecc
       dashboards:
         enabled: true
         searchNamespace: ALL
