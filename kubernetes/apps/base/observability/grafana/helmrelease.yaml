@@ -270,11 +270,11 @@ spec:
             type: postgres
             access: proxy
             url: postgres-cluster-rw.database.svc.cluster.local:5432
-            database: teslamate
             user: $TESLAMATE_DB_USER
             secureJsonData:
               password: "$TESLAMATE_DB_PASSWORD"
             jsonData:
+              database: teslamate
               postgresVersion: 1000
               sslmode: disable
           - name: InfluxDB
