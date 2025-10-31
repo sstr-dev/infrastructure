@@ -41,7 +41,8 @@ spec:
               - 44
               - 109
               - 65542 # gladius:external-services
-        strategy: RollingUpdate
+        #strategy: RollingUpdate
+        #type: deployment
         containers:
           app:
             image:
