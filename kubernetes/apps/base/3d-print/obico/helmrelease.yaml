@@ -60,7 +60,7 @@ spec:
     ml-api:
       image:
         repository: ghcr.io/gabe565/obico/ml-api
-        tag: latest@sha256:846de5ce02ad29fc720bdabc88baefd3f56702f4b5aa5c2f7b938d0bb2d27073
+        tag: latest@sha256:3a69ea7092f94c219886a1b87197d95f2a25b7515bfbc8afe9d47950113fc7aa
       env:
         DEBUG: "False"
     # -- Enable and configure redis subchart under this key. [[ref]](https://github.com/bitnami/charts/tree/main/bitnami/redis)
