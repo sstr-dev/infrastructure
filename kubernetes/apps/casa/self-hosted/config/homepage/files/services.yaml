@@ -193,12 +193,12 @@
         icon: cyberchef.png
         app: cyberchef
         namespace: self-hosted
-    - ConvertX:
-        description: Self-hosted online file converter
-        href: https://convertx.${SECRET_MAIN_DOMAIN_NAME}
-        icon: si-convertio
-        app: convertx
-        namespace: self-hosted
+    #- ConvertX:
+    #    description: Self-hosted online file converter
+    #    href: https://convertx.${SECRET_MAIN_DOMAIN_NAME}
+    #    icon: si-convertio
+    #    app: convertx
+    #    namespace: self-hosted
     - n8n:
         description: Flexible AI workflow automation
         href: https://n8n.${SECRET_MAIN_DOMAIN_NAME}
@@ -215,6 +215,8 @@
         description: Pastebin services
         href: https://privatebin.${SECRET_DEV_DOMAIN}
         icon: privatebin.png
+        app: privatebin
+        namespace: self-hosted
     - Scrypted:
         description: NVR
         href: https://scrypted.${SECRET_MAIN_DOMAIN_NAME}
