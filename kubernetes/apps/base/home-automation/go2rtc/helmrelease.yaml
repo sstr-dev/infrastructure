@@ -29,7 +29,7 @@ spec:
           app:
             image:
               repository: ghcr.io/alexxit/go2rtc
-              tag: 1.9.11
+              tag: 1.9.12
             #envFrom:
             #  - secretRef:
             #      name: *app
