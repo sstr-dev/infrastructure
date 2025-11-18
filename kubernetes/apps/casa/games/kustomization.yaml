@@ -5,6 +5,6 @@ namespace: games
 components:
   - ../../../components/common
   - ../../../vars/casa
-resources:
-  - ./pterodactyl.yaml
+resources: []
+  #- ./pterodactyl.yaml
   #- ./epicgames.yaml
