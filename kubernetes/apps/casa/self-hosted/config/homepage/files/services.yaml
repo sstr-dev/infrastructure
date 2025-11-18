@@ -42,16 +42,16 @@
               - uptime                # router uptime
               - down                  # download speed
               - up                    # upload speed
-    - Pterodactyl:
-        icon: pterodactyl.png
-        href: http://pterodactyl.${SECRET_MAIN_DOMAIN_NAME}
-        description: Gamer server platform
-        app: pterodactyl
-        namespace: games
-        widget:
-          type: pterodactyl
-          url: http://pterodactyl-app.games
-          key: '{{HOMEPAGE_VAR_PTERODACTYL_KEY}}'
+    #- Pterodactyl:
+    #    icon: pterodactyl.png
+    #    href: http://pterodactyl.${SECRET_MAIN_DOMAIN_NAME}
+    #    description: Gamer server platform
+    #    app: pterodactyl
+    #    namespace: games
+    #    widget:
+    #      type: pterodactyl
+    #      url: http://pterodactyl-app.games
+    #      key: '{{HOMEPAGE_VAR_PTERODACTYL_KEY}}'
     ### no widgets at bottom of list
     - OPNSense Firewall:
         icon: opnsense
