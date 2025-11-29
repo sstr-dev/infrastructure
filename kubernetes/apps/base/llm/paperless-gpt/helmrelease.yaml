@@ -35,8 +35,8 @@ spec:
               LLM_PROVIDER: ollama
               LLM_MODEL: phi4-mini:3.8b
               OLLAMA_HOST: http://${SECRET_AI1_IP}:11434
-              OLLAMA_CONTEXT_LENGTH: 3000
-              TOKEN_LIMIT: 600
+              OLLAMA_CONTEXT_LENGTH: 4096
+              TOKEN_LIMIT: 1600
 
               # --- OCR / Vision LLM ---
               OCR_PROVIDER: llm
