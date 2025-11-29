@@ -33,7 +33,7 @@ spec:
 
               # --- LLM for text processing (Ollama) ---
               LLM_PROVIDER: ollama
-              LLM_MODEL: qwen3:8b # phi4-mini:3.8b
+              LLM_MODEL: qwen3:4b-instruct-2507-q4_K_M # phi4-mini:3.8b
               OLLAMA_HOST: http://${SECRET_AI1_IP}:11434
               OLLAMA_CONTEXT_LENGTH: 4096
               TOKEN_LIMIT: 1600
