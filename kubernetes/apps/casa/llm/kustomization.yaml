@@ -12,3 +12,4 @@ resources:
   - ./postgres-llm-cluster.yaml
   - ./open-webui.yaml
   # - ./paperless-ai.yaml
+  - ./paperless-gpt.yaml
