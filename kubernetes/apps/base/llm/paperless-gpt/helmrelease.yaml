@@ -44,8 +44,8 @@ spec:
               VISION_LLM_MODEL: qwen2.5vl:3b   # recommended vision model
               OCR_PROCESS_MODE: image          # image|pdf|whole_pdf
               OCR_LIMIT_PAGES: 2               # 0 = unlimited
-              #PDF_SKIP_EXISTING_OCR: true      # skip PDFs that already contain OCR
-              PDF_SKIP_EXISTING_OCR: false
+              PDF_SKIP_EXISTING_OCR: true      # skip PDFs that already contain OCR
+              #PDF_SKIP_EXISTING_OCR: false
 
               # --- PDF Output / File Handling ---
               PDF_REPLACE: false               # replace original PDF in paperless? (dangerous)
