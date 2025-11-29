@@ -41,9 +41,9 @@ spec:
               # --- OCR / Vision LLM ---
               OCR_PROVIDER: llm
               VISION_LLM_PROVIDER: ollama
-              VISION_LLM_MODEL: qwen2.5vl:3b   # recommended vision model
+              VISION_LLM_MODEL: minicpm-v:8b   # recommended vision model (qwen2.5vl:3b)
               OCR_PROCESS_MODE: image          # image|pdf|whole_pdf
-              OCR_LIMIT_PAGES: 2               # 0 = unlimited
+              OCR_LIMIT_PAGES: 1               # 0 = unlimited
               PDF_SKIP_EXISTING_OCR: true      # skip PDFs that already contain OCR
               #PDF_SKIP_EXISTING_OCR: false
 
