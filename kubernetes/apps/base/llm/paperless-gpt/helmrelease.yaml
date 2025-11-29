@@ -27,7 +27,7 @@ spec:
 
               # --- General settings ---
               # LLM_LANGUAGE: English
-              # LLM_LANGUAGE: German
+              LLM_LANGUAGE: German
               LOG_LEVEL: info
               TZ: ${CLUSTER_TIMEZONE}
 
