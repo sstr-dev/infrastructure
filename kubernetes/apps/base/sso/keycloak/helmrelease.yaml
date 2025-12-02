@@ -29,7 +29,7 @@ spec:
               # Keycloak image repository
               repository: quay.io/keycloak/keycloak
               # Keycloak image tag
-              tag: "26.4.6"
+              tag: "26.4.7"
             env:
               TZ: ${CLUSTER_TIMEZONE}
               KC_HOSTNAME_URL: "https://${SECRET_SSO_DOMAIN}"
