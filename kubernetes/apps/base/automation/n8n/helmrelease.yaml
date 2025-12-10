@@ -34,6 +34,15 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         strategy: RollingUpdate
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/sstr-dev/postgres-init
+              tag: 17.7@sha256:7f4c3051706da3025f97b73c6acc60000e9c1c7a12cbfede5837e2a19d2e96f2
+              pullPolicy: IfNotPresent
+            envFrom:
+              - secretRef:
+                  name: *app
         containers:
           app:
             image:
@@ -69,27 +78,32 @@ spec:
               - secretRef:
                   name: *app
             probes:
-              liveness:
+              startup: &probeBase
                 enabled: true
                 custom: true
                 spec:
-                  httpGet:
+                  httpGet: &httpGet
                     path: /healthz
                     port: *port
-                  initialDelaySeconds: 0
-                  periodSeconds: 10
-                  timeoutSeconds: 1
+                  initialDelaySeconds: 10
+                  periodSeconds: 5
+                  timeoutSeconds: 3
+                  failureThreshold: 30
+              liveness:
+                <<: *probeBase
+                spec:
+                  httpGet: *httpGet
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
                   failureThreshold: 3
               readiness:
-                enabled: true
-                custom: true
+                <<: *probeBase
                 spec:
-                  httpGet:
-                    path: /healthz/readiness
-                    port: *port
-                  initialDelaySeconds: 0
+                  httpGet: *httpGet
+                  initialDelaySeconds: 10
                   periodSeconds: 10
-                  timeoutSeconds: 1
+                  timeoutSeconds: 5
                   failureThreshold: 3
             resources:
               requests:
