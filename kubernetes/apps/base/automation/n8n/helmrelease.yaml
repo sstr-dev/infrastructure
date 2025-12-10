@@ -64,6 +64,7 @@ spec:
               N8N_PROTOCOL: "https"
               N8N_PORT: &port 8080
               N8N_HOST: &hostName "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
+              N8N_PROXY_HOPS: "1"
               N8N_LOG_LEVEL: info
               N8N_LOG_OUTPUT: console
               N8N_RUNNERS_ENABLED: "true"
