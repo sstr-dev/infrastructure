@@ -20,7 +20,7 @@ spec:
     spec:
       # renovate: registryUrl=https://angelnu.github.io/helm-charts/
       chart: pod-gateway
-      version: 7.0.4
+      version: 7.0.5
       sourceRef:
         kind: HelmRepository
         name: angelnu-helm-charts
@@ -216,34 +216,34 @@ spec:
       #podAnnotations:
       #  configmap.reloader.stakater.com/reload: downloads-gateway-pod-gateway,downloads-gateway-pod-gateway-addon-vpn
       #  secret.reloader.stakater.com/reload: *app
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Service
-              name: *app
-            patch: |
-              - op: add
-                path: /spec/ports/-
-                value:
-                  name: gluetun
-                  port: 80
-                  protocol: TCP
-                  targetPort: 80
-          - target:
-              kind: Deployment
-              name: *app
-            patch: |
-              - op: add
-                path: /spec/template/spec/containers/1/ports
-                value: []
-          - target:
-              kind: Deployment
-              name: *app
-            patch: |
-              - op: add
-                path: /spec/template/spec/containers/1/ports/-
-                value:
-                  containerPort: 80
-                  name: gluetun
-                  protocol: TCP
+  #postRenderers:
+  #  - kustomize:
+  #      patches:
+  #        - target:
+  #            kind: Service
+  #            name: *app
+  #          patch: |
+  #            - op: add
+  #              path: /spec/ports/-
+  #              value:
+  #                name: gluetun
+  #                port: 80
+  #                protocol: TCP
+  #                targetPort: 80
+  #        - target:
+  #            kind: Deployment
+  #            name: *app
+  #          patch: |
+  #            - op: add
+  #              path: /spec/template/spec/containers/1/ports
+  #              value: []
+  #        - target:
+  #            kind: Deployment
+  #            name: *app
+  #          patch: |
+  #            - op: add
+  #              path: /spec/template/spec/containers/1/ports/-
+  #              value:
+  #                containerPort: 80
+  #                name: gluetun
+  #                protocol: TCP
