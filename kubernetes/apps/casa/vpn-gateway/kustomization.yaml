@@ -6,6 +6,6 @@ namespace: vpn-gateway
 components:
   - ../../../components/common
   - ../../../vars/casa
-resources: []
+resources:
   #- ./config/ks.yaml
-  #- ./downloads-gateway/ks.yaml
+  - ./downloads-gateway/ks.yaml
