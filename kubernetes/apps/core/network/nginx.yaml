@@ -47,8 +47,8 @@ spec:
   prune: true
   dependsOn:
     - name: ingress-nginx-repo
-    - name: internal-cluster-certificate
-      namespace: default
+    #- name: internal-cluster-certificate
+    #  namespace: default
   retryInterval: 2m
   sourceRef:
     kind: GitRepository
