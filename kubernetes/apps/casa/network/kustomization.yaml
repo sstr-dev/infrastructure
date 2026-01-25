@@ -15,4 +15,4 @@ resources:
   - ./echo.yaml
   - ./nginx.yaml
   - ./external-services.yaml
-  - ./multus-networks.yaml
+  #- ./multus-networks.yaml
