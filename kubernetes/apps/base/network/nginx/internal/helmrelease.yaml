@@ -27,6 +27,7 @@ spec:
       allowSnippetAnnotations: true
       service:
         annotations:
+          kube-vip.io/serviceInterface: ${LB_SERVICE_INTERFACE}
           kube-vip.io/loadbalancerIPs: ${LB_V4_NGINX_INTERNAL}
         externalTrafficPolicy: Cluster
       ingressClassResource:
