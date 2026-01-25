@@ -164,6 +164,7 @@ spec:
         enabled: true
         type: persistentVolumeClaim
         existingClaim: *app
+
       tv:
         type: nfs
         server: 10.0.60.10
@@ -171,6 +172,7 @@ spec:
         globalMounts:
           - path: /tv
             readOnly: false
+
       downloads:
         type: nfs
         server: 10.0.60.10
