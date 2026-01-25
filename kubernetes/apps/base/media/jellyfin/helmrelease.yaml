@@ -180,11 +180,18 @@ spec:
         globalMounts:
           - path: /config/metadata
       media:
-        enabled: true
-        type: hostPath
-        hostPath: ${SHARED_MEDIA_PATH}
+        type: nfs
+        server: 10.0.60.10
+        path: /mnt/user/media
         globalMounts:
           - path: /media
+            readOnly: true
+      #media:
+      #  enabled: true
+      #  type: hostPath
+      #  hostPath: ${SHARED_MEDIA_PATH}
+      #  globalMounts:
+      #    - path: /media
       tmpfs:
         type: emptyDir
         advancedMounts:
