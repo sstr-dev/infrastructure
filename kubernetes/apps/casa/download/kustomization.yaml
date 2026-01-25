@@ -11,7 +11,7 @@ components:
 resources:
   #- ./prowlarr.yaml
   #- ./readarr.yaml
-  #- ./radarr.yaml
+  - ./radarr.yaml
   - ./sonarr.yaml
   - ./webhook.yaml
 
