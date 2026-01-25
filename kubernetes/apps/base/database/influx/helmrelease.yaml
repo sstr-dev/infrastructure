@@ -61,8 +61,8 @@ spec:
         controller: *app
         type: LoadBalancer
         annotations:
-          kube-vip.io/pool: iot
-          kube-vip.io/serviceInterface: iot
+          kube-vip.io/pool: ${LB_SERVICE_POOL}
+          kube-vip.io/serviceInterface: ${LB_SERVICE_INTERFACE}
           kube-vip.io/loadbalancerIPs: ${LB_V4_SHARED}
         #type: LoadBalancer
         #annotations:
