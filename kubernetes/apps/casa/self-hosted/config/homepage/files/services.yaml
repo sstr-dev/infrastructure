@@ -30,18 +30,18 @@
               service_name: Radarr # service name for that widget
 
 - Infrastructure:
-    - Fritz!Box:
-        icon: avm-fritzbox     # optional: your icon file in /static/icons
-        href: http://${SECRET_FRITZ_IP}/   # URL when you click the tile
-        description: FRITZ!Box Router Management
-        widget:
-          type: fritzbox
-          url: http://${SECRET_FRITZ_IP}
-          fields:
-              - connectionStatus      # e.g. “connected” / “disconnected”
-              - uptime                # router uptime
-              - down                  # download speed
-              - up                    # upload speed
+    #- Fritz!Box:
+    #    icon: avm-fritzbox     # optional: your icon file in /static/icons
+    #    href: http://${SECRET_FRITZ_IP}/   # URL when you click the tile
+    #    description: FRITZ!Box Router Management
+    #    widget:
+    #      type: fritzbox
+    #      url: http://${SECRET_FRITZ_IP}
+    #      fields:
+    #          - connectionStatus      # e.g. “connected” / “disconnected”
+    #          - uptime                # router uptime
+    #          - down                  # download speed
+    #          - up                    # upload speed
     #- Pterodactyl:
     #    icon: pterodactyl.png
     #    href: http://pterodactyl.${SECRET_MAIN_DOMAIN_NAME}
@@ -53,17 +53,17 @@
     #      url: http://pterodactyl-app.games
     #      key: '{{HOMEPAGE_VAR_PTERODACTYL_KEY}}'
     ### no widgets at bottom of list
-    - OPNSense Firewall:
-        icon: opnsense
-        href: https://${SECRET_OPNSENSE_IP}
-        description: OPNSense Firewall Management
-        # ping
-        siteMonitor: https://${SECRET_OPNSENSE_IP}
-        # widget:
-        #   type: opnsense
-        #   url: https://${SECRET_OPNSENSE_IP}
-        #   username: "{{HOMEPAGE_VAR_OPNSENSE_API_KEY}}"
-        #   password: "{{HOMEPAGE_VAR_OPNSENSE_SECRET}}"
+    #- OPNSense Firewall:
+    #    icon: opnsense
+    #    href: https://${SECRET_OPNSENSE_IP}
+    #    description: OPNSense Firewall Management
+    #    # ping
+    #    siteMonitor: https://${SECRET_OPNSENSE_IP}
+    #    # widget:
+    #    #   type: opnsense
+    #    #   url: https://${SECRET_OPNSENSE_IP}
+    #    #   username: "{{HOMEPAGE_VAR_OPNSENSE_API_KEY}}"
+    #    #   password: "{{HOMEPAGE_VAR_OPNSENSE_SECRET}}"
 
     - Hashicorp Vault:
         icon: vault
@@ -73,7 +73,7 @@
         siteMonitor: ${VAULT_SERVER}
     - Brother MFC:
         icon: brother
-        href: http://192.168.188.42
+        href: http://10.0.21.25
         description: MFC-L3770CDW Printer Management
         # ping
         # siteMonitor: http://192.168.188.42
