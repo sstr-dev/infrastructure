@@ -165,16 +165,31 @@ spec:
         type: persistentVolumeClaim
         existingClaim: *app
       tv:
-        enabled: true
-        type: hostPath
-        hostPath: ${SHARED_MEDIA_PATH}/tv
+        type: nfs
+        server: 10.0.60.10
+        path: /mnt/user/media/tv
         globalMounts:
           - path: /tv
             readOnly: false
       downloads:
-        enabled: true
-        type: hostPath
-        hostPath: ${SHARED_MEDIA_PATH}/download/tv
+        type: nfs
+        server: 10.0.60.10
+        path: /mnt/user/media/download/tv
         globalMounts:
           - path: /downloads
             readOnly: false
+
+      #tv:
+      #  enabled: true
+      #  type: hostPath
+      #  hostPath: ${SHARED_MEDIA_PATH}/tv
+      #  globalMounts:
+      #    - path: /tv
+      #      readOnly: false
+      #downloads:
+      #  enabled: true
+      #  type: hostPath
+      #  hostPath: ${SHARED_MEDIA_PATH}/download/tv
+      #  globalMounts:
+      #    - path: /downloads
+      #      readOnly: false
