@@ -165,21 +165,30 @@ spec:
         type: persistentVolumeClaim
         existingClaim: *app
 
-      tv:
-        type: nfs
-        server: 10.0.60.10
-        path: /mnt/user/media/tv
-        globalMounts:
-          - path: /tv
-            readOnly: false
 
-      downloads:
+      media:
         type: nfs
         server: 10.0.60.10
-        path: /mnt/user/media/download/tv
+        path: /mnt/user/media
         globalMounts:
-          - path: /downloads
-            readOnly: false
+          - path: /media
+            readOnly: true
+
+      #tv:
+      #  type: nfs
+      #  server: 10.0.60.10
+      #  path: /mnt/user/media/tv
+      #  globalMounts:
+      #    - path: /tv
+      #      readOnly: false
+#
+      #downloads:
+      #  type: nfs
+      #  server: 10.0.60.10
+      #  path: /mnt/user/media/download/tv
+      #  globalMounts:
+      #    - path: /downloads
+      #      readOnly: false
 
       #tv:
       #  enabled: true
