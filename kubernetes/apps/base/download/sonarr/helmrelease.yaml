@@ -172,7 +172,7 @@ spec:
         path: /mnt/user/media
         globalMounts:
           - path: /media
-            readOnly: true
+            readOnly: false
 
       #tv:
       #  type: nfs
