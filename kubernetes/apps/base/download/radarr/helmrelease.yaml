@@ -167,17 +167,26 @@ spec:
         enabled: true
         type: persistentVolumeClaim
         existingClaim: *app
-      movies:
-        enabled: true
-        type: hostPath
-        hostPath: ${SHARED_MEDIA_PATH}/movies
+
+      media:
+        type: nfs
+        server: 10.0.60.10
+        path: /mnt/user/media
         globalMounts:
-          - path: /movies
+          - path: /media
             readOnly: false
-      downloads:
-        enabled: true
-        type: hostPath
-        hostPath: ${SHARED_MEDIA_PATH}/download/movies
-        globalMounts:
-          - path: /downloads
-            readOnly: false
+
+      #movies:
+      #  enabled: true
+      #  type: hostPath
+      #  hostPath: ${SHARED_MEDIA_PATH}/movies
+      #  globalMounts:
+      #    - path: /movies
+      #      readOnly: false
+      #downloads:
+      #  enabled: true
+      #  type: hostPath
+      #  hostPath: ${SHARED_MEDIA_PATH}/download/movies
+      #  globalMounts:
+      #    - path: /downloads
+      #      readOnly: false
