@@ -62,8 +62,8 @@ spec:
   infrastructure:
     annotations:
       #external-dns.alpha.kubernetes.io/hostname: *hostname
-      kube-vip.io/pool: iot
-      kube-vip.io/serviceInterface: iot
+      kube-vip.io/pool: ${LB_SERVICE_POOL}
+      kube-vip.io/serviceInterface: ${LB_SERVICE_INTERFACE}
       kube-vip.io/loadbalancerIPs: ${LB_V4_GATEWAY_MAIN}
   listeners:
     - name: http
@@ -99,8 +99,8 @@ spec:
   infrastructure:
     annotations:
       #external-dns.alpha.kubernetes.io/hostname: *hostname
-      kube-vip.io/pool: iot
-      kube-vip.io/serviceInterface: iot
+      kube-vip.io/pool: ${LB_SERVICE_POOL}
+      kube-vip.io/serviceInterface: ${LB_SERVICE_INTERFACE}
       kube-vip.io/loadbalancerIPs: ${LB_V4_GATEWAY_BASE}
   listeners:
     - name: http
@@ -136,8 +136,8 @@ spec:
   infrastructure:
     annotations:
       #external-dns.alpha.kubernetes.io/hostname: *hostname
-      kube-vip.io/pool: iot
-      kube-vip.io/serviceInterface: iot
+      kube-vip.io/pool: ${LB_SERVICE_POOL}
+      kube-vip.io/serviceInterface: ${LB_SERVICE_INTERFACE}
       kube-vip.io/loadbalancerIPs: ${LB_V4_GATEWAY_DEV}
   listeners:
     - name: http
@@ -176,8 +176,8 @@ spec:
   infrastructure:
     annotations:
       external-dns.alpha.kubernetes.io/hostname: external-l4.${DOMAIN}
-      kube-vip.io/pool: iot
-      kube-vip.io/serviceInterface: iot
+      kube-vip.io/pool: ${LB_SERVICE_POOL}
+      kube-vip.io/serviceInterface: ${LB_SERVICE_INTERFACE}
       kube-vip.io/loadbalancerIPs: ${LB_V4_GATEWAY_L4}
   listeners:
     - name: tcp
