@@ -9,11 +9,12 @@ components:
   #- ../../../components/namespace/vpn
   - ../../../vars/casa
 resources:
-  - ./prowlarr.yaml
-  #- ./sabnzbd.yaml
-  - ./readarr.yaml
-  #- ./lidarr.yaml
-  - ./radarr.yaml
-  - ./sonarr.yaml
+  #- ./prowlarr.yaml
+  #- ./readarr.yaml
+  #- ./radarr.yaml
+  #- ./sonarr.yaml
   - ./webhook.yaml
+
+  #- ./sabnzbd.yaml
+  #- ./lidarr.yaml
   #- ./calibre-downloader.yaml
