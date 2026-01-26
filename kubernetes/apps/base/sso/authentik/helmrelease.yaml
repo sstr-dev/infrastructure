@@ -51,6 +51,8 @@ spec:
         - secretRef:
             name: *app
     authentik:
+      # -- whether to create the authentik configuration secret
+      enabled: true
       #postgresql:
       #  host: pg-cluster-postgresql.database.svc.cluster.local
       #  user: file:///postgres-creds/username
@@ -62,8 +64,8 @@ spec:
       #  use_tls: false
       #redis:
       #  host: dragonfly-authentik
-      #disable_update_check: true
-      #disable_startup_analytics: true
+      disable_update_check: true
+      disable_startup_analytics: true
     server:
       autoscaling: &autoscaling
         enabled: true
