@@ -40,7 +40,7 @@ connectivity:
     target: 1.1.1.1:53
     interval: 1m
 endpoints:
-  - name: flux-webhook (casa)
+  - name: flux-webhook
     group: external
     url: https://${FLUX_WEBHOOK_EXTERNAL}
     interval: 1m
@@ -53,19 +53,19 @@ endpoints:
       - "[STATUS] == 404"
     alerts:
       - type: pushover
-  - name: flux-webhook (core)
-    group: external
-    url: https://${FLUX_WEBHOOK_CORE_EXTERNAL}
-    interval: 1m
-    #ui:
-    #  hide-url: true
-    #  hide-hostname: true
-    client:
-      dns-resolver: tcp://1.1.1.1:53
-    conditions:
-      - "[STATUS] == 404"
-    alerts:
-      - type: pushover
+  #- name: flux-webhook (core)
+  #  group: external
+  #  url: https://${FLUX_WEBHOOK_CORE_EXTERNAL}
+  #  interval: 1m
+  #  #ui:
+  #  #  hide-url: true
+  #  #  hide-hostname: true
+  #  client:
+  #    dns-resolver: tcp://1.1.1.1:53
+  #  conditions:
+  #    - "[STATUS] == 404"
+  #  alerts:
+  #    - type: pushover
   - name: sso
     group: external
     url: https://${SECRET_SSO_DOMAIN}/-/health/live/

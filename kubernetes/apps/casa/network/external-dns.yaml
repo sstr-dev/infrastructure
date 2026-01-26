@@ -26,3 +26,30 @@ spec:
   targetNamespace: network
   timeout: 5m
   wait: true
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app external-dns-unifi
+spec:
+  interval: 1h
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  path: ./kubernetes/apps/base/network/external-dns/unifi
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+  dependsOn:
+    - name: external-dns-helm
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: true
+  targetNamespace: network
