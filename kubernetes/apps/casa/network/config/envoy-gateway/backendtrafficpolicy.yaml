@@ -16,6 +16,12 @@ spec:
       name: base
     - <<: *target
       name: dev
+  retry:
+    numRetries: 2
+    retryOn:
+      triggers:
+        - reset
   compression:
     - type: Brotli
     - type: Gzip
+    - type: Zstd

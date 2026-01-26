@@ -16,6 +16,11 @@ spec:
       name: base
     - <<: *target
       name: dev
+  http2:
+    initialStreamWindowSize: 512Ki
+    initialConnectionWindowSize: 8Mi
+    onInvalidMessage: TerminateStream
+  http3: {}
   clientIPDetection:
     xForwardedFor:
       numTrustedHops: 1
@@ -24,4 +29,4 @@ spec:
     alpnProtocols:
       - h2
       - http/1.1
-  http3: {}
+
