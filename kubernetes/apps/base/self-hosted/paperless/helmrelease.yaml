@@ -76,6 +76,7 @@ spec:
               PAPERLESS_SOCIALACCOUNT_ALLOW_SIGNUPS: 'true'
               PAPERLESS_DISABLE_REGULAR_LOGIN: 'true'
               PAPERLESS_OCR_USER_ARGS: '{"invalidate_digital_signatures": true}'
+
             envFrom:
               - secretRef:
                   name: *app
