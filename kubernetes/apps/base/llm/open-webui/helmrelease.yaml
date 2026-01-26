@@ -93,7 +93,16 @@ spec:
           http:
             port: 8080
     route:
-      app:
+      internal:
+        enabled: true
+        parentRefs:
+          - name: main
+            namespace: network
+            sectionName: https
+        hostnames:
+          - "ai.${SECRET_MAIN_DOMAIN_NAME}"
+
+      external:
         hostnames: ["chat.${SECRET_DOMAIN}"]
         parentRefs:
           - name: base
