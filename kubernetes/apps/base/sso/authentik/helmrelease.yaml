@@ -62,8 +62,8 @@ spec:
       #  use_tls: false
       #redis:
       #  host: dragonfly-authentik
-      disable_update_check: true
-      disable_startup_analytics: true
+      #disable_update_check: true
+      #disable_startup_analytics: true
     server:
       autoscaling: &autoscaling
         enabled: true
