@@ -73,7 +73,7 @@ spec:
         usv:
           - apc
         server:
-          - casa-pve01.lokis-casa.internal
+          - casa-nut01.lokis-casa.internal
       path: /ups_metrics
       port: metrics
       scheme: http
