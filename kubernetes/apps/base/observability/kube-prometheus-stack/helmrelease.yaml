@@ -37,6 +37,8 @@ spec:
         enabled: true
         forceConflicts: true
     alertmanager:
+      ingress:
+        enabled: false
       #ingress:
       #  enabled: true
       #  ingressClassName: "${INGRESSCLASS}"
