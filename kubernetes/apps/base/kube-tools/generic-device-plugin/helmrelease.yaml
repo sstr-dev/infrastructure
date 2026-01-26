@@ -66,11 +66,11 @@ spec:
         hostPath: /dev
         #globalMounts:
         #  - readOnly: true
-      sys:
-        type: hostPath
-        hostPath: /sys
-        globalMounts:
-          - readOnly: true
+      #sys:
+      #  type: hostPath
+      #  hostPath: /sys
+      #  globalMounts:
+      #    - readOnly: true
       var-lib-kubelet-device-plugins:
         type: hostPath
         hostPath: /var/lib/kubelet/device-plugins
