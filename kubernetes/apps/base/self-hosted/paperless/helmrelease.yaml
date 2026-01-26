@@ -141,10 +141,10 @@ spec:
           - name: main
             namespace: network
             sectionName: https
-        rules:
-          - backendRefs:
-              - identifier: *app
-                port: *port
+        #rules:
+        #  - backendRefs:
+        #      - identifier: *app
+        #        port: *port
         annotations:
           nginx.ingress.kubernetes.io/proxy-body-size: 4G
           nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
