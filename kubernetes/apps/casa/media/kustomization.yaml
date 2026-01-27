@@ -7,7 +7,8 @@ components:
   - ../../../components/common
   - ../../../vars/casa
 resources:
-  #- ./jellyfin.yaml
+  - ./jellyfin.yaml
   - ./jellyseerr.yaml
+  # temporary deactivated
   #- ./calibre-web-automated.yaml
 
