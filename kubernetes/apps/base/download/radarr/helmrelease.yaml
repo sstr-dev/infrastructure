@@ -168,10 +168,17 @@ spec:
         type: persistentVolumeClaim
         existingClaim: *app
 
+      #media:
+      #  type: nfs
+      #  server: 10.0.60.10
+      #  path: /mnt/user/media
+      #  globalMounts:
+      #    - path: /media
+      #      readOnly: false
+
       media:
-        type: nfs
-        server: 10.0.60.10
-        path: /mnt/user/media
+        type: hostPath
+        hostPath: /media
         globalMounts:
           - path: /media
             readOnly: false
