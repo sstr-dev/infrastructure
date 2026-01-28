@@ -25,7 +25,7 @@ spec:
           app:
             image:
               repository: gotenberg/gotenberg
-              tag: 8.25.1
+              tag: 8.26.0
             command:
               - 'gotenberg'
               - '--chromium-disable-javascript=true'
