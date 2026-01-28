@@ -19,6 +19,7 @@ ui:
       link: https://github.com/sstr-dev/infrastructure
 alerting:
   pushover:
+    enabled: false
     title: Gatus (Kubernetes)
     application-token: $${PUSHOVER_TOKEN}
     user-key: $${PUSHOVER_USER_KEY}
