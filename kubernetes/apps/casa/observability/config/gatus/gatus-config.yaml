@@ -17,18 +17,18 @@ ui:
       link: https://github.com/sstr-dev
     - name: Infrastructure
       link: https://github.com/sstr-dev/infrastructure
-alerting:
-  pushover:
-    enabled: false
-    title: Gatus (Kubernetes)
-    application-token: $${PUSHOVER_TOKEN}
-    user-key: $${PUSHOVER_USER_KEY}
-    priority: 1
-    default-alert:
-      description: health-check failed
-      send-on-resolved: true
-      failure-threshold: 4
-      success-threshold: 3
+#alerting:
+#  pushover:
+#    enabled: false
+#    title: Gatus (Kubernetes)
+#    application-token: $${PUSHOVER_TOKEN}
+#    user-key: $${PUSHOVER_USER_KEY}
+#    priority: 1
+#    default-alert:
+#      description: health-check failed
+#      send-on-resolved: true
+#      failure-threshold: 4
+#      success-threshold: 3
 security:
   oidc:
     issuer-url: $${OIDC_ISSUER}
@@ -52,8 +52,8 @@ endpoints:
       dns-resolver: tcp://1.1.1.1:53
     conditions:
       - "[STATUS] == 404"
-    alerts:
-      - type: pushover
+    #alerts:
+    #  - type: pushover
   #- name: flux-webhook (core)
   #  group: external
   #  url: https://${FLUX_WEBHOOK_CORE_EXTERNAL}
@@ -78,5 +78,5 @@ endpoints:
       dns-resolver: tcp://1.1.1.1:53
     conditions:
       - "[STATUS] == 200"
-    alerts:
-      - type: pushover
+    #alerts:
+    #  - type: pushover
