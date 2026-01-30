@@ -1,0 +1,7 @@
+---
+# placeholder for hashicorp vault
+# check login, pull secret (json, value), push secret, sync?
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks: {}
