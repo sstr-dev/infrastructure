@@ -31,9 +31,10 @@ tasks:
       - brew bundle --file {{.WORKSTATION_RESOURCES_DIR}}/Brewfile
       - |
         if helm plugin list | awk 'NR>1{print $1}' | grep -qx diff; then
-          echo "helm-diff already installed"
+          echo "helm-diff plugin already installed"
           helm plugin update diff
         else
+          echo "installing helm-diff plugin ..."
           helm plugin install https://github.com/databus23/helm-diff
         fi
       # - helm plugin install https://github.com/databus23/helm-diff
