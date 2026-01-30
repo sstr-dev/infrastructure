@@ -47,6 +47,7 @@ includes:
   kubeblocks:
     aliases: ["kb"]
     taskfile: .taskfiles/Kubeblocks/Taskfile.yaml
+  vault: .taskfiles/Vault/Taskfile.yaml
 
 tasks:
 

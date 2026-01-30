@@ -65,3 +65,7 @@ test-*.py
 terraform.tfstate*
 *.tfvars
 .trash
+# Talos clusterconfigs
+talos/**/clusterconfig*
+db
+db.snapshot

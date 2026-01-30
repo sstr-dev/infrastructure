@@ -3,5 +3,40 @@
 # check login, pull secret (json, value), push secret, sync?
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
+vars:
+  VAULT_FILE: "{{.ROOT_DIR}}/.secrets/vault.yaml"
 
-tasks: {}
+  VAULT_ADDR:
+    sh: yq -r '.vault.address' {{.VAULT_FILE}}
+
+  VAULT_TOKEN:
+    sh: yq -r '.vault.token' {{.VAULT_FILE}}
+
+env:
+  VAULT_ADDR: "{{.VAULT_ADDR}}"
+  VAULT_TOKEN: "{{.VAULT_TOKEN}}"
+
+tasks:
+  vault:
+    desc: Ensure valid Vault login (auto-login or fail)
+    preconditions:
+      - sh: test -f {{.VAULT_FILE}}
+        msg: "Missing {{.VAULT_FILE}}"
+    cmds:
+      - |
+        if vault token lookup >/dev/null 2>&1; then
+          echo "✔ Vault login valid"
+        else
+          echo "🔐 Vault login invalid, attempting login…"
+          vault login -address="{{.VAULT_ADDR}}" "{{.VAULT_TOKEN}}" \
+            >/dev/null || {
+              echo "❌ Vault login failed"
+              exit 1
+            }
+        fi
+  read:
+    desc: Read secret from Vault
+    deps:
+      - vault
+    cmds:
+      - vault kv get secret/foo

@@ -2,6 +2,8 @@
 keys:
   - &kubernetes age13x3gvqpe83vx0rcmcdcqnt202c4rsq3sax8s5q2p5t2lcjflpsvqgng8s3
   - &ansible age1pvq7pns09vm4cw3kyq4t9lawnaf8ywlhe7ksx3mct9r9dcutgcyss2sdqa
+  - &talos age13f7w7x9zhz9gkpsrxtg437rjluv8cgvwxgq3dunlhexk49te7ywqj3xmf6
+  - &terraform age1raxvpxd5y60s5ku7lh5gsrnmxdjpgrlg3svd96pm956x42gfepzs0acyq7
 
 creation_rules:
 
@@ -14,7 +16,19 @@ creation_rules:
     key_groups:
       - age:
           - *ansible
-
+  - path_regex: talos/.*\.sops\.ya?ml
+    mac_only_encrypted: true
+    key_groups:
+      - age:
+          - *talos
+  - path_regex: terraform/.*\.sops\.ya?ml
+    mac_only_encrypted: true
+    key_groups:
+      - age:
+          - *terraform
 stores:
   yaml:
     indent: 2
+
+
+
