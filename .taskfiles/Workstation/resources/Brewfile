@@ -23,8 +23,10 @@ brew "yamllint"
 brew "viddy"
 
 brew "gh"
-#brew "siderolabs/tap/talosctl"
-#brew "talhelper"
+
+tap "siderolabs/tap"
+brew "siderolabs/tap/talosctl"
+brew "talhelper"
 
 #cask "1password"
 #cask "1password-cli"

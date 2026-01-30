@@ -29,7 +29,14 @@ tasks:
     desc: Install workstation dependencies with Brew
     cmds:
       - brew bundle --file {{.WORKSTATION_RESOURCES_DIR}}/Brewfile
-      - helm plugin install https://github.com/databus23/helm-diff
+      - |
+        if helm plugin list | awk 'NR>1{print $1}' | grep -qx diff; then
+          echo "helm-diff already installed"
+          helm plugin update diff
+        else
+          helm plugin install https://github.com/databus23/helm-diff
+        fi
+      # - helm plugin install https://github.com/databus23/helm-diff
     sources:
       - '{{.WORKSTATION_RESOURCES_DIR}}/Brewfile'
     generates:
