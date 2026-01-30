@@ -30,3 +30,5 @@ brew "talhelper"
 
 #cask "1password"
 #cask "1password-cli"
+tap "hashicorp/tap"
+brew "hashicorp/tap/vault"
