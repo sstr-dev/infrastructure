@@ -69,3 +69,4 @@ terraform.tfstate*
 talos/**/clusterconfig*
 db
 db.snapshot
+talos/_out
