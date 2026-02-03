@@ -232,9 +232,9 @@ function main() {
     # Talos requires the nodes to be 'Ready=False' before applying resources
     # wait_for_nodes
     apply_namespaces
-    apply_configmaps
-    apply_secrets
-    apply_helm_crds
+    #apply_configmaps
+    #apply_secrets
+    #apply_helm_crds
     apply_helm_apps
 
     #apply_crds
