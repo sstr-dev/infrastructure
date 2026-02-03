@@ -4,7 +4,7 @@ metadata:
     name: vault-cluster-creds
     namespace: security
 stringData:
-    password: ENC[AES256_GCM,data:csAwI3czOu6YHVh9L9yoMzo7wTzI3nkPpnBpWriMR6w=,iv:y7yMTUMs6CCQ0g91ViHOuNFSbNpdn++LdUJnzVwXJ28=,tag:TVT8d0p7IPJg2BMHkW+ZZA==,type:str]
+    password: ENC[AES256_GCM,data:6utzZLdFMWSOuO527bEKpCFm7bgVj7+vt7pjEar0Iw==,iv:5eoO1n3+PRBwIovWWWxoynlfrFAF7NULNHu5G5Sjvlk=,tag:jkvPHZejzUpp1t8HMuSjJw==,type:str]
 sops:
     age:
         - recipient: age13x3gvqpe83vx0rcmcdcqnt202c4rsq3sax8s5q2p5t2lcjflpsvqgng8s3
@@ -16,7 +16,7 @@ sops:
             dmUxeVptaDMvRHBSeE9EYS9nSE52NGcKyUiWpW5fzIFvsuyyXpxBlaXIsHGxEojq
             3D7O0OlHXUOHrKXubAUsJsL/cMPYeG/TvdzHhDGce4GYmfXUGdxbWw==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-05-20T20:15:26Z"
-    mac: ENC[AES256_GCM,data:x9RppZuqChNUM2jDz/P4Y4CYtYmPha/Yi0VJgFi62wUa4319FXqIiRvS0Hio5SGONTu/17Oe+4rPW21xIxwitYUr+w9lGM5Gbu0pVmscaN6yJjlj6p9lZkJ1+O8K9Q5vptVg3PpGUqw5ibPNHy56HkXmL0DTzAOtHDMcVHOT/yc=,iv:sydMiMhLtfTnyo9lPjbZc3Zh/+mLmAlDKTROHo8zXjU=,tag:kj4F0TXlu4edh/acCM+sgA==,type:str]
+    lastmodified: "2026-02-03T22:00:14Z"
+    mac: ENC[AES256_GCM,data:AcMIHizvWEiKX5HYwjrRpzf7FBqY874SDdUDV84nw6VkCAf51mNOYEcsP9gkY9KLF7nQj1efjE5NY0H2d9GGROxuwEQdOsNSwi2671onFIkdzcAYfU/AiUEoNWnY818WMDbW24fLMm5LeXcOA4FUrYbImOJ/1k+Ie58opJx9T5o=,iv:HfYwotW4a3Nj70ACIzIKW54MJBA6TR4UnV27VQXxqSY=,tag:zfYKnX82pjsfazqclce0rA==,type:str]
     encrypted_regex: ^(data|stringData)$
-    version: 3.10.2
+    version: 3.11.0
