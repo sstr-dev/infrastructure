@@ -8,7 +8,7 @@ components:
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
-  - ../../../vars/${CLUSTER}/ns/external-secrets-secrets.sops.yaml
+  - ../../../vars/main/ns/external-secrets-secrets.sops.yaml
   - ./external-secrets.yaml
   - ./external-secrets-pdb.yaml
 
