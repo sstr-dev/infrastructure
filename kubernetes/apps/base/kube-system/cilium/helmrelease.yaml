@@ -74,9 +74,9 @@ spec:
     pmtuDiscovery:
       enabled: true
     prometheus:
-      enabled: true
+      enabled: false
       serviceMonitor:
-        enabled: true
+        enabled: false
         trustCRDsExist: true
       annotations:
         grafana_folder: Infrastructure
