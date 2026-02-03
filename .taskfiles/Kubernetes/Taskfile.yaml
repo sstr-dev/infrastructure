@@ -82,7 +82,55 @@ tasks:
         msg: "❌ Node '{{.node}}' not found!"
 
 
+  delete-stuck-namespaces:
+    desc: Force-delete namespaces stuck in Terminating by removing finalizers
+    summary: |
+      Args:
+        cluster: Kubernetes context to run against (required)
+    cmds:
+      - |
+        set -euo pipefail
 
+        echo "▶ Using Kubernetes context: {{.cluster}}"
+        nss="$(kubectl --context {{.cluster}} get ns --field-selector status.phase=Terminating -o jsonpath='{.items[*].metadata.name}')"
+
+        if [ -z "${nss}" ]; then
+          echo "✅ No namespaces stuck in Terminating."
+          exit 0
+        fi
+
+        echo "⚠️  Namespaces stuck in Terminating:"
+        for ns in ${nss}; do
+          echo "  - ${ns}"
+        done
+
+        echo "▶ Pass 1: Clearing .spec.finalizers via /finalize"
+        for ns in ${nss}; do
+          echo "──> ${ns}"
+          kubectl --context {{.cluster}} get ns "${ns}" -o json \
+            | jq '.spec.finalizers = []' \
+            | kubectl --context {{.cluster}} replace --raw "/api/v1/namespaces/${ns}/finalize" -f -
+        done
+
+        echo "▶ Pass 2: Clearing .metadata.finalizers via /finalize"
+        for ns in ${nss}; do
+          echo "──> ${ns}"
+          kubectl --context {{.cluster}} get ns "${ns}" -o json \
+            | jq '.metadata.finalizers = []' \
+            | kubectl --context {{.cluster}} replace --raw "/api/v1/namespaces/${ns}/finalize" -f -
+        done
+
+        echo "✅ Done. Re-checking:"
+        kubectl --context {{.cluster}} get ns --field-selector status.phase=Terminating || true
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: which kubectl
+        msg: "❌ kubectl not found in PATH"
+      - sh: which jq
+        msg: "❌ jq not found in PATH"
 
   drain:
     desc: Drain a node

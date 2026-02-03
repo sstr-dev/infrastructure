@@ -1,0 +1,196 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  TALOS_MACHINE_FILE: '{{.talos_dir}}/machineconfig.yaml.j2'
+  RENDER_MACHINE_SCRIPT: '{{.SCRIPTS_DIR}}/render-machine-config.sh'
+  TALOS_NODES_DIR: '{{.talos_dir}}/nodes'
+  TALOS_SCHEMATIC_FILE: '{{.talos_dir}}/schematic.yaml'
+env:
+  TALOSCONFIG: "{{ .talos_dir }}/talosconfig"
+tasks:
+
+
+  # redesign, aaply config and bootstrap done for first clustrer
+  # and move to bootstrap
+  bootstrap:
+    desc: Bootstrap Talos
+    summary: |
+      Args:
+        cluster: Cluster to run command against (required)
+    cmd: bash {{.SCRIPTS_DIR}}/bootstrap-talos.sh {{.cluster}}
+    requires:
+      vars: [cluster]
+    preconditions:
+      - find --version | grep -q GNU
+      - test -f {{.SCRIPTS_DIR}}/bootstrap-talos.sh
+      - which gum vault talosctl yq
+  apps:
+    desc: Bootstrap Cluster apps
+    cmds:
+      - bash {{.SCRIPTS_DIR}}/bootstrap-talos-apps.sh
+    env:
+      cluster: '{{.cluster}}'
+      cluster_apps: '{{.cluster_apps}}'
+      cluster_dir: '{{.cluster_dir}}'
+      shared_apps: '{{.shared_apps}}'
+      components_dir: '{{.components_dir}}'
+    requires:
+      vars: [cluster]
+    preconditions:
+    - sh: kubectl config get-contexts {{.cluster}}
+      msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+    - sh: test -f {{.AGE_FILE}}
+      msg: "❌ SOPS Age key file missing: {{.AGE_FILE}}"
+    #- sh: test -f {{.cluster_dir}}/bootstrap/github-ssh-secret.sops.yaml
+    #  msg: "❌ Missing SSH secret file for cluster '{{.cluster}}'"
+    #- sh: sops --decrypt {{.cluster_dir}}/bootstrap/github-ssh-secret.sops.yaml > /dev/null
+    #  msg: "❌ Failed to decrypt SSH secret – is the age key correct?"
+    - sh: test -f {{.SCRIPTS_DIR}}/bootstrap-talos-apps.sh
+      msg: "❌ Bootstrap file missing: {{.SCRIPTS_DIR}}/bootstrap-talos-apps.sh"
+
+  bootstrap_outdated:
+    silent: true
+    dir: "{{ .talos_dir }}"
+    cmds:
+      - task: apply-config
+      - |
+        talosctl bootstrap -e {{ shellQuote .TALOS_BOOTSTRAP_NODE_IP }} -n {{ shellQuote .TALOS_BOOTSTRAP_NODE_IP }}
+
+        echo "Waiting for node to come back online"
+        sleep 10
+        until talosctl get rd -n {{ shellQuote .TALOS_BOOTSTRAP_NODE_IP }} 2>&1 > /dev/null; do
+          printf '.'
+        done
+        echo
+      - task: download-kubeconfig
+      - task: apply-helmfile
+      - echo "Bootstrap complete"
+
+
+
+
+  apply-node:
+    desc: Apply config to a node [cluster=required] [node=required] [MODE=auto]
+    cmd: |
+      {{.RENDER_MACHINE_SCRIPT}} {{.TALOS_MACHINE_FILE}} {{.TALOS_NODES_DIR}}/{{.node}}.yaml.j2 \
+        | talosctl --nodes {{.node}} apply-config --mode {{.MODE}} --file /dev/stdin {{if .INSECURE}}--insecure{{end}}
+    vars:
+      MODE: '{{.MODE | default "auto"}}'
+      INSECURE:
+        sh: talosctl --talosconfig {{.talos_dir}}/talosconfig --nodes {{.node}} get machineconfig &> /dev/null || echo true
+    requires:
+      vars:
+        - cluster
+        - node
+    preconditions:
+      #- op whoami --format=json
+      #- talosctl --nodes {{.node}} get machineconfig
+      - test -f {{.RENDER_MACHINE_SCRIPT}}
+      - test -f {{.TALOS_MACHINE_FILE}}
+      - test -f {{.TALOS_NODES_DIR}}/{{.node}}.yaml.j2
+      - which minijinja-cli talosctl vault yq
+
+  apply-cluster:
+    desc: Apply the Talos config on all nodes [cluster=required]
+    vars:
+      NODES:
+        sh: kubectl --context {{.cluster}} get nodes --output=jsonpath='{.items[*].metadata.name}'
+    cmds:
+      - for: {var: NODES}
+        task: apply-node
+        vars:
+          node: '{{.ITEM}}'
+          cluster: '{{.cluster}}'
+  dashboard:
+    desc: Display the Talos dashboard
+    cmds:
+      - talosctl dashboard
+    requires:
+      vars:
+        - CLUSTER
+    preconditions:
+      - test -f {{.talos_dir}}/talosconfig
+      - which talosctl
+
+  reset-cluster:
+    desc: Reset Talos across the whole cluster [cluster=main]
+    prompt: Reset the Talos cluster ... continue?
+    cmd: talosctl --talosconfig {{.talos_dir}}/talosconfig reset --nodes {{.NODES}} --graceful=false --reboot
+    vars:
+      NODES:
+        sh: talosctl --talosconfig {{.talos_dir}}/talosconfig config info --output json | jq --join-output '[.nodes[]] | join(",")'
+    requires:
+      vars: [cluster]
+    preconditions:
+      - talosctl config info
+      - talosctl --talosconfig {{.talos_dir}}/talosconfig --nodes {{.NODES}} get machineconfig
+      - which jq talosctl
+  reset-node:
+    desc: Reset Talos on a single node [cluster=main] [node=required]
+    prompt: Reset Talos node '{{.node}}' ... continue?
+    cmd: talosctl --talosconfig {{.talos_dir}}/talosconfig reset --nodes {{.node}} --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL --graceful=false --reboot
+    requires:
+      vars: [cluster,node]
+    preconditions:
+      - talosctl config info
+      # - talosctl --talosconfig {{.talos_dir}}/talosconfig --nodes {{.node}} get machineconfig
+      - which talosctl
+
+
+  kubeconfig:
+    desc: Generate the kubeconfig for a Talos cluster [cluster=main]
+    cmd: talosctl kubeconfig --nodes {{.TALOS_CONTROLLER}} --force --force-context-name {{.cluster}} {{.cluster_dir}}
+    vars:
+      TALOS_CONTROLLER:
+        sh: talosctl --talosconfig {{.talos_dir}}/talosconfig config info --output json --talosconfig {{.talos_dir}}/talosconfig | jq --raw-output '.endpoints[]' | shuf -n 1
+    requires:
+      vars: [cluster]
+    preconditions:
+      - talosctl config info --talosconfig {{.talos_dir}}/talosconfig
+      - test -f {{.talos_dir}}/talosconfig
+      - which talosctl
+
+  test-render:
+    desc: Render + inject Talos machineconfig and print to stdout [cluster=main]
+    #deps:
+    #  - vault:vault
+    cmds:
+      #- |
+      #  minijinja-cli {{.talos_dir}}/machineconfig.yaml.j2
+      - |
+        {{.RENDER_MACHINE_SCRIPT}} {{.TALOS_MACHINE_FILE}} {{.TALOS_NODES_DIR}}/{{.NODE}}.yaml.j2 > {{.talos_dir}}/test.yaml
+      #- |
+      #  minijinja-cli {{.talos_dir}}/machineconfig.yaml.j2 \
+      #    | task --silent vault:inject
+    requires:
+      vars: [cluster, NODE]
+    env:
+      MACHINE_TYPE: '{{.MACHINE_TYPE}}'
+    vars:
+      MACHINE_TYPE: "test"
+
+  generate-iso:
+    desc: Generate a Talos ISO for a specific version [version=required] [cluster=main]
+    cmd: |-
+      curl -L -o {{.talos_dir}}/talos-{{.version}}.iso \
+        https://factory.talos.dev/image/{{.TALOS_SCHEMATIC}}/{{.version}}/nocloud-amd64.iso
+    vars:
+      TALOS_SCHEMATIC:
+        sh: task --silent talos:generate-schematic
+    requires:
+      vars: [version, cluster]
+    preconditions:
+      - which curl task
+
+  generate-schematic:
+    desc: Generate a Talos schematic [cluster=main]
+    cmd: |-
+      curl --silent -X POST --data-binary @{{ .talos_dir }}/schematic.yaml https://factory.talos.dev/schematics \
+        | jq --raw-output '.id'
+    requires:
+      vars: [cluster]
+    preconditions:
+      - test -f {{.talos_dir}}/schematic.yaml
+      - which curl jq

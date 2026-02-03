@@ -1,0 +1,16 @@
+---
+machine:
+  install:
+    disk: /dev/sda
+    wipe: false # Indicates if the installation disk should be wiped at installation time.
+  type: worker
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+hostname: wk06
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: net0
+selector:
+  match: mac(link.permanent_addr) == "bc:24:11:bb:18:24"

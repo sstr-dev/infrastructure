@@ -1,0 +1,20 @@
+---
+machine:
+  install:
+    disk: /dev/sda
+    wipe: false # Indicates if the installation disk should be wiped at installation time.
+  type: controlplane
+#cluster:
+#  controlPlane:
+#    # endpoint: https://k8s.main.internal:6443
+#    endpoint: https://10.0.60.201:6443
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+hostname: cp01
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: net0
+selector:
+  match: mac(link.permanent_addr) == "bc:24:11:5e:58:13"

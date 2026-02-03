@@ -1,0 +1,30 @@
+---
+machine:
+  install:
+    disk: /dev/sda
+    wipe: false # Indicates if the installation disk should be wiped at installation time.
+  type: worker
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+hostname: wk01
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: net0
+selector:
+  match: mac(link.permanent_addr) == "bc:24:11:ac:4f:1f"
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: lbnet
+selector:
+  match: mac(link.permanent_addr) == "bc:24:11:08:1d:15"
+---
+apiVersion: v1alpha1
+kind: LinkConfig
+name: lbnet
+up: true
+addresses:
+  - address: 10.0.69.204/24
+

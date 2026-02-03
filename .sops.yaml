@@ -6,12 +6,22 @@ keys:
   - &terraform age1raxvpxd5y60s5ku7lh5gsrnmxdjpgrlg3svd96pm956x42gfepzs0acyq7
 
 creation_rules:
-
-  - path_regex: kubernetes/.*\.sops\.ya?ml
+  - path_regex: (bootstrap|kubernetes)/.*\.sops\.ya?ml
     encrypted_regex: "^(data|stringData)$"
+    mac_only_encrypted: true
     key_groups:
       - age:
           - *kubernetes
+  - path_regex: kubernetes/.*\.sops\.(env|ini|json|pem|toml)
+    key_groups:
+      - age:
+          - *kubernetes
+
+  #- path_regex: kubernetes/.*\.sops\.ya?ml
+  #  encrypted_regex: "^(data|stringData)$"
+  #  key_groups:
+  #    - age:
+  #        - *kubernetes
   - path_regex: ansible/.*\.sops\.ya?ml
     key_groups:
       - age:

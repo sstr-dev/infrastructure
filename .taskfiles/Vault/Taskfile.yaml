@@ -34,9 +34,39 @@ tasks:
               exit 1
             }
         fi
+
+  ensure:
+    desc: Ensure valid Vault login (auto-login or fail)
+    preconditions:
+      - sh: test -f {{.VAULT_FILE}}
+        msg: "Missing {{.VAULT_FILE}}"
+    cmds:
+      - |
+          if vault token lookup >/dev/null 2>&1; then
+            echo "✔ Vault login valid" >&2
+            exit 0
+          fi
+
+          echo "🔐 Vault login invalid, attempting login…" >&2
+          vault login -address="{{.VAULT_ADDR}}" "{{.VAULT_TOKEN}}" >/dev/null 2>&1 || {
+            echo "❌ Vault login failed" >&2
+            exit 1
+          }
   read:
     desc: Read secret from Vault
     deps:
-      - vault
+      - ensure
     cmds:
-      - vault kv get secret/foo
+      - vault kv get Kubernetes/talos-main
+
+  inject:
+    desc: Replace vault:// refs in stdin using Vault KV v2
+    deps:
+      - ensure
+    silent: true
+    interactive: true
+    cmds:
+      - |
+        {{.SCRIPTS_DIR}}/vault-inject.py
+
+

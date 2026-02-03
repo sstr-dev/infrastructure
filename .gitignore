@@ -70,3 +70,4 @@ talos/**/clusterconfig*
 db
 db.snapshot
 talos/_out
+talosconfig
