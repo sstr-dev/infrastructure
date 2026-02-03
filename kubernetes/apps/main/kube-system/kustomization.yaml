@@ -9,3 +9,5 @@ replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
   - ./cilium.yaml
+  - ./coredns.yaml
+  - ./metrics-server.yaml
