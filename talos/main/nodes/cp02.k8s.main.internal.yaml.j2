@@ -14,3 +14,8 @@ kind: LinkAliasConfig
 name: net0
 selector:
   match: mac(link.permanent_addr) == "bc:24:11:1b:de:89"
+---
+apiVersion: v1alpha1
+kind: Layer2VIPConfig
+name: 10.0.60.200
+link: net0
