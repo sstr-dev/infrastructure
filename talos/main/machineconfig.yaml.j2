@@ -135,7 +135,7 @@ cluster:
     crt: vault://Kubernetes/talos-main#CLUSTER_AGGREGATORCA_CRT
     key: vault://Kubernetes/talos-main#CLUSTER_AGGREGATORCA_KEY
   # # Allows running workload on control-plane nodes.
-  allowSchedulingOnControlPlanes: true
+  allowSchedulingOnControlPlanes: false
   apiServer:
     certSANs:
       - 127.0.0.1
