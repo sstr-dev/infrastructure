@@ -14,3 +14,16 @@ kind: LinkAliasConfig
 name: net0
 selector:
   match: mac(link.permanent_addr) == "bc:24:11:05:db:ad"
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: lbnet
+selector:
+  match: mac(link.permanent_addr) == "bc:24:11:5c:db:b6"
+---
+apiVersion: v1alpha1
+kind: LinkConfig
+name: lbnet
+up: true
+addresses:
+  - address: 10.0.69.206/24

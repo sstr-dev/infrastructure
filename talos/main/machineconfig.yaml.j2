@@ -17,8 +17,9 @@ machine:
     - 10.0.60.202
     - 10.0.60.203
     # Load balancers / VIPs
-    - 10.0.60.200
+    - 10.0.60.100
     - k8s.main.internal
+    - "*.k8s.main.internal"
     # Pod/Service Networks
     - 10.69.0.0/16
     - 10.96.0.0/16
@@ -61,6 +62,8 @@ machine:
   install:
     image: factory.talos.dev/installer/0c0d3e0b2d65c242b72c099fa37bf494c868beeed67d4a978b1ac3080623f2c6:v1.12.2
     wipe: false
+    #extraKernelArgs:
+    #  - ipv6.disable=1
   kernel:
     modules:
       - name: nbd
@@ -147,8 +150,9 @@ cluster:
       - 10.0.60.202
       - 10.0.60.203
       # Load balancers / VIPs
-      - 10.0.60.200
+      - 10.0.60.100
       - k8s.main.internal
+      - "*.k8s.main.internal"
       # Pod/Service Networks
       - 10.69.0.0/16
       - 10.96.0.0/16
