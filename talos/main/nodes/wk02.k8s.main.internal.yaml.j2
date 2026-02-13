@@ -2,26 +2,30 @@
 machine:
   install:
     disk: /dev/sda
-    wipe: true # Indicates if the installation disk should be wiped at installation time.
+    wipe: false # Indicates if the installation disk should be wiped at installation time.
   type: worker
   network:
     hostname: wk02
     interfaces:
-      - addresses:
-          - 10.0.60.205/24
-        interface: ens18
+      - interface: ens18
         dhcp: false
         mtu: 1500
-        routes:
-          - gateway: 10.0.60.1
-            network: 0.0.0.0/0
         vlans:
+          - dhcp: false
+            vlanId: 60
+            mtu: 1500
+            addresses:
+              - 10.0.60.205/24
+            routes:
+              - gateway: 10.0.60.1
+                network: 0.0.0.0/0
+                metric: 100
           - # Services
             dhcp: false
-            mtu: 9000
+            mtu: 1500
             vlanId: 69
             #routes:
             #  network: 10.0.69.0/16
             #  gateway: 10.0.69.1
-            #addresses:
-            #  - 10.0.69.205/16
+            addresses:
+              - 10.0.69.205/16
