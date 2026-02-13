@@ -16,6 +16,11 @@ spec:
     remediation:
       retries: 3
   values:
+    #defaultPodOptions:
+    #  dnsConfig:
+    #    options:
+    #      - name: ndots
+    #        value: "1"
     controllers:
       *app :
         labels:
@@ -27,7 +32,7 @@ spec:
           app:
             image:
               repository: ghcr.io/paperless-ngx/paperless-ngx
-              tag: 2.20.5
+              tag: 2.20.6
             env:
               # Application
               PAPERLESS_URL: https://dms.${SECRET_MAIN_DOMAIN_NAME}
@@ -66,7 +71,8 @@ spec:
               PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg.self-hosted.svc.cluster.local:3000
               PAPERLESS_TIKA_ENDPOINT: http://tika.self-hosted.svc.cluster.local:9998
               # Configure redis integration
-              PAPERLESS_REDIS: redis://dragonfly-cluster.database.svc.cluster.local:6379/1
+              #PAPERLESS_REDIS: redis://dragonfly-cluster.database.svc.cluster.local:6379/1
+              PAPERLESS_REDIS: redis://paperless-redis.self-hosted.svc.cluster.local:6379
               # Configure user permissions
               USERMAP_UID: 1000
               USERMAP_GID: 1000
@@ -97,6 +103,18 @@ spec:
                 memory: 768Mi
               limits:
                 memory: 2Gi
+      redis:
+        containers:
+          redis:
+            image:
+              repository: ghcr.io/valkey-io/valkey
+              tag: 9.0.2
+            resources:
+              requests:
+                cpu: 5m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
     service:
       app:
         primary: true
@@ -104,6 +122,11 @@ spec:
         ports:
           http:
             port: *port
+      redis:
+        controller: redis
+        ports:
+          http:
+            port: 6379
     #ingress:
     #  app:
     #    enabled: true
@@ -156,6 +179,10 @@ spec:
           #gethomepage.dev/widget.type: paperlessngx
           #gethomepage.dev/widget.url: "http://{{ .Release.Name }}.{{ .Release.Namespace }}:8000"
           #gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}` }}"
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: http
 
     persistence:
       data:
