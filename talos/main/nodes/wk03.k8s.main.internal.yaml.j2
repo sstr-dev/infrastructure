@@ -2,28 +2,26 @@
 machine:
   install:
     disk: /dev/sda
-    wipe: false # Indicates if the installation disk should be wiped at installation time.
+    wipe: true # Indicates if the installation disk should be wiped at installation time.
   type: worker
----
-apiVersion: v1alpha1
-kind: HostnameConfig
-hostname: wk03
----
-apiVersion: v1alpha1
-kind: LinkAliasConfig
-name: net0
-selector:
-  match: mac(link.permanent_addr) == "bc:24:11:05:db:ad"
----
-apiVersion: v1alpha1
-kind: LinkAliasConfig
-name: lbnet
-selector:
-  match: mac(link.permanent_addr) == "bc:24:11:5c:db:b6"
----
-apiVersion: v1alpha1
-kind: LinkConfig
-name: lbnet
-up: true
-addresses:
-  - address: 10.0.69.206/24
+  network:
+    hostname: wk03
+    interfaces:
+      - addresses:
+          - 10.0.60.206/24
+        interface: ens18
+        dhcp: false
+        mtu: 1500
+        routes:
+          - gateway: 10.0.60.1
+            network: 0.0.0.0/0
+        vlans:
+          - # Services
+            dhcp: false
+            mtu: 1500
+            vlanId: 69
+            #routes:
+            #  network: 10.0.69.0/16
+            #  gateway: 10.0.69.1
+            addresses:
+              - 10.0.69.206/16

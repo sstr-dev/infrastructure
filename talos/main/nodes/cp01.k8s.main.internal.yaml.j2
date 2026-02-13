@@ -2,25 +2,28 @@
 machine:
   install:
     disk: /dev/sda
-    wipe: false # Indicates if the installation disk should be wiped at installation time.
+    wipe: true # Indicates if the installation disk should be wiped at installation time.
   type: controlplane
-#cluster:
-#  controlPlane:
-#    # endpoint: https://k8s.main.internal:6443
-#    endpoint: https://10.0.60.201:6443
----
-apiVersion: v1alpha1
-kind: HostnameConfig
-hostname: cp01
----
-apiVersion: v1alpha1
-kind: LinkAliasConfig
-name: net0
-selector:
-  match: mac(link.permanent_addr) == "bc:24:11:5e:58:13"
-#---
-#apiVersion: v1alpha1
-#kind: Layer2VIPConfig
-#name: 10.0.60.200
-#link: net0
-#
+  nodeTaints:
+    node-role.kubernetes.io/control-plane: :NoSchedule
+  network:
+    hostname: cp01
+    interfaces:
+      - addresses:
+          - 10.0.60.201/24
+        interface: ens18
+        dhcp: false
+        mtu: 1500
+        routes:
+          - gateway: 10.0.60.1
+            network: 0.0.0.0/0
+        #vlans:
+        #  - # Services
+        #    dhcp: false
+        #    mtu: 1500
+        #    vlanId: 69
+        #    routes:s
+        #      network: 10.0.69.0/16
+        #      gateway: 10.0.69.1
+        #    addresses:
+        #      - 10.0.69.201/16

@@ -53,7 +53,6 @@ function apply_crds() {
 function apply_secrets() {
 
     local -r cluster_secrets=(
-        github-ssh-secret.sops.yaml
         vault-cluster-creds.sops.yaml
     )
     local -r flux_secrets=(
@@ -153,7 +152,7 @@ function apply_namespaces() {
         fi
 
         # Apply the namespace resources
-        if kustomize build ${app} | yq ea -e 'select(.kind == "Namespace")' \
+        if kustomize build ${app} --load-restrictor LoadRestrictionsNone | yq ea -e 'select(.kind == "Namespace")' \
             | kubectl --context ${cluster} apply --server-side --field-manager bootstrap --force-conflicts --filename - &>/dev/null;
         then
             log info "Namespace resource applied" "resource=${namespace}"
