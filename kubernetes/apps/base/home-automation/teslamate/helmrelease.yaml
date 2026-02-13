@@ -17,6 +17,11 @@ spec:
     remediation:
       retries: 3
   values:
+    defaultPodOptions:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
     controllers:
       teslamate:
         annotations:
