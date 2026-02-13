@@ -11,6 +11,11 @@ spec:
   dependsOn: []
   interval: 15m
   values:
+    defaultPodOptions:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
     controllers:
       open-webui:
         annotations:
