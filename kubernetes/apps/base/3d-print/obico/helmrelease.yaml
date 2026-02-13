@@ -36,7 +36,7 @@ spec:
     server:
       image:
         repository: ghcr.io/gabe565/obico/web
-        tag: latest@sha256:1281009eae5e397b2172f54247bb1e7c178ad7b6ad6e491210d629de80311b64
+        tag: latest@sha256:d67a7053137482c02d541c48c724ae424a8f1bbe498c6213179cbc03f91eaee0
       # -- Server environment variables. [[ref]](https://github.com/TheSpaghettiDetective/obico-server/blob/master/dotenv.example)
       env:
         TZ: ${CLUSTER_TIMEZONE}
