@@ -50,27 +50,6 @@ tasks:
     - sh: test -f {{.SCRIPTS_DIR}}/bootstrap-talos-apps.sh
       msg: "❌ Bootstrap file missing: {{.SCRIPTS_DIR}}/bootstrap-talos-apps.sh"
 
-  bootstrap_outdated:
-    silent: true
-    dir: "{{ .talos_dir }}"
-    cmds:
-      - task: apply-config
-      - |
-        talosctl bootstrap -e {{ shellQuote .TALOS_BOOTSTRAP_NODE_IP }} -n {{ shellQuote .TALOS_BOOTSTRAP_NODE_IP }}
-
-        echo "Waiting for node to come back online"
-        sleep 10
-        until talosctl get rd -n {{ shellQuote .TALOS_BOOTSTRAP_NODE_IP }} 2>&1 > /dev/null; do
-          printf '.'
-        done
-        echo
-      - task: download-kubeconfig
-      - task: apply-helmfile
-      - echo "Bootstrap complete"
-
-
-
-
   apply-node:
     desc: Apply config to a node [cluster=required] [node=required] [MODE=auto]
     cmd: |
@@ -171,18 +150,34 @@ tasks:
     vars:
       MACHINE_TYPE: "test"
 
+
+
+
+
+
   generate-iso:
-    desc: Generate a Talos ISO for a specific version [version=required] [cluster=main]
-    cmd: |-
-      curl -L -o {{.talos_dir}}/talos-{{.version}}.iso \
-        https://factory.talos.dev/image/{{.TALOS_SCHEMATIC}}/{{.version}}/nocloud-amd64.iso
+    desc: Download a Talos ISO for a specific version [version=required] [cluster=main]
     vars:
-      TALOS_SCHEMATIC:
-        sh: task --silent talos:generate-schematic
+      ISO_URL:
+        sh: task --silent generate-iso-url version={{.version}}
     requires:
       vars: [version, cluster]
     preconditions:
       - which curl task
+    cmds:
+      - curl -L -o {{.talos_dir}}/talos-{{.version}}.iso "{{.ISO_URL}}"
+
+  generate-iso-url:
+    desc: Generate the Talos ISO download URL [version=required]
+    vars:
+      TALOS_SCHEMATIC:
+        sh: task --silent talos:generate-schematic
+    requires:
+      vars: [version]
+    preconditions:
+      - which task
+    cmds:
+      - echo "https://factory.talos.dev/image/{{.TALOS_SCHEMATIC}}/{{.version}}/metal-amd64.iso"
 
   generate-schematic:
     desc: Generate a Talos schematic [cluster=main]

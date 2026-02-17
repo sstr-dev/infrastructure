@@ -7,32 +7,47 @@ machine:
   network:
     hostname: wk01
     interfaces:
-      - interface: ens18
-        #addresses:
-        #  - 10.0.60.204/24
-        #interface: ens18
+      - addresses:
+          - 10.0.60.204/24
+        interface: ens18
         dhcp: false
         mtu: 1500
-        #routes:
-        #  - gateway: 10.0.60.1
-        #    network: 0.0.0.0/0
-        #    metric: 100
-        vlans:
-          - dhcp: false
-            vlanId: 60
-            mtu: 1500
-            addresses:
-              - 10.0.60.204/24
-            routes:
-              - gateway: 10.0.60.1
-                network: 0.0.0.0/0
-                metric: 100
-          - # Services
-            dhcp: false
-            mtu: 1500
-            vlanId: 69
-            #routes:
-            #  network: 10.0.69.0/16
-            #  gateway: 10.0.69.1
-            addresses:
-              - 10.0.69.204/24
+        routes:
+          - gateway: 10.0.60.1
+            network: 0.0.0.0/0
+            metric: 100
+      - addresses:
+          - 10.0.69.204/24
+        interface: ens19
+        dhcp: false
+
+    #interfaces:
+    #  - interface: ens18
+    #    #addresses:
+    #    #  - 10.0.60.204/24
+    #    #interface: ens18
+    #    dhcp: false
+    #    mtu: 1500
+    #    #routes:
+    #    #  - gateway: 10.0.60.1
+    #    #    network: 0.0.0.0/0
+    #    #    metric: 100
+    #    vlans:
+    #      - dhcp: false
+    #        vlanId: 60
+    #        mtu: 1500
+    #        addresses:
+    #          - 10.0.60.204/24
+    #        routes:
+    #          - gateway: 10.0.60.1
+    #            network: 0.0.0.0/0
+    #            metric: 100
+    #      - # Services
+    #        dhcp: false
+    #        mtu: 1500
+    #        vlanId: 69
+    #        #routes:
+    #        #  network: 10.0.69.0/16
+    #        #  gateway: 10.0.69.1
+    #        addresses:
+    #          - 10.0.69.204/24

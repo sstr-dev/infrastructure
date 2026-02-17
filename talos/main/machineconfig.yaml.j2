@@ -11,6 +11,7 @@ machine:
     - 127.0.0.1
     # Load balancers / VIPs
     - 10.0.60.100
+    - 10.0.60.200
     - k8s.main.internal
     - "*.k8s.main.internal"
     # Pod/Service Networks
@@ -20,6 +21,7 @@ machine:
     nameservers:
       - 10.0.60.1
   features:
+    apidCheckExtKeyUsage: true
     diskQuotaSupport: true
     hostDNS:
       enabled: true
@@ -32,8 +34,10 @@ machine:
     kubernetesTalosAPIAccess:
       enabled: true
       allowedRoles: ["os:admin"]
-      allowedKubernetesNamespaces: ["actions-runner-system", "kube-tools"]
+      allowedKubernetesNamespaces: ["actions-runner-system", "kube-tools", "system-upgrade"]
     {% endif %}
+    rbac: true
+    stableHostname: true
   files:
     - op: create
       path: /etc/cri/conf.d/20-customization.part
@@ -52,8 +56,10 @@ machine:
         hard=True
         nconnect=16
         noatime=True
+        rsize=1048576
+        wsize=1048576
   install:
-    image: factory.talos.dev/installer/0c0d3e0b2d65c242b72c099fa37bf494c868beeed67d4a978b1ac3080623f2c6:v1.12.2
+    image: factory.talos.dev/installer/0c0d3e0b2d65c242b72c099fa37bf494c868beeed67d4a978b1ac3080623f2c6:v1.12.4
     wipe: false
     #extraKernelArgs:
     #  - ipv6.disable=1
@@ -64,10 +70,11 @@ machine:
     defaultRuntimeSeccompProfileEnabled: true
     disableManifestsDirectory: true
     extraArgs:
-      max-pods: "200"
+      max-pods: "250"
     extraConfig:
       serializeImagePulls: false
-    image: ghcr.io/siderolabs/kubelet:v1.35.0
+    # https://github.com/siderolabs/kubelet
+    image: ghcr.io/siderolabs/kubelet:v1.35.1
     nodeIP:
       validSubnets: ["10.0.60.0/24"]
   nodeLabels:
@@ -93,8 +100,10 @@ machine:
     net.ipv4.tcp_window_scaling: "1"           # 10Gb/s
     sunrpc.tcp_slot_table_entries: "128"       # 10Gb/s | NFS
     sunrpc.tcp_max_slot_table_entries: "128"   # 10Gb/s | NFS
+    net.ipv6.conf.all.autoconf: "0"            # disable IPv6 autoconfig
+    net.ipv6.conf.default.autoconf: "0"        # disable IPv6 autoconfig
     user.max_user_namespaces: "11255"          # User Namespaces
-    vm.nr_hugepages: "1024"                    # PostgreSQL
+    #vm.nr_hugepages: "1024"                    # PostgreSQL
   token: vault://Kubernetes/talos-main#MACHINE_TOKEN
   type: {{ machinetype }}
   time:
@@ -137,6 +146,7 @@ cluster:
       - 127.0.0.1
       # Load balancers / VIPs
       - 10.0.60.100
+      - 10.0.60.200
       - k8s.main.internal
       - "*.k8s.main.internal"
       # Pod/Service Networks
@@ -150,7 +160,8 @@ cluster:
   controllerManager:
     extraArgs:
       bind-address: 0.0.0.0
-    image: registry.k8s.io/kube-controller-manager:v1.35.0
+      node-cidr-mask-size-ipv6: "112"
+    image: registry.k8s.io/kube-controller-manager:v1.35.1
   coreDNS:
     disabled: true
   etcd:
@@ -162,7 +173,7 @@ cluster:
       listen-metrics-urls: http://0.0.0.0:2381
   proxy:
     disabled: true
-    image: registry.k8s.io/kube-proxy:v1.35.0
+    image: registry.k8s.io/kube-proxy:v1.35.1
   secretboxEncryptionSecret: vault://Kubernetes/talos-main#CLUSTER_SECRETBOXENCRYPTIONSECRET
   scheduler:
     config:
@@ -182,7 +193,7 @@ cluster:
                   - maxSkew: 1
                     topologyKey: kubernetes.io/hostname
                     whenUnsatisfiable: ScheduleAnyway
-    image: registry.k8s.io/kube-scheduler:v1.35.0
+    image: registry.k8s.io/kube-scheduler:v1.35.1
     extraArgs:
       bind-address: 0.0.0.0
   serviceAccount:

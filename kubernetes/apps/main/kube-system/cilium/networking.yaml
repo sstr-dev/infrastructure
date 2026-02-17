@@ -24,7 +24,8 @@ metadata:
 spec:
   loadBalancerIPs: true
   interfaces:
-    - ^(ens18|eth0)\.69$
+    #- ^(ens19|eth1)\.69$
+    - ^(ens19|eth1)$
   # NOTE: interfaces might need to be set if you have more than one active NIC on your hosts
   # interfaces:
   #   - ^eno[0-9]+
