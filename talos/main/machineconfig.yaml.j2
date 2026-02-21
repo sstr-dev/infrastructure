@@ -7,21 +7,28 @@ machine:
     {% if machinetype == 'controlplane' %}
     key: vault://Kubernetes/talos-main#MACHINE_CA_KEY
     {% endif %}
-  certSANs:
-    - 127.0.0.1
-    # Load balancers / VIPs
-    - 10.0.60.100
-    - 10.0.60.200
-    - k8s.main.internal
-    - "*.k8s.main.internal"
-    # Pod/Service Networks
-    - 10.69.0.0/16
-    - 10.96.0.0/16
+  #certSANs:
+  #  - 127.0.0.1
+  #  # Controller
+  #  - 10.0.60.201
+  #  - 10.0.60.202
+  #  - 10.0.60.203
+  #  # Load balancers / VIPs
+  #  - 10.0.60.100
+  #  - 10.0.60.200
+  #  - k8s.main.internal
+  #  # lb-haproxys
+  #  - 10.0.60.13
+  #  - 10.0.60.14
+  #  - "*.k8s.main.internal"
+  #  # Pod/Service Networks
+  #  - 10.69.0.0/16
+  #  - 10.96.0.0/16
   network:
     nameservers:
       - 10.0.60.1
   features:
-    apidCheckExtKeyUsage: true
+    #apidCheckExtKeyUsage: true
     diskQuotaSupport: true
     hostDNS:
       enabled: true
@@ -59,7 +66,7 @@ machine:
         rsize=1048576
         wsize=1048576
   install:
-    image: factory.talos.dev/installer/0c0d3e0b2d65c242b72c099fa37bf494c868beeed67d4a978b1ac3080623f2c6:v1.12.4
+    image: factory.talos.dev/metal-installer/0c0d3e0b2d65c242b72c099fa37bf494c868beeed67d4a978b1ac3080623f2c6:v1.12.4
     wipe: false
     #extraKernelArgs:
     #  - ipv6.disable=1
@@ -69,9 +76,10 @@ machine:
   kubelet:
     defaultRuntimeSeccompProfileEnabled: true
     disableManifestsDirectory: true
-    extraArgs:
-      max-pods: "250"
+    #extraArgs:
+    #  max-pods: "200"
     extraConfig:
+      maxPods: 250
       serializeImagePulls: false
     # https://github.com/siderolabs/kubelet
     image: ghcr.io/siderolabs/kubelet:v1.35.1
@@ -100,10 +108,10 @@ machine:
     net.ipv4.tcp_window_scaling: "1"           # 10Gb/s
     sunrpc.tcp_slot_table_entries: "128"       # 10Gb/s | NFS
     sunrpc.tcp_max_slot_table_entries: "128"   # 10Gb/s | NFS
-    net.ipv6.conf.all.autoconf: "0"            # disable IPv6 autoconfig
-    net.ipv6.conf.default.autoconf: "0"        # disable IPv6 autoconfig
+    #net.ipv6.conf.all.autoconf: "0"            # disable IPv6 autoconfig
+    #net.ipv6.conf.default.autoconf: "0"        # disable IPv6 autoconfig
     user.max_user_namespaces: "11255"          # User Namespaces
-    #vm.nr_hugepages: "1024"                    # PostgreSQL
+    vm.nr_hugepages: "1024"                    # PostgreSQL
   token: vault://Kubernetes/talos-main#MACHINE_TOKEN
   type: {{ machinetype }}
   time:
@@ -144,19 +152,27 @@ cluster:
   apiServer:
     certSANs:
       - 127.0.0.1
+      # Controller
+      - 10.0.60.201
+      - 10.0.60.202
+      - 10.0.60.203
       # Load balancers / VIPs
       - 10.0.60.100
       - 10.0.60.200
       - k8s.main.internal
-      - "*.k8s.main.internal"
-      # Pod/Service Networks
-      - 10.69.0.0/16
-      - 10.96.0.0/16
+      ## lb-haproxys
+      #- 10.0.60.13
+      #- 10.0.60.14
+      #- "*.k8s.main.internal"
+      ## Pod/Service Networks
+      #- 10.69.0.0/16
+      #- 10.96.0.0/16
     extraArgs:
       enable-aggregator-routing: true
       feature-gates: MutatingAdmissionPolicy=true
       runtime-config: admissionregistration.k8s.io/v1beta1=true
-    image: registry.k8s.io/kube-apiserver:v1.35.0
+    image: registry.k8s.io/kube-apiserver:v1.35.1
+    disablePodSecurityPolicy: true
   controllerManager:
     extraArgs:
       bind-address: 0.0.0.0

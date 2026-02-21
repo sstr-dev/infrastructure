@@ -85,10 +85,10 @@ tasks:
   dashboard:
     desc: Display the Talos dashboard
     cmds:
-      - talosctl dashboard
+      - talosctl --talosconfig {{.talos_dir}}/talosconfig dashboard
     requires:
       vars:
-        - CLUSTER
+        - cluster
     preconditions:
       - test -f {{.talos_dir}}/talosconfig
       - which talosctl

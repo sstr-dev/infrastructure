@@ -71,3 +71,4 @@ db
 db.snapshot
 talos/_out
 talosconfig
+talos-secrets.yaml

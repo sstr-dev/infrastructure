@@ -2,12 +2,12 @@
 machine:
   install:
     disk: /dev/sda
-    wipe: false # Indicates if the installation disk should be wiped at installation time.
+    wipe: true # Indicates if the installation disk should be wiped at installation time.
   type: controlplane
   nodeTaints:
     node-role.kubernetes.io/control-plane: :NoSchedule
   network:
-    hostname: cp02
+    hostname: cp02.k8s.main.internal
     interfaces:
       - addresses:
           - 10.0.60.202/24

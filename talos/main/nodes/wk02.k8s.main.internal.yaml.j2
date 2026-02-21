@@ -5,7 +5,7 @@ machine:
     wipe: false # Indicates if the installation disk should be wiped at installation time.
   type: worker
   network:
-    hostname: wk02
+    hostname: wk02.k8s.main.internal
     interfaces:
       - addresses:
           - 10.0.60.205/24
@@ -20,3 +20,6 @@ machine:
           - 10.0.69.205/24
         interface: ens19
         dhcp: false
+        routes:
+          - network: 10.0.69.0/24
+            metric: 2048
