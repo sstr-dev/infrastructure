@@ -118,6 +118,43 @@ tasks:
       - which talosctl
 
 
+  reboot-node:
+    desc: Reboot a node [cluster=main] [node=required] [MODE=powercycle]
+    cmd: talosctl --talosconfig {{.talos_dir}}/talosconfig --nodes {{.node}} reboot --mode={{.MODE}}
+    vars:
+      MODE: '{{.MODE | default "powercycle"}}'
+    requires:
+      vars:
+        - cluster
+        - node
+    preconditions:
+      - talosctl --talosconfig {{.talos_dir}}/talosconfig --nodes {{.node}} get machineconfig
+      - which talosctl
+
+  reboot-cluster:
+    desc: Reboot whole cluster [cluster=main]
+    prompt: Reboot the cluster {{.cluster}} ... continue?
+    vars:
+      MODE: '{{.MODE | default "powercycle"}}'
+      NODES:
+        sh: talosctl --talosconfig {{.talos_dir}}/talosconfig config info --output json | jq -r '.nodes[]'
+    cmds:
+      - for: { var: NODES }
+        task: reboot-node
+        vars:
+          node: '{{.ITEM}}'
+          cluster: '{{.cluster}}'
+          MODE: '{{.MODE}}'
+    requires:
+      vars:
+        - cluster
+    preconditions:
+      - test -f {{.talos_dir}}/talosconfig
+      - talosctl --talosconfig {{.talos_dir}}/talosconfig config info
+      - which talosctl yq
+
+
+
   kubeconfig:
     desc: Generate the kubeconfig for a Talos cluster [cluster=main]
     cmd: talosctl kubeconfig --nodes {{.TALOS_CONTROLLER}} --force --force-context-name {{.cluster}} {{.cluster_dir}}
@@ -139,12 +176,12 @@ tasks:
       #- |
       #  minijinja-cli {{.talos_dir}}/machineconfig.yaml.j2
       - |
-        {{.RENDER_MACHINE_SCRIPT}} {{.TALOS_MACHINE_FILE}} {{.TALOS_NODES_DIR}}/{{.NODE}}.yaml.j2 > {{.talos_dir}}/test.yaml
+        {{.RENDER_MACHINE_SCRIPT}} {{.TALOS_MACHINE_FILE}} {{.TALOS_NODES_DIR}}/{{.node}}.yaml.j2 > {{.talos_dir}}/test.yaml
       #- |
       #  minijinja-cli {{.talos_dir}}/machineconfig.yaml.j2 \
       #    | task --silent vault:inject
     requires:
-      vars: [cluster, NODE]
+      vars: [cluster, node]
     env:
       MACHINE_TYPE: '{{.MACHINE_TYPE}}'
     vars:

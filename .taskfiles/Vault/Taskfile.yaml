@@ -57,7 +57,20 @@ tasks:
     deps:
       - ensure
     cmds:
-      - vault kv get Kubernetes/talos-main
+      - vault kv get -mount=Kubernetes talos-main
+
+  read-latest:
+    desc: Read latest secret version from Vault (KV v2) with version proof
+    deps:
+      - ensure
+    preconditions:
+      - sh: which jq
+        msg: "Missing jq"
+    cmds:
+      - |
+        current_version="$(vault kv metadata get -mount=Kubernetes -format=json talos-main | jq -r '.data.current_version')"
+        echo "Current Vault version: ${current_version}"s
+        vault kv get -mount=Kubernetes -version="${current_version}" talos-main
 
   inject:
     desc: Replace vault:// refs in stdin using Vault KV v2
@@ -68,5 +81,4 @@ tasks:
     cmds:
       - |
         {{.SCRIPTS_DIR}}/vault-inject.py
-
 

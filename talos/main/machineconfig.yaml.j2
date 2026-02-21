@@ -7,19 +7,19 @@ machine:
     {% if machinetype == 'controlplane' %}
     key: vault://Kubernetes/talos-main#MACHINE_CA_KEY
     {% endif %}
-  #certSANs:
-  #  - 127.0.0.1
-  #  # Controller
-  #  - 10.0.60.201
-  #  - 10.0.60.202
-  #  - 10.0.60.203
-  #  # Load balancers / VIPs
-  #  - 10.0.60.100
-  #  - 10.0.60.200
-  #  - k8s.main.internal
-  #  # lb-haproxys
-  #  - 10.0.60.13
-  #  - 10.0.60.14
+  certSANs:
+    - 127.0.0.1
+    # Controller
+    - 10.0.60.201
+    - 10.0.60.202
+    - 10.0.60.203
+    # Load balancers / VIPs
+    - 10.0.60.100
+    - 10.0.60.200
+    - k8s.main.internal
+    # lb-haproxys
+    - 10.0.60.13
+    - 10.0.60.14
   #  - "*.k8s.main.internal"
   #  # Pod/Service Networks
   #  - 10.69.0.0/16
@@ -44,7 +44,7 @@ machine:
       allowedKubernetesNamespaces: ["actions-runner-system", "kube-tools", "system-upgrade"]
     {% endif %}
     rbac: true
-    stableHostname: true
+    stableHostname: false
   files:
     - op: create
       path: /etc/cri/conf.d/20-customization.part
@@ -160,9 +160,9 @@ cluster:
       - 10.0.60.100
       - 10.0.60.200
       - k8s.main.internal
-      ## lb-haproxys
-      #- 10.0.60.13
-      #- 10.0.60.14
+      # lb-haproxys
+      - 10.0.60.13
+      - 10.0.60.14
       #- "*.k8s.main.internal"
       ## Pod/Service Networks
       #- 10.69.0.0/16
@@ -176,7 +176,7 @@ cluster:
   controllerManager:
     extraArgs:
       bind-address: 0.0.0.0
-      node-cidr-mask-size-ipv6: "112"
+      #node-cidr-mask-size-ipv6: "112"
     image: registry.k8s.io/kube-controller-manager:v1.35.1
   coreDNS:
     disabled: true

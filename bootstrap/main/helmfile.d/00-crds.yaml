@@ -5,16 +5,18 @@
 # It is not intended to be used with helmfile apply or helmfile sync.
 
 helmDefaults:
-  cleanupOnFail: true
-  wait: true
-  waitForJobs: true
+  #cleanupOnFail: true
+  #wait: true
+  #waitForJobs: true
+  #postRenderer: bash
+  #postRendererArgs:
+  #  - -c
+  #  - yq ea --exit-status 'select(.kind == "CustomResourceDefinition")' -
+  # Prevent helmfile apply or sync
   args:
     - --include-crds
     - --no-hooks
-  postRenderer: bash
-  postRendererArgs:
-    - -c
-    - yq ea --exit-status 'select(.kind == "CustomResourceDefinition")' -
+
 
 releases:
   - name: cloudflare-dns
