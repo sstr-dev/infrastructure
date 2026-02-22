@@ -9,7 +9,7 @@ spec:
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
-  commonName: "${CERT_MAIN_DOMAIN}"
+  # commonName: "${CERT_MAIN_DOMAIN}"
   dnsNames: ["${CERT_DOMAIN}", "*.${CERT_DOMAIN}", "*.${CERT_MAIN_DOMAIN}", "${CERT_DEV_DOMAIN}", "*.${CERT_DEV_DOMAIN}", "${CERT_GAME_DOMAIN}", "*.${CERT_GAME_DOMAIN}"]
   #secretTemplate:
   #  annotations:
