@@ -11,7 +11,7 @@ components:
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
-  #- ./certificates.yaml
+  - ./certificates.yaml
   #- ./cloudflare-dns.yaml
   - ./cloudflare-tunnel.yaml
   #- ./echo.yaml

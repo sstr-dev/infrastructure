@@ -13,3 +13,5 @@ data:
   LB_SERVICE_POOL: services
   LB_INTERNAL_INTERFACE: eth0
 
+  DOMAIN: main.lokis-casa.internal
+
