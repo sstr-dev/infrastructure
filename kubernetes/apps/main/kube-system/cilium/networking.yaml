@@ -22,21 +22,40 @@ spec:
 apiVersion: cilium.io/v2alpha1
 kind: CiliumL2AnnouncementPolicy
 metadata:
-  name: l2-policy
+  name: l2-policy-lan69
 spec:
   loadBalancerIPs: true
-  #interfaces:
-  #  #- ^(ens19|eth1)\.69$
-  #  - ^(ens19|eth1)$
-  # NOTE: interfaces might need to be set if you have more than one active NIC on your hosts
   interfaces:
-    - ^ens[0-9]+$
-    - ^eno[0-9]+
-    - ^enp[0-9]+
-    - ^eth[0-9]+
-  #serviceSelector:
-  #  matchLabels:
-  #    io.cilium.service/method: l2
+    - ^ens19$
+    - ^eth1$
+  serviceSelector:
+    matchLabels:
+      network.l2.cilium/segment: servers
+  # Only workers with a .69 NIC may announce .69 VIPs.
+  nodeSelector:
+    matchLabels:
+      network.l2.cilium/lan69: "true"
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/cilium.io/ciliuml2announcementpolicy_v2alpha1.json
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: l2-policy-default
+spec:
+  loadBalancerIPs: true
+  ## NOTE: interfaces might need to be set if you have more than one active NIC on your hosts
+  interfaces:
+    - ^ens18$
+    - ^eth1$
+  #interfaces:
+  #  - ^ens[0-9]+$
+  #  - ^eno[0-9]+
+  #  - ^enp[0-9]+
+  #  - ^eth[0-9]+
+  # Exclude envoy-external so .69 VIPs are only announced on lan69 worker nodes.
+  serviceSelector:
+    matchLabels:
+      network.l2.cilium/segment: services
   nodeSelector:
     matchLabels:
       kubernetes.io/os: linux

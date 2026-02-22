@@ -4,6 +4,8 @@ machine:
     disk: /dev/sda
     wipe: false # Indicates if the installation disk should be wiped at installation time.
   type: worker
+  nodeLabels:
+    network.l2.cilium/lan69: "true"
   network:
     hostname: wk02.k8s.main.internal
     interfaces:
