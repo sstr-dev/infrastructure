@@ -75,13 +75,20 @@ tasks:
     desc: Apply the Talos config on all nodes [cluster=required]
     vars:
       NODES:
-        sh: kubectl --context {{.cluster}} get nodes --output=jsonpath='{.items[*].metadata.name}'
+        sh: talosctl --talosconfig {{.talos_dir}}/talosconfig config info --output json | jq -r '.nodes[]'
     cmds:
       - for: {var: NODES}
         task: apply-node
         vars:
           node: '{{.ITEM}}'
           cluster: '{{.cluster}}'
+    requires:
+      vars:
+        - cluster
+    preconditions:
+      - test -f {{.talos_dir}}/talosconfig
+      - talosctl --talosconfig {{.talos_dir}}/talosconfig config info
+      - which jq talosctl
   dashboard:
     desc: Display the Talos dashboard
     cmds:

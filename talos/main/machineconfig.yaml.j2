@@ -111,7 +111,7 @@ machine:
     #net.ipv6.conf.all.autoconf: "0"            # disable IPv6 autoconfig
     #net.ipv6.conf.default.autoconf: "0"        # disable IPv6 autoconfig
     user.max_user_namespaces: "11255"          # User Namespaces
-    vm.nr_hugepages: "1024"                    # PostgreSQL
+    vm.nr_hugepages: {{ '0' if machinetype == 'controlplane' else '1024' }}  # PostgreSQL
   token: vault://Kubernetes/talos-main#MACHINE_TOKEN
   type: {{ machinetype }}
   time:
