@@ -15,6 +15,6 @@ resources:
   #- ./cloudflare-dns.yaml
   - ./cloudflare-tunnel.yaml
   #- ./echo.yaml
-  #- ./envoy-gateway.yaml
+  - ./envoy-gateway.yaml
   #- ./multus.yaml
   - ./unifi-dns.yaml

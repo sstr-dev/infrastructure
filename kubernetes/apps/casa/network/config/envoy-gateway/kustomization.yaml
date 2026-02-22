@@ -8,3 +8,5 @@ resources:
   - ./envoyproxy.yaml
   - ./gateway.yaml
   - ./httproute.yaml
+  - ./podmonitor.yaml
+  - ./servicemonitor.yaml
