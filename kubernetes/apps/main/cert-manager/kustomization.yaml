@@ -7,5 +7,5 @@ components:
   - ../../../components/common
 replacements:
   - path: ../../../components/replacements/ks.yaml
-resources: []
-#  - ./cert-manager.yaml
+resources:
+  - ./cert-manager.yaml

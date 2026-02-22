@@ -5,10 +5,11 @@ kind: Kustomization
 namespace: external-secrets
 components:
   - ../../../components/common
+  - ../../../vars/main/namespaces/external-secrets
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
-  - ../../../vars/main/ns/external-secrets-secrets.sops.yaml
+  #- ../../../vars/main/ns/external-secrets-secrets.sops.yaml
   - ./external-secrets.yaml
   - ./external-secrets-pdb.yaml
 

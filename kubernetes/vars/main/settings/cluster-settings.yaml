@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-settings
+data:
+  CLUSTER_TIMEZONE: "Europe/Berlin"
+  CLUSTER: main
+
+  SERVICE_CIDR: "10.43.0.0/16"
+
+  LB_SERVICE_INTERFACE: services
+  LB_SERVICE_POOL: services
+  LB_INTERNAL_INTERFACE: eth0
+
