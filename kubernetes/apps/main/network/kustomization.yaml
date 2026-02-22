@@ -13,7 +13,7 @@ replacements:
 resources:
   #- ./certificates.yaml
   #- ./cloudflare-dns.yaml
-  #- ./cloudflare-tunnel.yaml
+  - ./cloudflare-tunnel.yaml
   #- ./echo.yaml
   #- ./envoy-gateway.yaml
   #- ./multus.yaml
