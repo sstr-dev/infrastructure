@@ -10,6 +10,7 @@ spec:
   postBuild:
     substitute:
       SUBDOMAIN: echo
+      GATEWAY: envoy-internal
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings

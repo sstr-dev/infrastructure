@@ -14,6 +14,7 @@ spec:
     substitute:
       APP: *app
       INGRESSCLASS: internal-nginx
+      GATEWAY: internal
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
