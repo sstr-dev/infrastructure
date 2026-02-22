@@ -9,6 +9,8 @@ spec:
   blocks:
     - start: 10.0.69.50
       stop: 10.0.69.99
+    - start: 10.0.60.50
+      stop: 10.0.60.99
     #- cidr: 192.168.21.0/24
     #- cidr: fdd5:aa8:9535:21::/64
     #- cidr: 192.168.20.16/32
@@ -23,14 +25,15 @@ metadata:
   name: l2-policy
 spec:
   loadBalancerIPs: true
-  interfaces:
-    #- ^(ens19|eth1)\.69$
-    - ^(ens19|eth1)$
+  #interfaces:
+  #  #- ^(ens19|eth1)\.69$
+  #  - ^(ens19|eth1)$
   # NOTE: interfaces might need to be set if you have more than one active NIC on your hosts
-  # interfaces:
-  #   - ^eno[0-9]+
-  #   - ^enp[0-9]+
-  #   - ^eth[0-9]+
+  interfaces:
+    - ^ens[0-9]+$
+    - ^eno[0-9]+
+    - ^enp[0-9]+
+    - ^eth[0-9]+
   #serviceSelector:
   #  matchLabels:
   #    io.cilium.service/method: l2
