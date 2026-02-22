@@ -30,7 +30,7 @@ spec:
     - ^eth1$
   serviceSelector:
     matchLabels:
-      network.l2.cilium/segment: servers
+      network.l2.cilium/segment: services
   # Only workers with a .69 NIC may announce .69 VIPs.
   nodeSelector:
     matchLabels:
@@ -46,7 +46,7 @@ spec:
   ## NOTE: interfaces might need to be set if you have more than one active NIC on your hosts
   interfaces:
     - ^ens18$
-    - ^eth1$
+    - ^eth0$
   #interfaces:
   #  - ^ens[0-9]+$
   #  - ^eno[0-9]+
@@ -55,7 +55,7 @@ spec:
   # Exclude envoy-external so .69 VIPs are only announced on lan69 worker nodes.
   serviceSelector:
     matchLabels:
-      network.l2.cilium/segment: services
+      network.l2.cilium/segment: servers
   nodeSelector:
     matchLabels:
       kubernetes.io/os: linux
