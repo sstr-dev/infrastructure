@@ -10,6 +10,9 @@ spec:
   postBuild:
     substitute:
       CLUSTER: ${CLUSTER}
+    substituteFrom:
+      - kind: Secret
+        name: ns-network-secret
   prune: true
   sourceRef:
     kind: GitRepository

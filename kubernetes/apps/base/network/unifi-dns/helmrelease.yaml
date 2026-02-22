@@ -82,8 +82,9 @@ spec:
     txtOwnerId: ${CLUSTER}
     txtPrefix: k8s.${CLUSTER}.
     domainFilters:
-      - landomain
-      - int_ext
+      - ${CERT_DOMAIN}
+      - ${CERT_DEV_DOMAIN}
+      - ${CERT_GAME_DOMAIN}
 
     serviceMonitor:
       enabled: true
