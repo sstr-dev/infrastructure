@@ -13,6 +13,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATEWAY: "main"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings

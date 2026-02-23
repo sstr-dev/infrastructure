@@ -14,7 +14,7 @@ spec:
     substitute:
       APP: *app
       INGRESSCLASS: internal-nginx
-      IOTINGRESS: "true"
+      GATEWAY: "dev"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings

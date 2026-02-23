@@ -102,9 +102,10 @@ spec:
     route:
       app:
         hostnames:
+          # ${SUBDOMAIN}:="{{ .Release.Name }}"
           - "{{ .Release.Name }}.${SECRET_DEV_DOMAIN}"
         parentRefs:
-          - name: dev
+          - name: ${GATEWAY:=dev}
             namespace: network
             sectionName: https
         rules:

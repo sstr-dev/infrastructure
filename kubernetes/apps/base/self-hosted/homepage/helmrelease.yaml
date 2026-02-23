@@ -28,7 +28,7 @@ spec:
             env:
               TZ: ${CLUSTER_TIMEZONE}
               HOMEPAGE_ALLOWED_HOSTS: "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
-              LOG_TARGETS: stdout
+              # LOG_TARGETS: stdout
               # LOG_LEVEL: debug
             envFrom:
               - secretRef:
@@ -74,7 +74,7 @@ spec:
       app:
         hostnames: ["{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"]
         parentRefs:
-          - name: main
+          - name: ${GATEWAY:=main}
             namespace: network
             sectionName: https
         rules:
