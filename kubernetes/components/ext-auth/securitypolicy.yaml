@@ -6,7 +6,7 @@ metadata:
 spec:
   extAuth:
     failOpen: false
-    recomputeRoute: true
+    # recomputeRoute: true
     headersToExtAuth:
       - X-Forwarded-For # this is here so we can get the real IP
       - X-Forwarded-Proto
