@@ -11,5 +11,6 @@ resources:
   - ./descheduler.yaml
   - ./reloader.yaml
   - ./spegel.yaml
+  # talos updates?
   # - ./tuppr.yaml
 
