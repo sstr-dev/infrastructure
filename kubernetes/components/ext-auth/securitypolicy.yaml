@@ -21,6 +21,7 @@ spec:
       path: /outpost.goauthentik.io/auth/envoy
       headersToBackend:
         - set-cookie
+        - location
         - x-authentik-*
         - authorization
   targetRefs:
