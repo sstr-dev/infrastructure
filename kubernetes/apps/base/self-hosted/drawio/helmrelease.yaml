@@ -89,7 +89,7 @@ spec:
         hostnames:
           - "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
         parentRefs:
-          - name: main
+          - name: ${GATEWAY:=main}
             namespace: network
             sectionName: https
         rules:

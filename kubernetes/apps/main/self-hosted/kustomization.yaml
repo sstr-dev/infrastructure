@@ -1,0 +1,26 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: self-hosted
+components:
+  - ../../../components/common
+  - ../../../vars/main/cluster
+replacements:
+  - path: ../../../components/replacements/ks.yaml
+resources:
+  #- ./it-tools.yaml
+  #- ./openspeedtest/ks.yaml
+  #- ./cyberchef.yaml
+  #- ./photon/ks.yaml
+  - ./homepage.yaml
+  #- ./snipe-it.yaml
+  - ./drawio.yaml
+  #- ./paperless-gotenberg.yaml
+  #- ./paperless-tika.yaml
+  #- ./paperless.yaml
+  #- ./mealie.yaml
+  #- ./opencloud.yaml
+  #- ./change-detection.yaml
+  #- ./privatebin.yaml
+  #- ./ocsinventory.yaml
