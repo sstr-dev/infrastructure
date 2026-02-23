@@ -1,11 +1,14 @@
 ---
-title: Dashboard
+title: Main Cluster
 # favicon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/homepage.png
 #useEqualHeights: true
 theme: dark
 color: slate
-headerStyle: clean
+#headerStyle: clean
+#statusStyle: dot
+headerStyle: boxedWidgets
 statusStyle: dot
+
 #useEqualHeights: false
 #fiveColumns: true
 quicklaunch:

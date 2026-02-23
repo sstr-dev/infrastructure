@@ -17,7 +17,7 @@
     target: _blank
 - greeting:
     text_size: xl
-    text: "Howdy Hey!"
+    text: "main cluster"
 - kubernetes:
     cluster:
       show: true
