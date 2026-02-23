@@ -20,3 +20,28 @@ spec:
     name: flux-system
     namespace: flux-system
   wait: false
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: echo-extras
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/${CLUSTER}/network/echo
+  postBuild:
+    substitute:
+      CLUSTER: ${CLUSTER}
+      SUBDOMAIN: echo
+      GATEWAY: envoy-external
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+  dependsOn:
+    - name: echo
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false
