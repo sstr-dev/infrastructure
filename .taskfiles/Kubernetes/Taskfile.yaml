@@ -19,6 +19,27 @@ tasks:
     requires:
       vars: [cluster]
 
+  sync-secret:
+    desc: Sync a single ExternalSecret
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the ExternalSecret (required)
+        name: ExternalSecret name (required)
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} annotate externalsecret {{.name}} force-sync="{{now | unixEpoch}}" --overwrite
+    vars:
+      ns: '{{ or .ns (fail "Argument (ns) is required") }}'
+      name: '{{ or .name .secret (fail "Argument (name) is required") }}'
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: which kubectl
+        msg: "❌ kubectl not found in PATH"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get externalsecret {{.name}}
+        msg: "❌ ExternalSecret '{{.name}}' not found in namespace '{{.ns}}'!"
+    requires:
+      vars: [cluster]
+
   labelandtaint:
     desc: "Apply node labels and taints to cluster {{.cluster}}"
     cmds:
