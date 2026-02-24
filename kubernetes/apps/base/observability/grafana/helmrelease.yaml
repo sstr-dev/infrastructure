@@ -33,12 +33,12 @@ spec:
     remediation:
       retries: 3
   values:
-    extraInitContainers:
-      - name: init-db
-        image: ghcr.io/sstr-dev/postgres-init:17.7@sha256:7f4c3051706da3025f97b73c6acc60000e9c1c7a12cbfede5837e2a19d2e96f2
-        envFrom:
-          - secretRef:
-              name: &secret grafana
+    #extraInitContainers:
+    #  - name: init-db
+    #    image: ghcr.io/sstr-dev/postgres-init:17.7@sha256:7f4c3051706da3025f97b73c6acc60000e9c1c7a12cbfede5837e2a19d2e96f2
+    #    envFrom:
+    #      - secretRef:
+    #          name: &secret grafana
     replicas: ${REPLICAS:=1}
     image:
       repository: grafana/grafana
@@ -60,7 +60,7 @@ spec:
       #GF_NEWS_NEWS_FEED_ENABLED: false
 
     envFromSecrets:
-      - name: *secret
+      - name: grafana
     grafana.ini:
       server:
         root_url: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
