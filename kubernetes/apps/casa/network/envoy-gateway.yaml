@@ -10,7 +10,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 1h
-  path: ./kubernetes/apps/base/network/envoy-gateway
+  path: ./kubernetes/apps/casa/network/envoy-gateway
   prune: true
   postBuild:
     substitute:
