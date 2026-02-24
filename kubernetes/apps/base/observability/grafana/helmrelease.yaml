@@ -255,21 +255,21 @@ spec:
             uid: prometheus
             access: proxy
             orgId: 1
-            url: http://prometheus-operated.observability.svc.cluster.local:9090
+            url: http://prometheus-operated.observability.svc:9090
             isDefault: true
           - name: Alertmanager
             type: alertmanager
             uid: alertmanager
             access: proxy
             orgId: 1
-            url: http://alertmanager-operated.observability.svc.cluster.local:9093
+            url: http://alertmanager-operated.observability.svc:9093
             jsonData:
               implementation: prometheus
               handleGrafanaManagedAlerts: true
           - name: TeslaMate
             type: postgres
             access: proxy
-            url: postgres-cluster-rw.database.svc.cluster.local:5432
+            url: postgres-cluster-rw.database.svc:5432
             user: $TESLAMATE_DB_USER
             secureJsonData:
               password: "$TESLAMATE_DB_PASSWORD"
@@ -280,7 +280,7 @@ spec:
           - name: InfluxDB
             type: influxdb
             access: proxy
-            url: http://influx.database.svc.cluster.local:8086
+            url: http://influx.database.svc:8086
             secureJsonData:
               token: "$INFLUX_GRAFANA_TOKEN"
             jsonData:
