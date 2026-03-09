@@ -85,6 +85,11 @@ machine:
     image: ghcr.io/siderolabs/kubelet:v1.35.1
     nodeIP:
       validSubnets: ["10.0.60.0/24"]
+    extraMounts:
+      - destination: /var/mnt/extra
+        options: ["bind", "rshared", "rw"]
+        source: /var/mnt/extra
+        type: bind
   nodeLabels:
     topology.kubernetes.io/region: k8s
     topology.kubernetes.io/zone: {{ 'm' if machinetype == 'controlplane' else 'w' }}
