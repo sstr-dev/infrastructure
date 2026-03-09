@@ -9,4 +9,5 @@ replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
   - ./openebs.yaml
+  #- ./csi-driver-nfs.yaml
 
