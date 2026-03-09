@@ -26,21 +26,49 @@ spec:
   interval: 1h
   values:
     controller:
-      runOnControlPlane: true
+      runOnControlPlane: false
     externalSnapshotter:
       enabled: false
     node:
       tolerations: []
     storageClass:
-      create: true
-      name: nfs-direct
-      parameters:
-        server: ${SECRET_NFS_SERVER}
-        share: ${SECRET_NFS_PATH}
-      mountOptions:
-        - nfsvers=4.2
-        - nconnect=16
-        - hard
-        - noatime
-      reclaimPolicy: Delete
-      volumeBindingMode: Immediate
+      create: false
+
+    ## StorageClass resources for creating multiple storage classes:
+    storageClasses:
+      - name: nfs-delete
+        annotations:
+          storageclass.kubernetes.io/is-default-class: "false"
+        parameters:
+          server: nas.main.internal
+          share: /mnt/user/kubernetes
+          # double $ sign to avoid flux variable substitution
+          subDir: delete/$${pvc.metadata.namespace}-$${pvc.metadata.name}
+          # subDir:
+          # mountPermissions: "0"
+          # csi.storage.k8s.io/provisioner-secret is only needed for providing mountOptions in DeleteVolume
+          # csi.storage.k8s.io/provisioner-secret-name: "mount-options"
+          # csi.storage.k8s.io/provisioner-secret-namespace: "default"
+        reclaimPolicy: Delete
+        volumeBindingMode: Immediate
+        mountOptions: &mountOptions
+          - nfsvers=4.2
+          - nconnect=16
+          - hard
+          - noatime
+      - name: nfs-retain
+        annotations:
+          storageclass.kubernetes.io/is-default-class: "false"
+        parameters:
+          server: nas.main.internal
+          share: /mnt/user/kubernetes
+          # double $ sign to avoid flux variable substitution
+          subDir: retain/$${pvc.metadata.namespace}-$${pvc.metadata.name}
+          # subDir:
+          # mountPermissions: "0"
+          # csi.storage.k8s.io/provisioner-secret is only needed for providing mountOptions in DeleteVolume
+          # csi.storage.k8s.io/provisioner-secret-name: "mount-options"
+          # csi.storage.k8s.io/provisioner-secret-namespace: "default"
+        reclaimPolicy: Retain
+        volumeBindingMode: Immediate
+        mountOptions: *mountOptions

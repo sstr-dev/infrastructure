@@ -8,9 +8,6 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/base/storage/csi-driver-nfs
   prune: true
-  # need namespace secrets?
-  # ${SECRET_NFS_SERVER}
-  # ${SECRET_NFS_PATH}
   sourceRef:
     kind: GitRepository
     name: flux-system
