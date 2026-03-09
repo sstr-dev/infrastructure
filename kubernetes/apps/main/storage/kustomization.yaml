@@ -10,5 +10,8 @@ replacements:
 resources:
   - ./openebs.yaml
   - ./csi-driver-nfs.yaml
-  # TODO: kopia? snapshott? volsync?
+  - ./snapshot-controller.yaml
+  #- ./kopia.yaml
+  #- ./volsync.yaml # before: add mutations (NFS?)
+  #- ./volsync-maintenance.yaml
 
