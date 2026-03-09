@@ -44,7 +44,7 @@ spec:
           share: /mnt/user/kubernetes
           # double $ sign to avoid flux variable substitution
           #subDir: delete/$${pvc.metadata.namespace}-$${pvc.metadata.name}
-          subDir: delete/${pvc.metadata.namespace}-${pvc.metadata.name}
+          subDir: delete1/${pvc.metadata.namespace}-${pvc.metadata.name}
           # subDir:
           # mountPermissions: "0"
           # csi.storage.k8s.io/provisioner-secret is only needed for providing mountOptions in DeleteVolume
