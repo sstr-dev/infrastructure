@@ -24,3 +24,5 @@ resources:
   #- ./change-detection.yaml
   #- ./privatebin.yaml
   #- ./ocsinventory.yaml
+
+# TODO planned: nextcloud, inmich, spoolman (from 3d-print)

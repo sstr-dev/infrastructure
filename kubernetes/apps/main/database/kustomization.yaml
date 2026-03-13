@@ -9,4 +9,5 @@ components:
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources: []
-# Services: cloudnative-pg, mariadb, mongodb, kafka
+# TODO: Services: cloudnative-pg (local, s3, + ferretDB), dragonly (local, s3)
+# optional: mariadb, mongodb, kafka

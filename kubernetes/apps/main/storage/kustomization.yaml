@@ -15,3 +15,4 @@ resources:
   #- ./volsync.yaml # before: add mutations (NFS?)
   #- ./volsync-maintenance.yaml
 
+# TODO: volsync (nfs, s3), kopia (s3), garage (ext)
