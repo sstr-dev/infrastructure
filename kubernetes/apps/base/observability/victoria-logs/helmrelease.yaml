@@ -33,7 +33,7 @@ spec:
       route:
         enabled: true
         hostnames:
-          - victoria-logs.${SECRET_MAIN_DOMAIN_NAME}
+          - victoria-logs.${DOMAIN}
         parentRefs:
           - name: ${GATEWAY:=envoy-internal}
             namespace: network
