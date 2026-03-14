@@ -177,6 +177,9 @@ spec:
     - name: cloudnative-pg-cluster
   path: ./kubernetes/apps/${CLUSTER}/database/cloudnative-pg/cluster/backup
   prune: true
+  postBuild:
+    substitute:
+      CLUSTER: ${CLUSTER}
   sourceRef:
     kind: GitRepository
     name: flux-system
