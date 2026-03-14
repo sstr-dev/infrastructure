@@ -1,0 +1,43 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: dragonfly-operator
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: v1.4.0
+  url: oci://ghcr.io/dragonflydb/dragonfly-operator/helm/dragonfly-operator
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: dragonfly-operator
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: dragonfly-operator
+  dependsOn: []
+  interval: 15m
+  values:
+    replicaCount: 2
+    manager:
+      image:
+        repository: ghcr.io/dragonflydb/operator
+      extraArgs:
+        - --metrics-bind-address=0.0.0.0:8080
+      topologySpreadConstraints:
+        - maxSkew: 1 # Skew of 1 allows for rolling updates
+          topologyKey: kubernetes.io/hostname
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/instance: *app
+          whenUnsatisfiable: DoNotSchedule
+    grafanaDashboard:
+      enabled: true
+      folder: database
