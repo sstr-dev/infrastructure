@@ -64,7 +64,7 @@ spec:
       LB_SERVICE_IP: 10.0.60.56
       LB_SERVICE_SEGMENT: servers
       CNPG_STORAGECLASS: local-hostpath
-      CNPG_REPLICAS: '2'
+      CNPG_REPLICAS: '1'
       CNPG_SIZE: 5Gi
     substituteFrom:
       - kind: ConfigMap
