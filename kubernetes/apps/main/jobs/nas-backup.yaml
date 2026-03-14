@@ -12,8 +12,9 @@ spec:
     - name: external-secrets
       namespace: external-secrets
   postBuild:
-    substitute:
-      CLUSTER: ${CLUSTER}
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
   sourceRef:
     kind: GitRepository
     name: flux-system

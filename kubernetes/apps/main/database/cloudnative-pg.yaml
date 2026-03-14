@@ -178,8 +178,9 @@ spec:
   path: ./kubernetes/apps/${CLUSTER}/database/cloudnative-pg/cluster/backup
   prune: true
   postBuild:
-    substitute:
-      CLUSTER: ${CLUSTER}
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -200,8 +201,9 @@ spec:
   path: ./kubernetes/apps/${CLUSTER}/database/cloudnative-pg/vector/backup
   prune: true
   postBuild:
-    substitute:
-      CLUSTER: ${CLUSTER}
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -222,8 +224,9 @@ spec:
   path: ./kubernetes/apps/${CLUSTER}/database/cloudnative-pg/timescale/backup
   prune: true
   postBuild:
-    substitute:
-      CLUSTER: ${CLUSTER}
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
   sourceRef:
     kind: GitRepository
     name: flux-system

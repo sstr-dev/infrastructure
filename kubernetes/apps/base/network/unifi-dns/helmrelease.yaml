@@ -45,8 +45,6 @@ spec:
                 key: *name
           - name: SERVER_HOST
             value: 0.0.0.0
-          - name: DRY_RUN
-            value: "true"
         securityContext:
           readOnlyRootFilesystem: true
         livenessProbe:
@@ -73,15 +71,13 @@ spec:
     #  #- --managed-record-types=SRV
     registry: txt
     sources:
-      #- crd
-      #- ingress
       - gateway-httproute
-      #- gateway-tlsroute
       - service
 
     txtOwnerId: ${CLUSTER}
     txtPrefix: k8s.${CLUSTER}.
     domainFilters:
+      - ${DOMAIN}
       - ${CERT_DOMAIN}
       - ${CERT_DEV_DOMAIN}
       - ${CERT_GAME_DOMAIN}

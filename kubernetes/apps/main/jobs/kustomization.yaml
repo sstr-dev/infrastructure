@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: jobs
 components:
   - ../../../components/common
+  - ../../../vars/main/settings
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
