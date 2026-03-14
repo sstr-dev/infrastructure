@@ -23,11 +23,11 @@ spec:
       shared_buffers: 512MB
   resources:
     requests:
-      cpu: 500m
-      memory: 1Gi
+      cpu: ${CNPG_REQUESTS_CPU:=100m}
+      memory: ${CNPG_REQUESTS_MEMORY:=${CNPG_LIMITS_MEMORY:=1Gi}}
     limits:
       #hugepages-2Mi: 2Gi
-      memory: 4Gi
+      memory: ${CNPG_LIMITS_MEMORY:=1Gi}
   monitoring:
     enablePodMonitor: true
   plugins:

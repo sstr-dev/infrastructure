@@ -65,6 +65,8 @@ spec:
       CNPG_STORAGECLASS: local-hostpath
       CNPG_REPLICAS: '3'
       CNPG_SIZE: 5Gi
+      CNPG_REQUESTS_MEMORY: 1Gi
+      CNPG_LIMITS_MEMORY: 2Gi
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
@@ -102,6 +104,8 @@ spec:
       CNPG_STORAGECLASS: local-hostpath
       CNPG_REPLICAS: '3'
       CNPG_SIZE: 5Gi
+      CNPG_REQUESTS_MEMORY: 1Gi
+      CNPG_LIMITS_MEMORY: 2Gi
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
@@ -139,6 +143,8 @@ spec:
       CNPG_STORAGECLASS: local-hostpath
       CNPG_REPLICAS: '3'
       CNPG_SIZE: 5Gi
+      CNPG_REQUESTS_MEMORY: 1Gi
+      CNPG_LIMITS_MEMORY: 2Gi
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings

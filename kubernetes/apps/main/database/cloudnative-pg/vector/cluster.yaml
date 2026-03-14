@@ -32,9 +32,10 @@ spec:
     shared_preload_libraries: ["vchord.so"]
   resources:
     requests:
-      cpu: 500m
+      cpu: ${CNPG_REQUESTS_CPU:=100m}
+      memory: ${CNPG_REQUESTS_MEMORY:=${CNPG_LIMITS_MEMORY:=1Gi}}
     limits:
-      memory: 4Gi
+      memory: ${CNPG_LIMITS_MEMORY:=1Gi}
   monitoring:
     enablePodMonitor: true
   plugins:
