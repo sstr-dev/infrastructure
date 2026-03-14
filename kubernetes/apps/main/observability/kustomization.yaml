@@ -11,4 +11,5 @@ replacements:
 resources:
   - ./victoria-logs.yaml
   - ./fluent-bit.yaml
+  - ./kube-prometheus-stack.yaml
 

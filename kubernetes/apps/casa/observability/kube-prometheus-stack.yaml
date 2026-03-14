@@ -9,7 +9,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 1h
-  path: ./kubernetes/apps/base/observability/kube-prometheus-stack
+  path: ./kubernetes/apps/casa/observability/kube-prometheus-stack
   components:
     - ../../../../components/ext-auth
     - ../../../../components/ext-auth/two
