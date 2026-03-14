@@ -1,0 +1,50 @@
+---
+# yaml-language-server: $schema=https://schemas.sstr.dev/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres-timescale
+  annotations:
+    cnpg.io/skipEmptyWalArchiveCheck: "enabled"
+spec:
+  instances: ${CNPG_REPLICAS:=1}
+  imageCatalogRef:
+    apiGroup: postgresql.cnpg.io
+    kind: ImageCatalog
+    name: timescaledb
+    major: 18
+  postgresGID: 1000
+  postgresUID: 1000
+  storage:
+    size: ${CNPG_SIZE:=2Gi}
+    storageClass: ${CNPG_STORAGECLASS:=local-hostpath}
+  superuserSecret:
+    name: cloudnative-pg-secret
+  enableSuperuserAccess: true
+  bootstrap:
+    initdb:
+      postInitTemplateSQL:
+        - CREATE EXTENSION IF NOT EXISTS timescaledb;
+  postgresql:
+    parameters:
+      max_connections: "400"
+      shared_buffers: 512MB
+    shared_preload_libraries: ["timescaledb"]
+  resources:
+    requests:
+      cpu: 500m
+    limits:
+      memory: 4Gi
+  monitoring:
+    enablePodMonitor: true
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters: &parameters
+        barmanObjectName: garage-timescale
+        serverName: postgres-timescale
+  externalClusters:
+    - name: source
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters: *parameters
