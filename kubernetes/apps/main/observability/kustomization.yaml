@@ -10,4 +10,5 @@ replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
   - ./victoria-logs.yaml
+  - ./fluent-bit.yaml
 
