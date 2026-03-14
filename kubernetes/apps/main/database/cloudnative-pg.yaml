@@ -25,27 +25,27 @@ spec:
     namespace: flux-system
   wait: true
 ---
-## yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-#apiVersion: kustomize.toolkit.fluxcd.io/v1
-#kind: Kustomization
-#metadata:
-#  name: cloudnative-pg-barman-cloud
-#spec:
-#  dependsOn:
-#    - name: cert-manager
-#      namespace: cert-manager
-#    - name: cloudnative-pg
-#  path: ./kubernetes/apps/base/database/cloudnative-pg/barman-cloud
-#  prune: true
-#  sourceRef:
-#    kind: GitRepository
-#    name: flux-system
-#    namespace: flux-system
-#  wait: true
-#  interval: 1h
-#  retryInterval: 2m
-#  timeout: 5m
-#  postBuild:
-#    substitute:
-#      # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar
-#      SIDECAR_IMAGE_VERSION: v0.11.0
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: cloudnative-pg-barman-cloud
+spec:
+  dependsOn:
+    - name: cert-manager
+      namespace: cert-manager
+    - name: cloudnative-pg
+  path: ./kubernetes/apps/base/database/cloudnative-pg/barman-cloud
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: true
+  interval: 1h
+  retryInterval: 2m
+  timeout: 5m
+  postBuild:
+    substitute:
+      # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar
+      SIDECAR_IMAGE_VERSION: v0.11.0
