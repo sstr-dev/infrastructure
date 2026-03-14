@@ -24,8 +24,9 @@ spec:
   resources:
     requests:
       cpu: 500m
+      memory: 1Gi
     limits:
-      hugepages-2Mi: 2Gi
+      #hugepages-2Mi: 2Gi
       memory: 4Gi
   monitoring:
     enablePodMonitor: true
