@@ -1,0 +1,68 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cnpg-vector-backup
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  values:
+    controllers:
+      cnpg-backup:
+        type: cronjob
+        cronjob:
+          schedule: "@daily"
+          concurrencyPolicy: Forbid
+          successfulJobsHistory: 1
+          failedJobsHistory: 1
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/sstr-dev/postgres-init
+              tag: 18@sha256:5e6db27183f1bd4a9ba03449b4a17170ba523313af987bce9f1ed73c9be5effc
+            command: ["/list_dbs.sh"]
+            env:
+              EXCLUDE_DBS: app postgres template0 template1
+            envFrom: &envFrom
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
+        containers:
+          app:
+            image:
+              repository: docker.io/prodrigestivill/postgres-backup-local
+              tag: 18@sha256:f70742ebe42b2277689b028d1fd15aa80f77cffa01da163cc9f85a6ff1866e7f
+            command: ["/bin/bash", "/backup.sh"]
+            env:
+              TZ: ${TIMEZONE}
+              POSTGRES_DB_FILE: /config/db_list
+              POSTGRES_EXTRA_OPTS: "--blobs --clean --create --compress=9"
+              BACKUP_DIR: /backups/database/postgresql-vector
+              BACKUP_KEEP_DAYS: "7"
+              BACKUP_KEEP_WEEKS: "4"
+              BACKUP_KEEP_MONTHS: "6"
+              BACKUP_LATEST_TYPE: none
+            envFrom: *envFrom
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+        fsGroupChangePolicy: OnRootMismatch
+    persistence:
+      config:
+        type: emptyDir
+        globalMounts:
+          - path: /config
+      nas:
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/main-backup
+        globalMounts:
+          - path: /backups

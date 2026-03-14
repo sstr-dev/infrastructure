@@ -188,3 +188,47 @@ spec:
   interval: 1h
   retryInterval: 2m
   timeout: 5m
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: cnpg-vector-backup
+spec:
+  dependsOn:
+    - name: cloudnative-pg-cluster-vector
+  path: ./kubernetes/apps/${CLUSTER}/database/cloudnative-pg/vector/backup
+  prune: true
+  postBuild:
+    substitute:
+      CLUSTER: ${CLUSTER}
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false
+  interval: 1h
+  retryInterval: 2m
+  timeout: 5m
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: cnpg-timescale-backup
+spec:
+  dependsOn:
+    - name: cloudnative-pg-cluster-timescale
+  path: ./kubernetes/apps/${CLUSTER}/database/cloudnative-pg/timescale/backup
+  prune: true
+  postBuild:
+    substitute:
+      CLUSTER: ${CLUSTER}
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false
+  interval: 1h
+  retryInterval: 2m
+  timeout: 5m
