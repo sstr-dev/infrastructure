@@ -24,12 +24,3 @@ resources:
   - ./victoria-logs.yaml
   # Exporters
   - ./exporters
-
-  # keda
-  # kromgo
-
-  # grafana
-  # gatus
-  # exporters
-
-
