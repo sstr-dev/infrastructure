@@ -9,7 +9,28 @@ components:
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
-  - ./victoria-logs.yaml
   - ./fluent-bit.yaml
+  #- ./gatus.yaml
+  #- ./grafana.yaml
+  - ./karma.yaml
+  - ./keda.yaml
+  - ./kromgo.yaml
+
   - ./kube-prometheus-stack.yaml
+  # TODO seperate scrape config? ./kube-prometheus-stack-scrapeconfig.yaml
+
+
+  - ./silence-operator.yaml
+  - ./silences.yaml
+  - ./victoria-logs.yaml
+  # Exporters
+  #- ./exporters
+
+  # keda
+  # kromgo
+
+  # grafana
+  # gatus
+  # exporters
+
 
