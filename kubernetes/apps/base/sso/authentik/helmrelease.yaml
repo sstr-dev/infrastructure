@@ -88,20 +88,20 @@ spec:
         serviceMonitor:
           # -- enable a prometheus ServiceMonitor
           enabled: true
-      # -- Additional volumes to the authentik server pod
-      volumes:
-        - name: authentik-templates
-          persistentVolumeClaim:
-            claimName: authentik-custom-templates
-        - name: authentik-media
-          persistentVolumeClaim:
-            claimName: authentik-media
-      # -- Additional volumeMounts to the authentik server main container
-      volumeMounts:
-        - name: authentik-templates
-          mountPath: /templates
-        - name: authentik-media
-          mountPath: /media
+      ## -- Additional volumes to the authentik server pod
+      #volumes:
+      #  - name: authentik-templates
+      #    persistentVolumeClaim:
+      #      claimName: authentik-custom-templates
+      #  - name: authentik-media
+      #    persistentVolumeClaim:
+      #      claimName: authentik-media
+      ## -- Additional volumeMounts to the authentik server main container
+      #volumeMounts:
+      #  - name: authentik-templates
+      #    mountPath: /templates
+      #  - name: authentik-media
+      #    mountPath: /media
       #ingress:
       #  enabled: true
       #  ingressClassName: ${SSO_INGRESSCLASS}
