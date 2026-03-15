@@ -12,4 +12,5 @@ resources:
   - ./minio.yaml
   - ./democratic-csi.yaml
   - ./local-path-provisioner.yaml
+  - ./csi-driver-nfs.yaml
 
