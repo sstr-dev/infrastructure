@@ -11,7 +11,7 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: nfs-retain
+  storageClassName: sc-standard
 
 ---
 apiVersion: v1
