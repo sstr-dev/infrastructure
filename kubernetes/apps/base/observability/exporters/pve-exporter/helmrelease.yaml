@@ -37,6 +37,12 @@ spec:
               limits:
                 memory: 80Mi
 
+    defaultPodOptions:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+
     persistence:
       pve-config:
         type: secret
