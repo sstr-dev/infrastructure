@@ -23,7 +23,7 @@ resources:
   - ./silence-operator.yaml
   - ./victoria-logs.yaml
   # Exporters
-  #- ./exporters
+  - ./exporters
 
   # keda
   # kromgo

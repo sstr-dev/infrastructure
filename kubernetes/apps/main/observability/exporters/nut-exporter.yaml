@@ -17,7 +17,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      GATEWAY: "internal"
+      GATEWAY: "envoy-internal"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
@@ -25,7 +25,6 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: observability
   timeout: 5m
   wait: true
 ---
@@ -35,10 +34,9 @@ kind: Kustomization
 metadata:
   name: &app nut-exporter-probes
 spec:
-  targetNamespace: observability
   dependsOn:
     - name: nut-exporter
-  path: ./kubernetes/apps/casa/observability/config/nut-exporter-probes
+  path: ./kubernetes/apps/${CLUSTER}/observability/nut-exporter-probes
   prune: true
   postBuild:
     substitute:

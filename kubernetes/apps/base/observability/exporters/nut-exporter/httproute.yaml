@@ -8,7 +8,7 @@ spec:
   hostnames:
     - nut-exporter.${DOMAIN}
   parentRefs:
-    - name: internal
+    - name: ${GATEWAY:=envoy-internal}
       namespace: network
       sectionName: https
   rules:

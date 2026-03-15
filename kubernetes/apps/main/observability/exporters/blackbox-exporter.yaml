@@ -3,7 +3,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app nut-exporter
+  name: &app blackbox-exporter
 spec:
   commonMetadata:
     labels:
@@ -11,16 +11,17 @@ spec:
   interval: 1h
   #components:
   #  - ../../../../../components/ext-auth
-  path: ./kubernetes/apps/base/observability/exporters/nut-exporter
+  path: ./kubernetes/apps/base/observability/exporters/blackbox-exporter
   prune: true
   retryInterval: 2m
   postBuild:
     substitute:
       APP: *app
-      GATEWAY: "internal"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -33,12 +34,12 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app nut-exporter-probes
+  name: &app blackbox-exporter-probes
 spec:
   targetNamespace: observability
   dependsOn:
-    - name: nut-exporter
-  path: ./kubernetes/apps/casa/observability/config/nut-exporter-probes
+    - name: blackbox-exporter
+  path: ./kubernetes/apps/casa/observability/config/blackbox-exporter-probes
   prune: true
   postBuild:
     substitute:
@@ -46,6 +47,8 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -53,3 +56,4 @@ spec:
   interval: 30m
   retryInterval: 1m
   timeout: 5m
+
