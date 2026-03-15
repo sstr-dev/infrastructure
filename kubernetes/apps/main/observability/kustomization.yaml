@@ -21,7 +21,7 @@ resources:
 
 
   - ./silence-operator.yaml
-  - ./silences.yaml
+  #- ./silences.yaml
   - ./victoria-logs.yaml
   # Exporters
   #- ./exporters
