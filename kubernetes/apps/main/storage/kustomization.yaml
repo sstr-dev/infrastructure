@@ -12,7 +12,7 @@ resources:
   - ./csi-driver-nfs.yaml
   - ./snapshot-controller.yaml
   #- ./kopia.yaml
-  #- ./volsync.yaml # before: add mutations (NFS?)
+  - ./volsync.yaml
   #- ./volsync-maintenance.yaml
 
 # TODO: volsync (nfs, s3), kopia (s3), garage (ext)
