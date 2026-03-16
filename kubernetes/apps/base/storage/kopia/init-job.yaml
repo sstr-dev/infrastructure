@@ -1,0 +1,58 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kopia-init-repository
+  namespace: storage
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        - name: init-repository
+          image: ghcr.io/home-operations/kopia:0.22.3@sha256:17ab64542280197a5368247deaefadc3e3bbe15714ab666c2455a06824e86efd
+          envFrom:
+            - secretRef:
+                name: kopia-secret
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              if [ -f /repository/kopia.repository ]; then
+                echo "repository already initialized"
+                exit 0
+              fi
+
+              exec kopia repository create filesystem --path=/repository
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: repository
+              mountPath: /repository
+            - name: tmpfs
+              mountPath: /config/cache
+              subPath: cache
+            - name: tmpfs
+              mountPath: /config/logs
+              subPath: logs
+            - name: tmpfs
+              mountPath: /tmp
+              subPath: tmp
+      volumes:
+        - name: repository
+          nfs:
+            server: nas.main.internal
+            path: /mnt/user/main-backup/volsync
+        - name: tmpfs
+          emptyDir: {}

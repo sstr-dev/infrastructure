@@ -10,6 +10,9 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/base/storage/volsync-maintenance
   prune: true
+  postBuild:
+    substitute:
+      CLUSTER: ${CLUSTER}
   sourceRef:
     kind: GitRepository
     name: flux-system
