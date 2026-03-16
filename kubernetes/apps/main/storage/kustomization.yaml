@@ -13,5 +13,6 @@ resources:
   - ./csi-driver-nfs.yaml
   - ./snapshot-controller.yaml
   - ./kopia.yaml
+  - ./longhorn.yaml
   - ./volsync.yaml
   - ./volsync-maintenance.yaml
