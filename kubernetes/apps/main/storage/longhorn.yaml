@@ -10,6 +10,10 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/base/storage/longhorn
   prune: true
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
   sourceRef:
     kind: GitRepository
     name: flux-system
