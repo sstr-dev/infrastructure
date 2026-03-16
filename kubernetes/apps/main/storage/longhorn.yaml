@@ -15,3 +15,20 @@ spec:
     name: flux-system
     namespace: flux-system
   wait: false
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: longhorn-jobs
+spec:
+  dependsOn:
+    - name: longhorn
+  interval: 1h
+  path: ./kubernetes/apps/base/storage/longhorn/jobs
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false
