@@ -6,6 +6,7 @@ machine:
   type: worker
   nodeLabels:
     network.l2.cilium/lan69: "true"
+    node.longhorn.io/create-default-disk: "true"
   network:
     hostname: wk01.k8s.main.internal
     interfaces:

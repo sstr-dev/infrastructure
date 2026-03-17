@@ -12,7 +12,7 @@ spec:
   kopia:
     accessModes:
       - ${VOLSYNC_ACCESSMODES:=ReadWriteOnce}
-    storageClassName: ${VOLSYNC_STORAGECLASS:=longhorn-volsync}
+    storageClassName: ${VOLSYNC_STORAGECLASS:=longhorn}
     volumeSnapshotClassName: ${VOLSYNC_SNAPSHOTCLASS:=longhorn}
 
     capacity: ${VOLSYNC_CAPACITY:=5Gi}

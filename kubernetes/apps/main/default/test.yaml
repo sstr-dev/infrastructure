@@ -14,8 +14,8 @@ spec:
       APP: *app
       CLUSTER: ${CLUSTER}
       VOLSYNC_CAPACITY: 1Gi
-      VOLSYNC_STORAGECLASS: longhorn-volsync
-      VOLSYNC_SNAPSHOTCLASS: longhorn
+      #VOLSYNC_STORAGECLASS: longhorn-volsync
+      #VOLSYNC_SNAPSHOTCLASS: longhorn
   prune: true
   sourceRef:
     kind: GitRepository
