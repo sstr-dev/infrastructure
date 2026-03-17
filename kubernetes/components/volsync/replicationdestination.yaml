@@ -21,8 +21,10 @@ spec:
     cacheAccessModes:
       - ReadWriteOnce
 
-    cleanupCachePVC: true
-    cleanupTempPVC: true
+    # true for Rook-Ceph, false for Longhorn
+    cleanupCachePVC: false
+    cleanupTempPVC: false
+
     copyMethod: Snapshot
     enableFileDeletion: true
 
