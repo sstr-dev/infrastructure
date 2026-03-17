@@ -27,8 +27,8 @@ spec:
   interval: 15m
   values:
     defaultSettings:
-      #backupTarget: s3://longhorn-backups@home/
-      #backupTargetCredentialSecret: longhorn-secret
+      backupTarget: s3://longhorn-backups@home/
+      backupTargetCredentialSecret: longhorn-secret
       defaultDataPath: /var/mnt/extra/longhorn
       defaultReplicaCount: "3"
       backupstorePollInterval: 0
