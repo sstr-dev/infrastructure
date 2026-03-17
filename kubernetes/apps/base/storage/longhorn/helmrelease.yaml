@@ -34,7 +34,8 @@ spec:
       backupstorePollInterval: 0
       createDefaultDiskLabeledNodes: true
       restoreVolumeRecurringJobs: true
-      storageOverProvisioningPercentage: "100"
+      # Overprovisioning might be needed when using volsync
+      storageOverProvisioningPercentage: "100000"
       storageMinimalAvailablePercentage: "1"
       guaranteedEngineManagerCPU: 20
       guaranteedReplicaManagerCPU: 20
@@ -42,6 +43,9 @@ spec:
       concurrentAutomaticEngineUpgradePerNodeLimit: "3"
       defaultLonghornStaticStorageClass: longhorn
       nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
+      # Recommended for databases with app-level redundancy:
+      # This allows the drain to proceed even if the volume is the last replica.
+      nodeDrainPolicy: allow-if-replica-is-stopped
       #taintToleration: node-role.kubernetes.io/control-plane:NoSchedule
     #longhornDriver:
     #  tolerations: &tolerations
