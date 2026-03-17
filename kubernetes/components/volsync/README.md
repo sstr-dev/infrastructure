@@ -56,7 +56,7 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
 components:
-  - ../../../components/volsync
+  - ../../../../components/volsync
 ```
 
 Flux `Kustomization` example:

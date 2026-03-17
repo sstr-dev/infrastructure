@@ -6,7 +6,7 @@ metadata:
   name: &app test
 spec:
   components:
-    - ../../../components/volsync
+    - ../../../../components/volsync
   interval: 1h
   path: ./kubernetes/apps/${CLUSTER}/default/test
   postBuild:
