@@ -1,0 +1,44 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app test
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    controllers:
+      app:
+        containers:
+          app:
+            image:
+              repository: docker.io/library/busybox
+              tag: 1.36
+            command:
+              - /bin/sh
+              - -ec
+              - |
+                while true; do
+                  date -Iseconds >> /data/heartbeat.log
+                  sleep 30
+                done
+
+    persistence:
+      data:
+        enabled: true
+        existingClaim: *app
+        globalMounts:
+          - path: /data
