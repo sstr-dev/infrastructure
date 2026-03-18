@@ -1,89 +1,55 @@
-# VolSync Component
+# VolSync component
 
-This component creates a VolSync setup backed by a Kopia repository.
+## Flux Kustomization
 
-It includes:
-- an `ExternalSecret` for the Kopia repository credentials
-- a `ReplicationSource`
-- a `ReplicationDestination`
-- a restore `PersistentVolumeClaim`
-
-## Variables
-
-Required:
-- `APP`: Base name for all generated resources
-
-Optional:
-- `VOLSYNC_ACCESSMODES` default: `ReadWriteOnce`
-- `VOLSYNC_SNAP_ACCESSMODES` default: `ReadWriteOnce`
-- `VOLSYNC_STORAGECLASS` default: `longhorn-volsync`
-- `VOLSYNC_SNAPSHOTCLASS` default: `longhorn`
-- `VOLSYNC_CAPACITY` default: `5Gi`
-- `VOLSYNC_CACHE_CAPACITY` default: `8Gi`
-- `VOLSYNC_CACHE_STORAGECLASS` default: `local-hostpath`
-- `VOLSYNC_PUID` default: `1000`
-- `VOLSYNC_PGID` default: `1000`
-
-## Generated Resources
-
-For `APP=my-app`, this component creates:
-- secret target: `my-app-volsync-secret`
-- replication source: `my-app-src`
-- replication destination: `my-app-dst`
-- restore PVC: `my-app`
-
-## Secret Data
-
-The generated secret contains:
-- `KOPIA_REPOSITORY=filesystem:///repository`
-- `KOPIA_FS_PATH=/repository`
-- `KOPIA_PASSWORD`
-
-The external secret reads from:
-- `${CLUSTER}/volsync-template`
-
-## Usage
-
-Add the component to an application kustomization and provide at least `APP`.
-
-Base app `kustomization.yaml` example:
+This requires `postBuild` configured on the Flux Kustomization
 
 ```yaml
----
-# yaml-language-server: $schema=https://json.schemastore.org/kustomization
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - ./helmrelease.yaml
-components:
-  - ../../../../components/volsync
-```
-
-Flux `Kustomization` example:
-
-```yaml
----
-# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app my-app
+  namespace: flux-system
 spec:
-  path: ./kubernetes/apps/base/my-app
+  # ...
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CAPACITY: 20Gi
-      VOLSYNC_STORAGECLASS: longhorn-volsync
-      VOLSYNC_SNAPSHOTCLASS: longhorn
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false
+      VOLSYNC_CAPACITY: 5Gi
 ```
 
-The common repo pattern is:
-- add the component in the app base
-- provide `APP` and optional `VOLSYNC_*` values through Flux `postBuild.substitute`
+and then use the component your application's `kustomization.yaml`
+
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+components:
+  # ...
+  - ../../../../components/volsync
+```
+
+## Required `postBuild` vars:
+
+- `APP`: The application name
+- `VOLSYNC_CAPACITY`: The PVC size
+
+## Optional `postBuild` vars:
+
+- `VOLSYNC_ACCESSMODES`: Volume access mode (default `ReadWriteOnce`)
+- `VOLSYNC_BACKUP_MOVER_FS_GROUP`: File system group for the mover (defaults to the value of `VOLSYNC_MOVER_FS_GROUP`)
+- `VOLSYNC_BACKUP_MOVER_GROUP`: Group of the mover's user (defaults to the value of `VOLSYNC_MOVER_GROUP`)
+- `VOLSYNC_BACKUP_MOVER_USER`: User to run the mover as (defaults to the value of `VOLSYNC_MOVER_USER`)
+- `VOLSYNC_CACHE_ACCESSMODES`: Cache volume access mode (default `ReadWriteOnce`)
+- `VOLSYNC_CACHE_CAPACITY`: The cache PVC size (default `1Gi`)
+- `VOLSYNC_CACHE_STORAGECLASS`: The storage class for the cache PVC (default `local-hostpath`)
+- `VOLSYNC_COPYMETHOD`: The copy method (default `Snapshot`)
+- `VOLSYNC_MOVER_FS_GROUP`: File system group for the mover (default `568`)
+- `VOLSYNC_MOVER_GROUP`: Group of the mover's user (default `568`)
+- `VOLSYNC_MOVER_USER`: User to run the mover as (default `568`)
+- `VOLSYNC_RESTORE_MOVER_FS_GROUP`: File system group for the mover (defaults to the value of `VOLSYNC_MOVER_FS_GROUP`)
+- `VOLSYNC_RESTORE_MOVER_GROUP`: Group of the mover's user (defaults to the value of `VOLSYNC_MOVER_GROUP`)
+- `VOLSYNC_RESTORE_MOVER_USER`: User to run the mover as (defaults to the value of `VOLSYNC_MOVER_USER`)
+- `VOLSYNC_SCHEDULE_B2`: Cron expression for the volume sync schedule for b2 (default `0 2 * * 0`)
+- `VOLSYNC_SCHEDULE_MINIO`: Cron expression for the volume sync schedule for minio (default `0 2 * * *`)
+- `VOLSYNC_SNAPSHOTCLASS`: The storage class for volume snapshots (default `longhorn`)
+- `VOLSYNC_STORAGECLASS`: The storage class for the PVC (default `longhorn`)
