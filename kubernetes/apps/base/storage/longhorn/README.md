@@ -1,9 +1,28 @@
-# Longhorn filesystem
+# Longhorn
 
-Used to keep local PVCs that do not need to survive the whole cluster going down. These are primarly database nodes and ephemeral volumes.
+## Default path (`/var/lib/longhorn`)
 
-## Allow node drain
+```sh
+kubectl label nodes <name> node.longhorn.io/create-default-disk=true
+```
 
-1. Go the cluster settings within the longhorn UI at https://longhorn-ui-longhorn-system.apps.prod.angelnu.com/#/setting
-2. Set Node Drain Policy to `allow-if-replica-is-stopped`
+## Custom path (`/var/mnt/extra/longhorn`)
 
+```sh
+kubectl label nodes <name> node.longhorn.io/create-default-disk=config
+kubectl annotate nodes <name> node.longhorn.io/default-disks-config='[{"path":"/var/mnt/extra/longhorn"}]'
+```
+
+## Checks
+
+### Node Labels
+
+```sh
+kubectl get nodes <name> --show-labels
+```
+
+### Node Annotations
+
+```sh
+kubectl get nodes <name> -o jsonpath='{.metadata.annotations}'
+```
