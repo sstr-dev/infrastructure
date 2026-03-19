@@ -17,8 +17,8 @@ spec:
     accessModes: ["${VOLSYNC_ACCESSMODES:-ReadWriteOnce}"]
     capacity: "${VOLSYNC_CAPACITY}"
     sourceIdentity:
-      #sourceName: ${APP}
-      sourceName: '${APP}-src'
+      sourceName: ${APP}
+      #sourceName: '${APP}-src'
     moverSecurityContext:
       fsGroup: ${VOLSYNC_RESTORE_MOVER_FS_GROUP:-${VOLSYNC_MOVER_FS_GROUP:-568}}
       runAsGroup: ${VOLSYNC_RESTORE_MOVER_GROUP:-${VOLSYNC_MOVER_GROUP:-568}}
