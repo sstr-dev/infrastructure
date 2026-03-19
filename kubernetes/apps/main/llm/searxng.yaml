@@ -18,6 +18,7 @@ spec:
     substitute:
       APP: *app
       DRAGONFLY_REQUESTS_MEMORY: 256Mi
+      GATEWAY: "envoy-external"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings

@@ -67,7 +67,7 @@ spec:
       app:
         hostnames: ["search.${SECRET_MAIN_DOMAIN_NAME}"]
         parentRefs:
-          - name: main
+          - name: ${GATEWAY:=envoy-internal}
             namespace: network
             sectionName: https
     persistence:
