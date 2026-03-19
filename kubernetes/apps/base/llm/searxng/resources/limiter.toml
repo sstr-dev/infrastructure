@@ -11,14 +11,20 @@ trusted_proxies = [
 [botdetection.ip_limit]
 # On a private instance, local/private client IPs should not be rate-limited.
 # This also avoids false 429s if the gateway/proxy IP is seen upstream.
-filter_link_local = false
+#filter_link_local = false
+# To get unlimited access in a local network, by default link-local addresses
+# (networks) are not monitored by the ip_limit
+filter_link_local = true
 link_token = false
 
 [botdetection.ip_lists]
 block_ip = []
 
 # Keep this empty for now, otherwise the proxy/node IP bypasses the limiter.
-pass_ip = []
+pass_ip = [
+  '10.0.0.0/16', # IPv4 private network
+  '10.42.0.0/16' # IPv4 private network
+]
 
 # Activate passlist of (hardcoded) IPs from the SearXNG organization,
 # e.g. `check.searx.space`.
