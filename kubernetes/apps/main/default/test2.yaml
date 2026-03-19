@@ -8,7 +8,7 @@ spec:
   components:
     - ../../../../components/volsync
   interval: 1h
-  path: ./kubernetes/apps/${CLUSTER}/default/test
+  path: ./kubernetes/apps/${CLUSTER}/default/test2
   postBuild:
     substitute:
       APP: *app

@@ -7,6 +7,6 @@ components:
   - ../../../components/common
 replacements:
   - path: ../../../components/replacements/ks.yaml
-#resources:
-#  - ./test.yaml
-resources: []
+resources:
+  - ./test2.yaml
+#resources: []
