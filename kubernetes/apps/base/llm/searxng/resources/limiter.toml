@@ -9,7 +9,9 @@ trusted_proxies = [
 ]
 
 [botdetection.ip_limit]
-filter_link_local = true
+# On a private instance, local/private client IPs should not be rate-limited.
+# This also avoids false 429s if the gateway/proxy IP is seen upstream.
+filter_link_local = false
 link_token = false
 
 [botdetection.ip_lists]
