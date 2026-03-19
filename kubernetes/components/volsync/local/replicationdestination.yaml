@@ -23,3 +23,6 @@ spec:
       fsGroup: ${VOLSYNC_RESTORE_MOVER_FS_GROUP:-${VOLSYNC_MOVER_FS_GROUP:-568}}
       runAsGroup: ${VOLSYNC_RESTORE_MOVER_GROUP:-${VOLSYNC_MOVER_GROUP:-568}}
       runAsUser: ${VOLSYNC_RESTORE_MOVER_USER:-${VOLSYNC_MOVER_USER:-568}}
+    ## true for Rook-Ceph, false for Longhorn
+    #cleanupCachePVC: false
+    #cleanupTempPVC: false
