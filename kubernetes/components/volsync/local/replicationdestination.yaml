@@ -6,7 +6,7 @@ metadata:
 spec:
   trigger:
     manual: restore-once
-  restic:
+  kopia:
     copyMethod: "${VOLSYNC_COPYMETHOD:-Snapshot}"
     repository: "${APP}-volsync-secret"
     volumeSnapshotClassName: "${VOLSYNC_SNAPSHOTCLASS:-longhorn}"
