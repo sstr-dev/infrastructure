@@ -8,7 +8,8 @@ spec:
   components:
     - ../../../../components/volsync
   interval: 1h
-  path: ./kubernetes/apps/${CLUSTER}/default/test2
+  #path: ./kubernetes/apps/${CLUSTER}/default/test2
+  path: ./kubernetes/migration/common
   postBuild:
     substitute:
       APP: *app
@@ -22,3 +23,9 @@ spec:
     name: flux-system
     namespace: flux-system
   wait: false
+
+#spec:
+#  path: ./kubernetes/migration/common
+#  components:
+#    - ../../../../components/volsync
+#    - ../../../../components/volmigrate/nfs

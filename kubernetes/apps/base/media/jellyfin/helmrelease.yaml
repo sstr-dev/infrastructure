@@ -43,6 +43,7 @@ spec:
               PUID: 1000
               PGID: 1000
               DOTNET_SYSTEM_IO_DISABLEFILELOCKING: "true"
+              # JELLYFIN_PublishedServerUrl: &ip 192.168.40.247
 
               #JELLYFIN_FFmpeg__probesize: 50000000
               #JELLYFIN_FFmpeg__analyzeduration: 50000000

@@ -1,0 +1,56 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "${BOOTSTRAP_JOB:-${APP}-bootstrap}"
+  labels:
+    app.kubernetes.io/name: "${APP}"
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: "${APP}"
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: ${BOOTSTRAP_USER:-568}
+        runAsGroup: ${BOOTSTRAP_GROUP:-568}
+      containers:
+        - name: seed
+          image: ${BOOTSTRAP_IMAGE:-busybox:1.37.0}
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              marker="/target/${BOOTSTRAP_MARKER:-.bootstrap-complete}"
+
+              if [ -f "$marker" ]; then
+                echo "bootstrap already completed"
+                exit 0
+              fi
+
+              if find /target -mindepth 1 -not -name "${BOOTSTRAP_MARKER:-.bootstrap-complete}" | read _; then
+                echo "target PVC is not empty, refusing to overwrite"
+                exit 1
+              fi
+
+              cp -av /source/. /target/
+              touch "$marker"
+              echo "bootstrap completed"
+          volumeMounts:
+            - name: source
+              mountPath: /source
+              readOnly: true
+            - name: target
+              mountPath: /target
+      volumes:
+        - name: source
+          nfs:
+            server: "${BOOTSTRAP_NFS_SERVER}"
+            path: "${BOOTSTRAP_NFS_PATH}"
+        - name: target
+          persistentVolumeClaim:
+            claimName: "${BOOTSTRAP_CLAIM:-${APP}}"
