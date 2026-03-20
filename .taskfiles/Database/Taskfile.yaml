@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
-# mariadb, mongo untested
+# mongo untested
 
 tasks:
 
@@ -172,6 +172,210 @@ tasks:
     preconditions:
       - sh: kubectl config get-contexts {{.cluster}}
         msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get cluster.postgresql.cnpg.io {{.dbcluster}}
+        msg: "❌ CNPG cluster '{{.dbcluster}}' not found in namespace '{{.ns}}'!"
+
+  # task db:cnpg:databases cluster=main
+  # task db:cnpg:databases cluster=casa-rke2 dbcluster=postgres-cluster
+  cnpg:databases:
+    desc: List databases in a CNPG cluster
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the CNPG cluster (default: database)
+        dbcluster: CNPG Cluster name (default: postgres)
+        database: Database to connect to for listing (default: postgres)
+        user: Database user (default: postgres)
+    vars:
+      ns: '{{.ns | default "database"}}'
+      dbcluster: '{{.dbcluster | default .name | default "postgres"}}'
+      database: '{{.database | default "postgres"}}'
+      user: '{{.user | default "postgres"}}'
+      pod:
+        sh: kubectl --context {{.cluster}} --namespace {{.ns}} get pods -l cnpg.io/cluster={{.dbcluster}},role=primary -o jsonpath='{.items[0].metadata.name}'
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.pod}} -- psql -U {{.user}} -d {{.database}} -At -c "SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname;"
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: which kubectl
+        msg: "❌ kubectl not found in PATH"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get cluster.postgresql.cnpg.io {{.dbcluster}}
+        msg: "❌ CNPG cluster '{{.dbcluster}}' not found in namespace '{{.ns}}'!"
+
+  # task db:cnpg:dump cluster=casa-rke2 database=authentik type=plain dbcluster=postgres-cluster
+  cnpg:dump:
+    desc: Create a local dump from a CNPG cluster
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the CNPG cluster (default: database)
+        dbcluster: CNPG Cluster name (default: postgres)
+        database: Database to dump (default: postgres)
+        user: Database user (default: postgres)
+        type: Dump type, one of custom|plain (default: custom)
+        folder: Local output directory (default: {{.ROOT_DIR}}/..local/cnpg/dump)
+        file: Output file name (optional)
+    vars:
+      ns: '{{.ns | default "database"}}'
+      dbcluster: '{{.dbcluster | default .name | default "postgres"}}'
+      database: '{{.database | default "postgres"}}'
+      user: '{{.user | default "postgres"}}'
+      type: '{{.type | default "custom"}}'
+      folder: '{{.folder | default (printf "%s/.local/cnpg/dump" .ROOT_DIR)}}'
+      ext:
+        sh: |
+          case '{{.type}}' in
+            custom) echo dump ;;
+            plain) echo sql ;;
+            *) exit 1 ;;
+          esac
+      file: '{{.file | default (printf "%s/%s-%s-%s.%s" .folder .dbcluster .database .type (trim .ext))}}'
+      pod:
+        sh: kubectl --context {{.cluster}} --namespace {{.ns}} get pods -l cnpg.io/cluster={{.dbcluster}},role=primary -o jsonpath='{.items[0].metadata.name}'
+      dump_args:
+        sh: |
+          case '{{.type}}' in
+            custom) echo "-Fc" ;;
+            plain) echo "" ;;
+            *) exit 1 ;;
+          esac
+    cmds:
+      - mkdir -p {{.folder}}
+      - kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.pod}} -- pg_dump {{.dump_args}} -U {{.user}} -d {{.database}} > {{.file}}
+      - echo "Wrote dump to {{.file}}"
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: which kubectl
+        msg: "❌ kubectl not found in PATH"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get cluster.postgresql.cnpg.io {{.dbcluster}}
+        msg: "❌ CNPG cluster '{{.dbcluster}}' not found in namespace '{{.ns}}'!"
+      - sh: '[[ "{{.type}}" == "custom" || "{{.type}}" == "plain" ]]'
+        msg: "❌ type must be one of: custom, plain"
+
+  # task db:cnpg:restore cluster=main file=.local/cnpg/dump/postgres-app-custom.dump type=custom database=app
+  # task db:cnpg:restore cluster=main file=.local/cnpg/dump/postgres-app-plain.sql type=plain database=app
+  # task db:cnpg:restore cluster=main file=./dump.dump type=custom database=app clean=true
+  cnpg:restore:
+    desc: Restore a local dump into a CNPG cluster
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the CNPG cluster (default: database)
+        dbcluster: CNPG Cluster name (default: postgres)
+        database: Target database to restore into (default: postgres)
+        user: Database user (default: postgres)
+        type: Dump type, one of custom|plain (default: custom)
+        file: Local dump file to restore (required)
+        clean: Drop existing objects before restore, true|false (default: false)
+    vars:
+      ns: '{{.ns | default "database"}}'
+      dbcluster: '{{.dbcluster | default .name | default "postgres"}}'
+      database: '{{.database | default "postgres"}}'
+      user: '{{.user | default "postgres"}}'
+      type: '{{.type | default "custom"}}'
+      clean: '{{.clean | default "false"}}'
+      file: '{{.file | default ""}}'
+      pod:
+        sh: kubectl --context {{.cluster}} --namespace {{.ns}} get pods -l cnpg.io/cluster={{.dbcluster}},role=primary -o jsonpath='{.items[0].metadata.name}'
+    cmds:
+      - |
+        set -euo pipefail
+
+        if [ '{{.type}}' = 'custom' ]; then
+          if [ '{{.clean}}' = 'true' ]; then
+            cat '{{.file}}' | kubectl --context {{.cluster}} --namespace {{.ns}} exec -i {{.pod}} -- \
+              pg_restore -U {{.user}} -d {{.database}} --clean --if-exists --no-owner --no-privileges
+          else
+            cat '{{.file}}' | kubectl --context {{.cluster}} --namespace {{.ns}} exec -i {{.pod}} -- \
+              pg_restore -U {{.user}} -d {{.database}} --no-owner --no-privileges
+          fi
+        else
+          cat '{{.file}}' | kubectl --context {{.cluster}} --namespace {{.ns}} exec -i {{.pod}} -- \
+            psql -v ON_ERROR_STOP=1 -U {{.user}} -d {{.database}}
+        fi
+      - echo "Restored {{.file}} into {{.dbcluster}}/{{.database}}"
+    requires:
+      vars: ["cluster", "file"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: which kubectl
+        msg: "❌ kubectl not found in PATH"
+      - sh: test -f {{.file}}
+        msg: "❌ dump file '{{.file}}' not found!"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get cluster.postgresql.cnpg.io {{.dbcluster}}
+        msg: "❌ CNPG cluster '{{.dbcluster}}' not found in namespace '{{.ns}}'!"
+      - sh: '[[ "{{.type}}" == "custom" || "{{.type}}" == "plain" ]]'
+        msg: "❌ type must be one of: custom, plain"
+      - sh: '[[ "{{.clean}}" == "true" || "{{.clean}}" == "false" ]]'
+        msg: "❌ clean must be one of: true, false"
+
+  # task db:cnpg:create-db cluster=main user=app database=app
+  # task db:cnpg:create-db cluster=casa-rke2 dbcluster=postgres-cluster user=authentik database=authentik
+  cnpg:create-db:
+    desc: Create or update a PostgreSQL role and database in a CNPG cluster
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the CNPG cluster (default: database)
+        dbcluster: CNPG Cluster name (default: postgres)
+        user: Role/user to create or update (required)
+        database: Database to create or re-owner (required)
+        admin_user: Administrative database user (default: postgres)
+        admin_database: Administrative database to connect to (default: postgres)
+    interactive: true
+    vars:
+      ns: '{{.ns | default "database"}}'
+      dbcluster: '{{.dbcluster | default .name | default "postgres"}}'
+      user: '{{ or .user (fail "Argument (user) is required") }}'
+      database: '{{ or .database (fail "Argument (database) is required") }}'
+      admin_user: '{{.admin_user | default "postgres"}}'
+      admin_database: '{{.admin_database | default "postgres"}}'
+      pod:
+        sh: kubectl --context {{.cluster}} --namespace {{.ns}} get pods -l cnpg.io/cluster={{.dbcluster}},role=primary -o jsonpath='{.items[0].metadata.name}'
+    cmds:
+      - |
+        set -euo pipefail
+
+        read -r -s -p "Password for database user '{{.user}}': " APP_PASSWORD
+        echo
+
+        if [ -z "${APP_PASSWORD}" ]; then
+          echo "❌ Password must not be empty"
+          exit 1
+        fi
+
+        kubectl --context {{.cluster}} --namespace {{.ns}} exec -i {{.pod}} -- \
+          psql -v ON_ERROR_STOP=1 \
+            -v app_user='{{.user}}' \
+            -v app_db='{{.database}}' \
+            -v app_password="${APP_PASSWORD}" \
+            -U {{.admin_user}} -d {{.admin_database}} <<'SQL'
+        SELECT format('CREATE ROLE %I LOGIN PASSWORD %L', :'app_user', :'app_password')
+        WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'app_user') \gexec
+
+        SELECT format('ALTER ROLE %I WITH LOGIN PASSWORD %L', :'app_user', :'app_password') \gexec
+
+        SELECT format('CREATE DATABASE %I OWNER %I', :'app_db', :'app_user')
+        WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = :'app_db') \gexec
+
+        SELECT format('ALTER DATABASE %I OWNER TO %I', :'app_db', :'app_user')
+        WHERE EXISTS (SELECT 1 FROM pg_database WHERE datname = :'app_db') \gexec
+        SQL
+
+        echo "Created or updated role '{{.user}}' and database '{{.database}}'"
+    requires:
+      vars: ["cluster", "user", "database"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: which kubectl
+        msg: "❌ kubectl not found in PATH"
       - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get cluster.postgresql.cnpg.io {{.dbcluster}}
         msg: "❌ CNPG cluster '{{.dbcluster}}' not found in namespace '{{.ns}}'!"
 

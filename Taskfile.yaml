@@ -48,9 +48,6 @@ includes:
     taskfile: .taskfiles/Repository/Taskfile.yaml
   sops: .taskfiles/Sops/Taskfile.yaml
   workstation: .taskfiles/Workstation/Taskfile.yaml
-  #kubeblocks:
-  #  aliases: ["kb"]
-  #  taskfile: .taskfiles/Kubeblocks/Taskfile.yaml
   vault: .taskfiles/Vault/Taskfile.yaml
   talos: .taskfiles/Talos/Taskfile.yaml
   volsync:
