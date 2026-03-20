@@ -37,20 +37,28 @@ env:
 includes:
   ansible: .taskfiles/Ansible/Taskfile.yaml
   sync: .taskfiles/Sync/Taskfile.yaml
-  flux: .taskfiles/Flux/Taskfile.yaml
+  flux:
+    aliases: ["fx"]
+    taskfile: .taskfiles/Flux/Taskfile.yaml
   kubernetes:
-    aliases: ["k8s"]
+    aliases: ["k8s", "ku"]
     taskfile: .taskfiles/Kubernetes/Taskfile.yaml
   repository:
     aliases: ["repo"]
     taskfile: .taskfiles/Repository/Taskfile.yaml
   sops: .taskfiles/Sops/Taskfile.yaml
   workstation: .taskfiles/Workstation/Taskfile.yaml
-  kubeblocks:
-    aliases: ["kb"]
-    taskfile: .taskfiles/Kubeblocks/Taskfile.yaml
+  #kubeblocks:
+  #  aliases: ["kb"]
+  #  taskfile: .taskfiles/Kubeblocks/Taskfile.yaml
   vault: .taskfiles/Vault/Taskfile.yaml
   talos: .taskfiles/Talos/Taskfile.yaml
+  volsync:
+    aliases: ["vs"]
+    taskfile: .taskfiles/VolSync
+  database:
+    aliases: ["db"]
+    taskfile: .taskfiles/Database/Taskfile.yaml
 
 tasks:
 
@@ -104,5 +112,4 @@ tasks:
       - { msg: "Missing Makejinja config file", sh: "test -f {{.MAKEJINJA_CONFIG_FILE}}" }
       - { msg: "Missing Makejinja plugin file", sh: "test -f {{.BOOTSTRAP_DIR}}/scripts/plugin.py" }
       - { msg: "Missing bootstrap config file", sh: "test -f {{.BOOTSTRAP_CONFIG_FILE}}" }
-
 

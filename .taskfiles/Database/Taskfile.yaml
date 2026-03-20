@@ -1,0 +1,237 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+# mariadb, mongo untested
+
+tasks:
+
+  overview:
+    silent: true
+    desc: Show an overview of database operators and clusters
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the database stack (default: database)
+    vars:
+      ns: '{{.ns | default "database"}}'
+    cmds:
+      - |
+        set -euo pipefail
+
+        echo "▶ Database overview for cluster '{{.cluster}}' in namespace '{{.ns}}'"
+
+        if kubectl --context {{.cluster}} get crd clusters.postgresql.cnpg.io >/dev/null 2>&1; then
+          task --taskfile {{.TASKFILE}} .overview:cnpg cluster={{.cluster}} ns={{.ns}}
+        fi
+
+        if kubectl --context {{.cluster}} get crd mariadbs.k8s.mariadb.com >/dev/null 2>&1; then
+          task --taskfile {{.TASKFILE}} .overview:mariadb cluster={{.cluster}} ns={{.ns}}
+        fi
+
+        if kubectl --context {{.cluster}} get crd mongodbcommunity.mongodbcommunity.mongodb.com >/dev/null 2>&1; then
+          task --taskfile {{.TASKFILE}} .overview:mongo cluster={{.cluster}} ns={{.ns}}
+        fi
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: which kubectl
+        msg: "❌ kubectl not found in PATH"
+      - sh: which task
+        msg: "❌ task not found in PATH"
+
+  .overview:cnpg:
+    silent: true
+    vars:
+      ns: '{{.ns | default "database"}}'
+    cmds:
+      - echo
+      - echo "== CNPG =="
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get clusters.postgresql.cnpg.io || true
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get scheduledbackups.postgresql.cnpg.io || true
+    requires:
+      vars: ["cluster"]
+
+  .overview:mariadb:
+    silent: true
+    vars:
+      ns: '{{.ns | default "database"}}'
+    cmds:
+      - echo
+      - echo "== MariaDB =="
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get mariadbs.k8s.mariadb.com || true
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get backups.k8s.mariadb.com || true
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get databases.k8s.mariadb.com || true
+    requires:
+      vars: ["cluster"]
+
+  .overview:mongo:
+    silent: true
+    vars:
+      ns: '{{.ns | default "database"}}'
+    cmds:
+      - echo
+      - echo "== MongoDB =="
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get mongodbcommunity.mongodbcommunity.mongodb.com || true
+    requires:
+      vars: ["cluster"]
+
+  cnpg:clusters:
+    desc: List CNPG clusters
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the CNPG clusters (default: database)
+    vars:
+      ns: '{{.ns | default "database"}}'
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} get clusters.postgresql.cnpg.io
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get crd clusters.postgresql.cnpg.io
+        msg: "❌ CNPG CRDs not found in cluster '{{.cluster}}'!"
+
+  cnpg:backups:
+    desc: List CNPG backups and scheduled backups
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the CNPG clusters (default: database)
+    vars:
+      ns: '{{.ns | default "database"}}'
+    cmds:
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get backups.postgresql.cnpg.io
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get scheduledbackups.postgresql.cnpg.io
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get crd backups.postgresql.cnpg.io
+        msg: "❌ CNPG Backup CRD not found in cluster '{{.cluster}}'!"
+
+  cnpg:backup:
+    desc: Trigger a one-off CNPG backup for a cluster
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the CNPG cluster (default: database)
+        dbcluster: CNPG Cluster name (default: postgres)
+    vars:
+      ns: '{{.ns | default "database"}}'
+      dbcluster: '{{.dbcluster | default .name | default "postgres"}}'
+      backup_name:
+        sh: printf '%s-manual-%s' '{{.dbcluster}}' "$(date +%Y%m%d%H%M%S)"
+    cmds:
+      - |
+        cat <<EOF | kubectl --context {{.cluster}} --namespace {{.ns}} apply -f -
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Backup
+        metadata:
+          name: {{.backup_name}}
+        spec:
+          cluster:
+            name: {{.dbcluster}}
+          method: plugin
+          pluginConfiguration:
+            name: barman-cloud.cloudnative-pg.io
+        EOF
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get backup {{.backup_name}} -o wide
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get cluster.postgresql.cnpg.io {{.dbcluster}}
+        msg: "❌ CNPG cluster '{{.dbcluster}}' not found in namespace '{{.ns}}'!"
+
+  cnpg:psql:
+    desc: Open psql in the primary CNPG pod
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the CNPG cluster (default: database)
+        dbcluster: CNPG Cluster name (default: postgres)
+        database: Database to connect to (default: postgres)
+        user: Database user (default: postgres)
+    interactive: true
+    vars:
+      ns: '{{.ns | default "database"}}'
+      dbcluster: '{{.dbcluster | default .name | default "postgres"}}'
+      database: '{{.database | default "postgres"}}'
+      user: '{{.user | default "postgres"}}'
+      pod:
+        sh: kubectl --context {{.cluster}} --namespace {{.ns}} get pods -l cnpg.io/cluster={{.dbcluster}},role=primary -o jsonpath='{.items[0].metadata.name}'
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec -it {{.pod}} -- psql -U {{.user}} -d {{.database}}
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get cluster.postgresql.cnpg.io {{.dbcluster}}
+        msg: "❌ CNPG cluster '{{.dbcluster}}' not found in namespace '{{.ns}}'!"
+
+
+
+  mariadb:clusters:
+    desc: List MariaDB cluster resources
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the MariaDB cluster (default: database)
+    vars:
+      ns: '{{.ns | default "database"}}'
+    cmds:
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get mariadbs.k8s.mariadb.com
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get backups.k8s.mariadb.com
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get databases.k8s.mariadb.com
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get users.k8s.mariadb.com
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get crd mariadbs.k8s.mariadb.com
+        msg: "❌ MariaDB CRDs not found in cluster '{{.cluster}}'!"
+
+  mariadb:backup:
+    desc: Show MariaDB backup resources for a cluster
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the MariaDB cluster (default: database)
+        name: Backup resource name (default: mariadb-backup)
+    vars:
+      ns: '{{.ns | default "database"}}'
+      name: '{{.name | default "mariadb-backup"}}'
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} get backup.k8s.mariadb.com {{.name}} -o yaml
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get backup.k8s.mariadb.com {{.name}}
+        msg: "❌ MariaDB backup '{{.name}}' not found in namespace '{{.ns}}'!"
+
+  mongo:clusters:
+    desc: List MongoDBCommunity clusters
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the MongoDB cluster (default: database)
+    vars:
+      ns: '{{.ns | default "database"}}'
+    cmds:
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get mongodbcommunity.mongodbcommunity.mongodb.com
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get secret | grep '^mongo-' || true
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get crd mongodbcommunity.mongodbcommunity.mongodb.com
+        msg: "❌ MongoDBCommunity CRD not found in cluster '{{.cluster}}'!"

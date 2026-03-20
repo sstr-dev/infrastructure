@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+tasks:
+  list:
+    desc: List snapshots for an app
+    summary: |
+      Args:
+        cluster: Cluster to run command against (required)
+        ns: Namespace the PVC is in (default: default)
+        app: Application to list snapshots for (required)
+    preconditions:
+      - which kubectl
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get replicationsources {{.app}}
+      - kubectl --context {{.cluster}} --namespace storage get deployment/kopia
+    requires:
+      vars: ["cluster", "app"]
+    vars:
+      ns: '{{.ns | default "default"}}'
+    cmds:
+      - kubectl --context {{.cluster}} --namespace storage exec deployment/kopia -- kopia snapshot list {{.app}}@{{.ns}}:/data --all
+
+
