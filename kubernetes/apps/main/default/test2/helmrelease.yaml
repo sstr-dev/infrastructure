@@ -32,7 +32,7 @@ spec:
               - -ec
               - |
                 while true; do
-                  date -Iseconds >> /data/heartbeat.log
+                  date -Iseconds >> /data/heartbeat2.log
                   sleep 30
                 done
 
