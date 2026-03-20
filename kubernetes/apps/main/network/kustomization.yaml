@@ -18,3 +18,4 @@ resources:
   - ./echo.yaml
   #- ./multus.yaml
   - ./unifi-dns.yaml
+  - ./smtp-relay.yaml
