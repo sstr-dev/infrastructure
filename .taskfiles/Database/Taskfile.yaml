@@ -205,6 +205,7 @@ tasks:
         msg: "❌ CNPG cluster '{{.dbcluster}}' not found in namespace '{{.ns}}'!"
 
   # task db:cnpg:dump cluster=casa-rke2 database=authentik type=plain dbcluster=postgres-cluster
+  # task db:cnpg:dump cluster=casa-rke2 database=n8n type=plain dbcluster=postgres-cluster
   cnpg:dump:
     desc: Create a local dump from a CNPG cluster
     summary: |
@@ -260,6 +261,7 @@ tasks:
   # task db:cnpg:restore cluster=main file=.local/cnpg/dump/postgres-app-custom.dump type=custom database=app
   # task db:cnpg:restore cluster=main file=.local/cnpg/dump/postgres-app-plain.sql type=plain database=app
   # task db:cnpg:restore cluster=main file=./dump.dump type=custom database=app clean=true
+  # task db:cnpg:restore cluster=main file=.local/cnpg/dump/postgres-cluster-n8n-custom.dump type=custom database=n8n
   cnpg:restore:
     desc: Restore a local dump into a CNPG cluster
     summary: |
