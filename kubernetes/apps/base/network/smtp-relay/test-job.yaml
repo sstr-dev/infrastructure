@@ -1,0 +1,58 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: smtp-relay-test
+  namespace: network
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: smtp-test
+          image: python:3.13-alpine
+          env:
+            - name: SMTP_HOST
+              value: smtp-relay
+            - name: SMTP_PORT
+              value: "25"
+            - name: SMTP_TEST_SUBJECT
+              value: smtp-relay test
+            - name: SMTP_TEST_FROM_LOCALPART
+              value: no-reply
+            - name: SMTP_TEST_TO
+              value: ""
+          envFrom:
+            - secretRef:
+                name: smtp-relay-secret
+          command:
+            - python3
+            - -c
+            - |
+              import os
+              import smtplib
+              from email.message import EmailMessage
+
+              hostname = os.environ["SMTP_RELAY_HOSTNAME"]
+              sender = f'{os.environ.get("SMTP_TEST_FROM_LOCALPART", "no-reply")}@{hostname}'
+              recipient = os.environ.get("SMTP_TEST_TO") or os.environ.get("SMTP_RELAY_USERNAME")
+              if not recipient:
+                  raise SystemExit("SMTP_TEST_TO or SMTP_RELAY_USERNAME must be set")
+
+              msg = EmailMessage()
+              msg["From"] = sender
+              msg["To"] = recipient
+              msg["Subject"] = os.environ.get("SMTP_TEST_SUBJECT", "smtp-relay test")
+              msg.set_content(
+                  "This is a one-time smtp-relay test sent from the Kubernetes Job "
+                  "smtp-relay-test."
+              )
+
+              host = os.environ.get("SMTP_HOST", "smtp-relay")
+              port = int(os.environ.get("SMTP_PORT", "25"))
+              with smtplib.SMTP(host, port, timeout=30) as smtp:
+                  smtp.send_message(msg)
+
+              print(f"sent test mail via {host}:{port} to {recipient}")
