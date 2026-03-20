@@ -5,4 +5,7 @@ kind: Kustomization
 resources:
   - ./s3-backup.yaml
   - ./openwebui-temp.yaml
+  - ./postgres-main.yaml
+  - ./postgres-timescale-main.yaml
+  - ./postgres-vector-main.yaml
 

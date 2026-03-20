@@ -262,6 +262,11 @@ tasks:
   # task db:cnpg:restore cluster=main file=.local/cnpg/dump/postgres-app-plain.sql type=plain database=app
   # task db:cnpg:restore cluster=main file=./dump.dump type=custom database=app clean=true
   # task db:cnpg:restore cluster=main file=.local/cnpg/dump/postgres-cluster-n8n-custom.dump type=custom database=n8n
+  # n8n works with plain after drop db:
+  # DROP DATABASE n8n;
+  # CREATE DATABASE n8n OWNER n8n;
+  # task db:cnpg:dump cluster=casa-rke2 database=n8n dbcluster=postgres-cluster type=plain
+  # task db:cnpg:restore cluster=main file=.local/cnpg/dump/postgres-cluster-n8n-plain.sql type=plain database=n8n
   cnpg:restore:
     desc: Restore a local dump into a CNPG cluster
     summary: |
