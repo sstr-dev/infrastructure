@@ -20,5 +20,5 @@ tasks:
       ns: '{{.ns | default "default"}}'
     cmds:
       - kubectl --context {{.cluster}} --namespace storage exec deployment/kopia -- kopia snapshot list {{.app}}@{{.ns}}:/data --all
-
+  # TODO: manual backup (${APP}-dst) and restore
 

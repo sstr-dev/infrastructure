@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: automation
+components:
+  - ../../../components/common
+  - ../../../vars/main/cluster
+replacements:
+  - path: ../../../components/replacements/ks.yaml
+resources:
+  - ./n8n.yaml
