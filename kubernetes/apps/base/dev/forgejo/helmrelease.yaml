@@ -97,6 +97,9 @@ spec:
           ENABLE_NOTIFY_MAIL: true
           # DEFAULT_ALLOW_CREATE_ORGANIZATION: false
           MAX_CREATION_LIMIT: 100
+        service.explore:
+          REQUIRE_SIGNIN_VIEW: true
+
         admin:
           SEND_NOTIFICATION_EMAIL_ON_NEW_USER: true
           #DISABLE_REGULAR_ORG_CREATION: true
@@ -165,7 +168,7 @@ spec:
         successThreshold: 1
         failureThreshold: 10
       oauth:
-        - name: Authentik
+        - name: authentik
           provider: openidConnect
           existingSecret: forgejo-secret
           autoDiscoverUrl: https://${SECRET_SSO_DOMAIN}/application/o/forgejo/.well-known/openid-configuration
