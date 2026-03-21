@@ -30,8 +30,8 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/home-operations/it-tools
-              tag: 2024.10.22@sha256:7f26ae8d7a4a58b8d70b685cba5cbaa54d7df876d9f8bae702207f45b06d9b7c
+              repository: ghcr.io/sstr-dev/it-tools
+              tag: 2026.1.4@sha256:583afe98140f2acdcd2b02863c3beca51b7ef589d7e25d93d38c2673c654fd3f
             env:
               TZ: ${CLUSTER_TIMEZONE}
             resources:
@@ -71,3 +71,8 @@ spec:
     persistence:
       tmp:
         type: emptyDir
+        advancedMounts:
+          it-tools:
+            app:
+              - path: /tmp
+                subPath: tmp
