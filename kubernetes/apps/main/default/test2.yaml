@@ -14,7 +14,7 @@ spec:
 #    - ../../../../components/volmigrate/nfs
   interval: 1h
   #path: ./kubernetes/apps/${CLUSTER}/default/test2
-  path: ./kubernetes/migration/common
+  path: ./kubernetes/apps/base/migration/common
   postBuild:
     substitute:
       APP: *app

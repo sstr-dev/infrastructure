@@ -14,10 +14,6 @@ spec:
         app.kubernetes.io/name: "${APP}"
     spec:
       restartPolicy: Never
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: ${BOOTSTRAP_USER:-99}
-        runAsGroup: ${BOOTSTRAP_GROUP:-100}
       containers:
         - name: seed
           image: ${BOOTSTRAP_IMAGE:-busybox:1.37.0}
@@ -48,10 +44,6 @@ spec:
               cp -av /source/. /target/
               touch "$marker"
               echo "bootstrap completed"
-              if [ "${BOOTSTRAP_DEBUG_SLEEP:-0}" != "0" ]; then
-                echo "debug sleep: ${BOOTSTRAP_DEBUG_SLEEP}s"
-                sleep "${BOOTSTRAP_DEBUG_SLEEP}"
-              fi
           volumeMounts:
             - name: source
               mountPath: /source

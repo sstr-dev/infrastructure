@@ -18,11 +18,9 @@ Use it as a temporary migration step, then remove it after the data has been see
 
 - `BOOTSTRAP_CLAIM`: PVC name, default `${APP}`
 - `BOOTSTRAP_DEBUG_SLEEP`: sleep in seconds before the copy starts, default `0`
-- `BOOTSTRAP_GROUP`: job container group, default `100`
 - `BOOTSTRAP_IMAGE`: container image, default `busybox:1.37.0`
 - `BOOTSTRAP_JOB`: job name, default `${APP}-bootstrap`
 - `BOOTSTRAP_MARKER`: marker file path in target PVC, default `.bootstrap-complete`
-- `BOOTSTRAP_USER`: job container user, default `99`
 
 ## Usage
 
@@ -62,3 +60,4 @@ postBuild:
 ## Notes
 - use `cp -av source nfstarget` to copy files
 - set `BOOTSTRAP_DEBUG_SLEEP` to keep the pod idle before copying, for example `300`
+- the job currently runs as root because no pod `securityContext` is set
