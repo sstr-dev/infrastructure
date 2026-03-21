@@ -16,15 +16,23 @@ spec:
       restartPolicy: Never
       securityContext:
         runAsNonRoot: true
-        runAsUser: ${BOOTSTRAP_USER:-568}
-        runAsGroup: ${BOOTSTRAP_GROUP:-568}
+        runAsUser: ${BOOTSTRAP_USER:-99}
+        runAsGroup: ${BOOTSTRAP_GROUP:-100}
       containers:
         - name: seed
           image: ${BOOTSTRAP_IMAGE:-busybox:1.37.0}
+          env:
+            - name: BOOTSTRAP_DEBUG_SLEEP
+              value: "${BOOTSTRAP_DEBUG_SLEEP:-0}"
           command:
             - /bin/sh
             - -ec
             - |
+              if [ "${BOOTSTRAP_DEBUG_SLEEP:-0}" != "0" ]; then
+                echo "debug sleep: ${BOOTSTRAP_DEBUG_SLEEP}s"
+                sleep "${BOOTSTRAP_DEBUG_SLEEP}"
+              fi
+
               marker="/target/${BOOTSTRAP_MARKER:-.bootstrap-complete}"
 
               if [ -f "$marker" ]; then
@@ -40,6 +48,10 @@ spec:
               cp -av /source/. /target/
               touch "$marker"
               echo "bootstrap completed"
+              if [ "${BOOTSTRAP_DEBUG_SLEEP:-0}" != "0" ]; then
+                echo "debug sleep: ${BOOTSTRAP_DEBUG_SLEEP}s"
+                sleep "${BOOTSTRAP_DEBUG_SLEEP}"
+              fi
           volumeMounts:
             - name: source
               mountPath: /source
@@ -49,8 +61,8 @@ spec:
       volumes:
         - name: source
           nfs:
-            server: "${BOOTSTRAP_NFS_SERVER}"
-            path: "${BOOTSTRAP_NFS_PATH}"
+            server: "${BOOTSTRAP_NFS_SERVER:-nas.main.internal}"
+            path: "${BOOTSTRAP_NFS_PATH:-/mnt/user/legacy/${APP}}"
         - name: target
           persistentVolumeClaim:
             claimName: "${BOOTSTRAP_CLAIM:-${APP}}"
