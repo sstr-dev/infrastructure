@@ -61,7 +61,7 @@ spec:
               N8N_PUBLIC_API_DISABLED: true
               N8N_PUBLIC_API_SWAGGERUI_DISABLED: true
               #===LOGGING & DIAGNOSTICS===
-              N8N_LOG_LEVEL: debug
+              N8N_LOG_LEVEL: info
               N8N_LOG_OUTPUT: console
               N8N_DIAGONISTICS_ENABLED: false
               N8N_METRICS: true
