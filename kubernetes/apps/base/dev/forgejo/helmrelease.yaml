@@ -172,7 +172,7 @@ spec:
           provider: openidConnect
           existingSecret: forgejo-secret
           autoDiscoverUrl: https://${SECRET_SSO_DOMAIN}/application/o/forgejo/.well-known/openid-configuration
-          groupClaimName: users
+          groupClaimName: groups
           adminGroup: homelab-admins
           #iconUrl: https://${AUTH_HOST}/static/dist/assets/icons/icon.png
       metrics:
