@@ -7,20 +7,16 @@ metadata:
 spec:
   components:
     - ../../../../components/volsync
-    - ../../../../components/volmigrate/nfs
-#  path: ./kubernetes/migration/common
-#  components:
-#    - ../../../../components/volsync
-#    - ../../../../components/volmigrate/nfs
+    #- ../../../../components/volmigrate/nfs
   interval: 1h
-  #path: ./kubernetes/apps/${CLUSTER}/default/test2
-  path: ./kubernetes/apps/base/migration/common
+  path: ./kubernetes/apps/${CLUSTER}/default/test2
+  #path: ./kubernetes/apps/base/migration/common
   postBuild:
     substitute:
       APP: *app
       CLUSTER: ${CLUSTER}
       VOLSYNC_CAPACITY: 1Gi
-      BOOTSTRAP_DEBUG_END_SLEEP: "60"
+      #BOOTSTRAP_DEBUG_END_SLEEP: "60"
       #VOLSYNC_STORAGECLASS: longhorn-volsync
       #VOLSYNC_SNAPSHOTCLASS: longhorn
   prune: true
