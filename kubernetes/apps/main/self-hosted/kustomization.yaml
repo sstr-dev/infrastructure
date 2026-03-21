@@ -5,11 +5,11 @@ kind: Kustomization
 namespace: self-hosted
 components:
   - ../../../components/common
-  - ../../../vars/main/cluster
+  - ../../../vars/main/namespaces/self-hosted
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
-  #- ./it-tools.yaml
+  - ./it-tools.yaml
   #- ./openspeedtest/ks.yaml
   #- ./cyberchef.yaml
   #- ./photon/ks.yaml

@@ -8,7 +8,7 @@ components:
   - ../../../vars/casa
 resources:
   - ../../../vars/casa/ns/security-secrets.sops.yaml
-  - ./it-tools.yaml
+  #- ./it-tools.yaml
   #- ./openspeedtest/ks.yaml
   - ./cyberchef.yaml
   #- ./photon/ks.yaml

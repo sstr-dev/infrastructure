@@ -50,59 +50,9 @@ spec:
         ports:
           http:
             port: &port 8080
-    #ingress:
-    #  app:
-    #    enabled: ${DEFAULTINGRESSEN:=true}
-    #    className: ${INGRESSCLASS}
-    #    #annotations:
-    #    #  gethomepage.dev/enabled: "true"
-    #    #  gethomepage.dev/description: Swiss army knife for IT
-    #    #  gethomepage.dev/group: Home
-    #    #  gethomepage.dev/icon: it-tools.svg
-    #    #  gethomepage.dev/name: IT-Tools
-    #    #  gethomepage.dev/pod-selector: >-
-    #    #    app.kubernetes.io/name in (
-    #    #      it-tools
-    #    #    )
-    #    hosts:
-    #      - host: &host "{{ .Release.Name }}.${DOMAIN}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: *port
-    #    tls:
-    #      - hosts:
-    #          - *host
-    #  iot:
-    #    enabled: ${IOTINGRESS:=false}
-    #    className: iot-nginx
-    #    annotations:
-    #      gethomepage.dev/enabled: "true"
-    #      gethomepage.dev/description: Swiss army knife for IT
-    #      gethomepage.dev/group: Home
-    #      gethomepage.dev/icon: it-tools.svg
-    #      gethomepage.dev/name: IT-Tools
-    #      gethomepage.dev/pod-selector: >-
-    #        app.kubernetes.io/name in (
-    #          it-tools
-    #        )
-    #    hosts:
-    #      - host: &host "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: *port
-    #    tls:
-    #      - hosts:
-    #        - *host
-
-
     route:
       app:
         hostnames:
-          # ${SUBDOMAIN}:="{{ .Release.Name }}"
           - "{{ .Release.Name }}.${SECRET_DEV_DOMAIN}"
         parentRefs:
           - name: ${GATEWAY:=dev}
