@@ -17,6 +17,7 @@ This document tracks the configured usage of the `10.0.60.0/24` and `10.0.69.0/2
 | `10.0.60.56` | `main`  | `servers` | service IP | `postgres-lb`            | database load balancer service IP           |
 | `10.0.60.57` | `main`  | `servers` | service IP | `postgres-timescale-lb`  | timescale database load balancer service IP |
 | `10.0.60.58` | `main`  | `servers` | service IP | `postgres-vector-lb`     | vector database load balancer service IP    |
+| `10.0.60.59` | `main`  | `servers` | service IP | `forgejo`                | forgejo git load balancer service IP        |
 | `10.0.69.50` | `casa`  | `service` | gateway IP | `LB_V4_GATEWAY_MAIN`     | main gateway IP                             |
 | `10.0.69.51` | `casa`  | `service` | gateway IP | `LB_V4_GATEWAY_BASE`     | base gateway IP                             |
 | `10.0.69.52` | `casa`  | `service` | gateway IP | `LB_V4_GATEWAY_DEV`      | dev gateway IP                              |

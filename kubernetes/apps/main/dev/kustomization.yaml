@@ -8,6 +8,6 @@ components:
   - ../../../vars/main/namespaces/dev
 replacements:
   - path: ../../../components/replacements/ks.yaml
-#resources:
-#  - ./forgejo.yaml
-resources: []
+resources:
+  - ./forgejo.yaml
+#resources: []
