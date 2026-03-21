@@ -64,6 +64,7 @@ spec:
     postgresql:
       enabled: false
 
+    # https://forgejo.org/docs/next/admin/config-cheat-sheet/
     gitea:
       admin:
         existingSecret: *secret
@@ -71,6 +72,8 @@ spec:
       ssh:
         logLevel: INFO
       config:
+        APP_NAME: 'Anubis Code Forge'
+        APP_SLOGAN: ""
         server:
           ROOT_URL: https://${SECRET_FORGEJO_HOSTNAME}
           DOMAIN: ${SECRET_FORGEJO_HOSTNAME}
@@ -85,6 +88,8 @@ spec:
           ROOT: /data/git/repositories
           DEFAULT_BRANCH: main
           DEFAULT_PRIVATE: true
+        repository.pull-request:
+          WORK_IN_PROGRESS_PREFIXES: 'WIP:,[WIP]:'
         lfs:
           PATH: /data/git/lfs
         service:
@@ -112,9 +117,6 @@ spec:
         #  MINIO_LOCATION: home
         #  MINIO_USE_SSL: true
         #attachment: *s3storage
-        APP_NAME: 'Anubis Code Forge'
-        repository.pull-request:
-          WORK_IN_PROGRESS_PREFIXES: 'WIP:,[WIP]:'
         mailer:
           ENABLED: true
           PROTOCOL: smtp
