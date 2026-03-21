@@ -34,20 +34,12 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         strategy: RollingUpdate
-        #initContainers:
-        #  init-db:
-        #    image:
-        #      repository: ghcr.io/sstr-dev/postgres-init
-        #      tag: 17.7@sha256:7f4c3051706da3025f97b73c6acc60000e9c1c7a12cbfede5837e2a19d2e96f2
-        #      pullPolicy: IfNotPresent
-        #    envFrom:
-        #      - secretRef:
-        #          name: *app
         containers:
           app:
             image:
               repository: ghcr.io/n8n-io/n8n
-              tag: 2.10.0
+              # renovate: datasource=github-releases depName=n8n-io/n8n
+              tag: 2.12.2
               pullPolicy: IfNotPresent
             env:
               GENERIC_TIMEZONE: ${CLUSTER_TIMEZONE}
@@ -113,16 +105,6 @@ spec:
               limits:
                 memory: 2Gi
 
-    #serviceMonitor:
-    #  app:
-    #    serviceName: *app
-    #    endpoints:
-    #      - port: http
-    #        scheme: http
-    #        path: /metrics
-    #        interval: 1m
-    #        scrapeTimeout: 10s
-
     service:
       app:
         controller: *app
@@ -136,7 +118,7 @@ spec:
         hostnames:
           - *hostName
         parentRefs:
-          - name: main
+          - name: envoy-external
             namespace: network
             sectionName: https
         #annotations:
@@ -156,7 +138,7 @@ spec:
         hostnames:
           - ${SECRET_N8NWEBHOOKS_DOMAIN}
         parentRefs:
-          - name: base
+          - name: envoy-external
             namespace: network
             sectionName: https
         rules:
@@ -168,59 +150,6 @@ spec:
             backendRefs:
               - identifier: app
                 port: *port
-    #ingress:
-    #  app:
-    #    enabled: true
-    #    className: iot-nginx
-    #    annotations:
-    #      gethomepage.dev/enabled: "true"
-    #      gethomepage.dev/description: Flexible AI workflow automation
-    #      gethomepage.dev/group: Home
-    #      gethomepage.dev/icon: *app
-    #      gethomepage.dev/name: *app
-    #      gethomepage.dev/weight: "1" # optional
-    #      gethomepage.dev/pod-selector: >-
-    #        app.kubernetes.io/name in (
-    #          n8n
-    #        )
-    #    hosts:
-    #      - host: *hostName
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      - hosts:
-    #        - *hostName
-    #  webhooks:
-    #    enabled: true
-    #    className: iot-base-nginx
-    #    #annotations:
-    #    #  gethomepage.dev/enabled: "true"
-    #    #  gethomepage.dev/description: "Lightweight LDAP interface for authentication"
-    #    #  gethomepage.dev/group: Infrastructure
-    #    #  gethomepage.dev/icon: mdi-account-lock
-    #    #  gethomepage.dev/name: lldap
-    #    #  gethomepage.dev/pod-selector: >-
-    #    #    app.kubernetes.io/name in (
-    #    #      it-tools
-    #    #    )
-    #    hosts:
-    #      - host: &host "${SECRET_N8NWEBHOOKS_DOMAIN}"
-    #        paths:
-    #          - path: /webhook
-    #            service:
-    #              identifier: app
-    #              port: http
-    #          - path: /webhook-test
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      - hosts:
-    #          - *host
-
     persistence:
       data:
         existingClaim: n8n
