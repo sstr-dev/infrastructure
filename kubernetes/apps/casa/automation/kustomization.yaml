@@ -6,6 +6,6 @@ namespace: automation
 components:
   - ../../../components/common
   - ../../../vars/casa
-resources:
-  - ./n8n.yaml
+resources: []
+  #- ./n8n.yaml
 
