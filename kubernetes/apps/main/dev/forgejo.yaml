@@ -1,0 +1,9 @@
+# VOL_CAPACITY: 16Gi
+# VOL_STORAGECLASS: longhorn
+# VOL_ACCESSMODES: ReadWriteOnce
+# LB_SERVICE_IP: 10.0.60.56
+# LB_SERVICE_SEGMENT: servers
+
+
+# use volsync
+# secrets: ns-dev-secret

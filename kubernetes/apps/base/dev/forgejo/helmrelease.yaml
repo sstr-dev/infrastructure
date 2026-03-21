@@ -1,0 +1,232 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: forgejo
+spec:
+  interval: 15m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: 16.2.1
+  url: oci://code.forgejo.org/forgejo-helm/forgejo
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app forgejo
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: forgejo
+  values:
+    containerSecurityContext:
+      capabilities:
+        add: ["SYS_CHROOT"]
+
+    deployment:
+      annotations:
+        secret.reloader.stakater.com/reload: &secret forgejo-secret
+
+    strategy:
+      type: 'Recreate'
+
+    httpRoute:
+      enabled: true
+      hostnames: [ "${SECRET_FORGEJO_HOSTNAME}" ]
+      parentRefs:
+        - name: envoy-external
+          namespace: network
+          sectionName: https
+
+    service:
+      ssh:
+        type: LoadBalancer
+        port: 22
+        labels:
+          network.l2.cilium/segment: ${LB_SERVICE_SEGMENT}
+        annotations:
+          external-dns.alpha.kubernetes.io/hostname: "${SECRET_FORGEJO_GIT_HOSTNAME}"
+          io.cilium/lb-ipam-ips: ${LB_SERVICE_IP}
+
+    persistence:
+      enabled: true
+      mount: true
+      create: false
+      claimName: *app
+
+    valkey-cluster:
+      enabled: false
+    postgresql-ha:
+      enabled: false
+    postgresql:
+      enabled: false
+
+    gitea:
+      admin:
+        existingSecret: *secret
+        passwordMode: keepUpdated
+      ssh:
+        logLevel: INFO
+      config:
+        server:
+          ROOT_URL: https://${SECRET_FORGEJO_HOSTNAME}
+          DOMAIN: ${SECRET_FORGEJO_HOSTNAME}
+          SSH_DOMAIN: ${SECRET_FORGEJO_GIT_HOSTNAME}
+          LFS_START_SERVER: true
+          # OFFLINE_MODE: true
+          LANDING_PAGE: login
+          MINIMUM_KEY_SIZE_CHECK: true
+          SSH_PORT: 22
+          SSH_LISTEN_PORT: 2222
+        repository:
+          ROOT: /data/git/repositories
+          DEFAULT_BRANCH: main
+          DEFAULT_PRIVATE: true
+        lfs:
+          PATH: /data/git/lfs
+        service:
+          ALLOW_ONLY_EXTERNAL_REGISTRATION: true
+          #ALLOW_ONLY_EXTERNAL_REGISTRATION: false
+          DEFAULT_KEEP_EMAIL_PRIVATE: true
+          DISABLE_REGISTRATION: true
+          ENABLE_PASSKEY_AUTHENTICATION: false
+          SHOW_REGISTRATION_BUTTON: false
+          ENABLE_NOTIFY_MAIL: true
+          # DEFAULT_ALLOW_CREATE_ORGANIZATION: false
+          MAX_CREATION_LIMIT: 100
+        admin:
+          SEND_NOTIFICATION_EMAIL_ON_NEW_USER: true
+          #DISABLE_REGULAR_ORG_CREATION: true
+        cron:
+          ENABLED: true
+        #storage: &s3storage
+        #  STORAGE_TYPE: minio
+        #  MINIO_ENDPOINT: ${SECRET_S3_NAS_STORAGE_IP}:${SECRET_S3_NAS_STORAGE_PORT}
+        #  MINIO_BUCKET: forgejo
+        #  MINIO_LOCATION: home
+        #  MINIO_USE_SSL: true
+        #attachment: *s3storage
+        APP_NAME: 'Anubis Code Forge'
+        repository.pull-request:
+          WORK_IN_PROGRESS_PREFIXES: 'WIP:,[WIP]:'
+        mailer:
+          ENABLED: true
+          PROTOCOL: smtp
+          SMTP_ADDR: smtp-relay.network.svc.cluster.local
+          SMTP_PORT: 25
+          FROM: "Forgejo <${SECRET_SMTP_FROM_FULL}>"
+        database:
+          #PATH: /data/gitea.db
+          #DB_TYPE: sqlite3
+          #SQLITE_JOURNAL_MODE: wal
+          DB_TYPE: postgres
+          HOST: postgres-rw.database.svc.cluster.local:5432
+        cache:
+          ADAPTER: redis
+          # ADAPTER: memory
+        queue:
+          TYPE: redis
+          # TYPE: level
+        session:
+          PROVIDER: redis
+          # PROVIDER: db
+        openid:
+          ENABLE_OPENID_SIGNIN: false
+          ENABLE_OPENID_SIGNUP: true
+          UPDATE_AVATAR: true
+          WHITELISTED_URIS: ${SECRET_SSO_DOMAIN}
+        oauth2_client:
+          ENABLE_AUTO_REGISTRATION: true
+          ACCOUNT_LINKING: auto
+          USERNAME: preferred_username
+          UPDATE_AVATAR: true
+          OPENID_CONNECT_SCOPES: openid email profile groups
+        other:
+          SHOW_FOOTER_TEMPLATE_LOAD_TIME: false
+        packages:
+          LIMIT_SIZE_CONTAINER: '2 GiB'
+        #webhook:
+        #  ALLOWED_HOST_LIST: "*.${SECRET_DOMAIN}"
+        cron.archive_cleanup:
+          SCHEDULE: '@hourly'
+          OLDER_THAN: '2h'
+        security:
+          REVERSE_PROXY_TRUSTED_PROXIES: 127.0.0.0/8,::1/128,10.42.0.0/16,fd01::/48
+      livenessProbe:
+        tcpSocket: ~
+        httpGet:
+          path: /api/healthz
+          port: http
+        initialDelaySeconds: 30 # default is 200
+        periodSeconds: 30
+        successThreshold: 1
+        failureThreshold: 10
+      oauth:
+        - name: Authentik
+          provider: openidConnect
+          existingSecret: forgejo-secret
+          autoDiscoverUrl: https://${SECRET_SSO_DOMAIN}/application/o/forgejo/.well-known/openid-configuration
+          groupClaimName: users
+          adminGroup: homelab-admins
+          #iconUrl: https://${AUTH_HOST}/static/dist/assets/icons/icon.png
+      metrics:
+        enabled: true
+        serviceMonitor:
+          enabled: true
+          namespace: 'observability'
+    memcached:
+      enabled: false
+    serviceAccount:
+      create: true
+  valuesFrom:
+    #- targetPath: gitea.config.storage.MINIO_ACCESS_KEY_ID
+    #  kind: Secret
+    #  name: *secret
+    #  valuesKey: FORGEJO_AWS_ACCESS_KEY_ID
+    #- targetPath: gitea.config.storage.MINIO_SECRET_ACCESS_KEY
+    #  kind: Secret
+    #  name: *secret
+    #  valuesKey: FORGEJO_AWS_SECRET_ACCESS_KEY
+    #- targetPath: gitea.config.attachment.MINIO_ACCESS_KEY_ID
+    #  kind: Secret
+    #  name: *secret
+    #  valuesKey: FORGEJO_AWS_ACCESS_KEY_ID
+    #- targetPath: gitea.config.attachment.MINIO_SECRET_ACCESS_KEY
+    #  kind: Secret
+    #  name: *secret
+    #  valuesKey: FORGEJO_AWS_SECRET_ACCESS_KEY
+    - targetPath: gitea.config.database.NAME
+      kind: Secret
+      name: *secret
+      valuesKey: POSTGRES_DB
+    - targetPath: gitea.config.database.USER
+      kind: Secret
+      name: *secret
+      valuesKey: POSTGRES_USERNAME
+    - targetPath: gitea.config.database.PASSWD
+      kind: Secret
+      name: *secret
+      valuesKey: POSTGRES_PASSWORD
+    - targetPath: gitea.config.cache.HOST
+      kind: Secret
+      name: *secret
+      valuesKey: REDIS_URL
+    - targetPath: gitea.config.queue.CONN_STR
+      kind: Secret
+      name: *secret
+      valuesKey: REDIS_URL
+    - targetPath: gitea.config.session.PROVIDER_CONFIG
+      kind: Secret
+      name: *secret
+      valuesKey: REDIS_URL
+    - targetPath: gitea.config.security.SECRET_KEY
+      kind: Secret
+      name: *secret
+      valuesKey: FORGEJO_SECRET_KEY
+    - targetPath: gitea.config.security.INTERNAL_TOKEN
+      kind: Secret
+      name: *secret
+      valuesKey: FORGEJO_INTERNAL_TOKEN
