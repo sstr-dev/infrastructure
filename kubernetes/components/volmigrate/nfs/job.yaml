@@ -21,29 +21,15 @@ spec:
             - /bin/sh
             - -ec
             - |
-              if [ "${BOOTSTRAP_DEBUG_SLEEP:-0}" != "0" ]; then
-                echo "debug sleep: ${BOOTSTRAP_DEBUG_SLEEP}s"
-                sleep "${BOOTSTRAP_DEBUG_SLEEP:-0}"
+              if [ "${BOOTSTRAP_DEBUG_START_SLEEP:-0}" != "0" ]; then
+                echo "debug start sleep: ${BOOTSTRAP_DEBUG_START_SLEEP}s"
+                sleep "${BOOTSTRAP_DEBUG_START_SLEEP:-0}"
               fi
-
-              marker="/target/${BOOTSTRAP_MARKER:-.bootstrap-complete}"
-
-              if [ -f "$marker" ]; then
-                echo "bootstrap already completed"
-                exit 0
-              fi
-
-              if find /target -mindepth 1 -not -name "${BOOTSTRAP_MARKER:-.bootstrap-complete}" | read _; then
-                echo "target PVC is not empty, refusing to overwrite"
-                exit 1
-              fi
-
               cp -av /source/. /target/
-              touch "$marker"
               echo "bootstrap completed"
-              if [ "${BOOTSTRAP_DEBUG_SLEEP:-0}" != "0" ]; then
-                echo "debug sleep: ${BOOTSTRAP_DEBUG_SLEEP:-0}s"
-                sleep "${BOOTSTRAP_DEBUG_SLEEP:-0}"
+              if [ "${BOOTSTRAP_DEBUG_END_SLEEP:-0}" != "0" ]; then
+                echo "debug end sleep: ${BOOTSTRAP_DEBUG_END_SLEEP:-0}s"
+                sleep "${BOOTSTRAP_DEBUG_END_SLEEP:-0}"
               fi
           volumeMounts:
             - name: source

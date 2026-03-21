@@ -20,7 +20,7 @@ spec:
       APP: *app
       CLUSTER: ${CLUSTER}
       VOLSYNC_CAPACITY: 1Gi
-      BOOTSTRAP_DEBUG_SLEEP: "300"
+      BOOTSTRAP_DEBUG_END_SLEEP: "300"
       #VOLSYNC_STORAGECLASS: longhorn-volsync
       #VOLSYNC_SNAPSHOTCLASS: longhorn
   prune: true
