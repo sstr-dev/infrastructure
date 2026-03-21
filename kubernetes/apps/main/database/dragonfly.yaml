@@ -8,6 +8,9 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/base/database/dragonfly/operator
   prune: true
+  postBuild:
+    substitute:
+      CLUSTER: ${CLUSTER}
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -28,6 +31,9 @@ spec:
       failed:  status.phase == 'Failed' || status.phase == 'failed'
   path: ./kubernetes/apps/${CLUSTER}/database/dragonfly/cluster
   prune: true
+  postBuild:
+    substitute:
+      CLUSTER: ${CLUSTER}
   sourceRef:
     kind: GitRepository
     name: flux-system
