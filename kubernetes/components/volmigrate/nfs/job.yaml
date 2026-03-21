@@ -17,16 +17,13 @@ spec:
       containers:
         - name: seed
           image: ${BOOTSTRAP_IMAGE:-busybox:1.37.0}
-          env:
-            - name: BOOTSTRAP_DEBUG_SLEEP
-              value: "${BOOTSTRAP_DEBUG_SLEEP:-0}"
           command:
             - /bin/sh
             - -ec
             - |
               if [ "${BOOTSTRAP_DEBUG_SLEEP:-0}" != "0" ]; then
                 echo "debug sleep: ${BOOTSTRAP_DEBUG_SLEEP}s"
-                sleep "${BOOTSTRAP_DEBUG_SLEEP}"
+                sleep "${BOOTSTRAP_DEBUG_SLEEP:-0}"
               fi
 
               marker="/target/${BOOTSTRAP_MARKER:-.bootstrap-complete}"
@@ -44,6 +41,10 @@ spec:
               cp -av /source/. /target/
               touch "$marker"
               echo "bootstrap completed"
+              if [ "${BOOTSTRAP_DEBUG_SLEEP:-0}" != "0" ]; then
+                echo "debug sleep: ${BOOTSTRAP_DEBUG_SLEEP:-0}s"
+                sleep "${BOOTSTRAP_DEBUG_SLEEP:-0}"
+              fi
           volumeMounts:
             - name: source
               mountPath: /source
