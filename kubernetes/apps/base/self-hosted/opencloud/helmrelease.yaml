@@ -79,33 +79,12 @@ spec:
             port: &port 9200
           nats:
             port: 9233
-    #ingress:
-    #  app:
-    #    enabled: true
-    #    className: ${INGRESSCLASS}
-    #    annotations:
-    #      gethomepage.dev/enabled: 'true'
-    #      gethomepage.dev/group: Home
-    #      gethomepage.dev/name: OpenCloud
-    #      gethomepage.dev/description: "File sharing and collaboration solution."
-    #      gethomepage.dev/icon: open-cloud.png
-    #      gethomepage.dev/pod-selector: >-
-    #        app.kubernetes.io/name in (opencloud)
-    #    hosts:
-    #      - host: &host "home-files.${SECRET_DOMAIN}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: *port
-    #    tls:
-    #      - hosts:
-    #        - *host
+
     route:
       app:
         hostnames: ["home-files.${SECRET_DOMAIN}"]
         parentRefs:
-          - name: base
+          - name: envoy-external
             namespace: network
             sectionName: https
         rules:
