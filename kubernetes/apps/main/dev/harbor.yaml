@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app harbor
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/base/dev/harbor
+  postBuild:
+    substitute:
+      APP: *app
+      GATUS_SUBDOMAIN: "registry"
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+  dependsOn:
+    - name: cloudnative-pg-cluster
+      namespace: database
+    - name: external-secrets
+      namespace: external-secrets
+  components:
+    - ../../../../components/gatus/external/dev
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: dev
+  timeout: 5m
+

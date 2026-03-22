@@ -5,9 +5,9 @@ resources:
   - ./helmrelease.yaml
   - ./externalsecret.yaml
   #- ./manual-ingress.yaml
-  - ./pvc/registry.yaml
-  - ./pvc/jobservice.yaml
-  - ./pvc/jobservice-scandata.yaml
-  - ./pvc/redis.yaml
-  - ./pvc/trivy.yaml
+  #- ./pvc/registry.yaml
+  #- ./pvc/jobservice.yaml
+  #- ./pvc/jobservice-scandata.yaml
+  #- ./pvc/redis.yaml
+  #- ./pvc/trivy.yaml
   - ./httproute.yaml

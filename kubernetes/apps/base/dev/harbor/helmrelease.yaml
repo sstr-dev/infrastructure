@@ -43,39 +43,29 @@ spec:
     expose:
       # Set how to expose the service. Set the type as "ingress", "clusterIP", "nodePort" or "loadBalancer"
       # and fill the information in the corresponding section
-      type: nothing
+      type: clusterIP
       tls:
         enabled: false
-        # The source of the tls certificate. Set as "auto", "secret"
-        # or "none" and fill the information in the corresponding section
-        # 1) auto: generate the tls certificate automatically
-        # 2) secret: read the tls certificate from the specified secret.
-        # The tls certificate can be generated manually or by cert manager
-        # 3) none: configure no tls certificate for the ingress. If the default
-        # tls certificate is configured in the ingress controller, choose this option
-        certSource: none
-      #ingress:
-      #  annotations:
-      #    ingress.kubernetes.io/ssl-redirect: "true"
-      #    ingress.kubernetes.io/proxy-body-size: "0"
-      #    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-      #    nginx.ingress.kubernetes.io/proxy-body-size: "0"
-      #    nginx.ingress.kubernetes.io/custom-http-errors: "418"
-      #    nginx.ingress.kubernetes.io/proxy-connect-timeout: "480"
-      #    gethomepage.dev/enabled: "true"
-      #    gethomepage.dev/name: "Harbor"
-      #    gethomepage.dev/icon: "harbor.png"
-      #    gethomepage.dev/description: Container Registry
-      #    gethomepage.dev/group: "Infrastructure"
-      #    gethomepage.dev/href: "https://registry.${SECRET_DEV_DOMAIN}"
-      #    gethomepage.dev/pod-selector: "app.kubernetes.io/name=harbor,app.kubernetes.io/component=core"
-      #  className: iot-dev-nginx
-      #  hosts:
-      #    core: registry.${SECRET_DEV_DOMAIN}
+      clusterIP:
+        name: harbor
+        ports:
+          httpPort: 80
+
+      #type: nothing
+      #tls:
+      #  enabled: false
+      #  # The source of the tls certificate. Set as "auto", "secret"
+      #  # or "none" and fill the information in the corresponding section
+      #  # 1) auto: generate the tls certificate automatically
+      #  # 2) secret: read the tls certificate from the specified secret.
+      #  # The tls certificate can be generated manually or by cert manager
+      #  # 3) none: configure no tls certificate for the ingress. If the default
+      #  # tls certificate is configured in the ingress controller, choose this option
+      #  certSource: none
     database:
       type: external
       external:
-        host: postgres-cluster-rw.database.svc.cluster.local
+        host: postgres-rw.database.svc.cluster.local
         port: "5432"
         username: harbor
         existingSecret: *app
@@ -92,56 +82,61 @@ spec:
       enabled: true
       persistentVolumeClaim:
         registry:
-          existingClaim: "harbor-registry"
+          storageClass: longhorn
+          size: 50Gi
+          accessMode: ReadWriteOnce
         jobservice:
           jobLog:
-            existingClaim: "harbor-jobservice"
+            storageClass: local-hostpath
+            size: 1Gi
           scanDataExports:
-            existingClaim: "harbor-jobservice-scandata"
-        redis:
-          existingClaim: "harbor-redis"
+            storageClass: longhorn
+            size: 1Gi
+        #redis:
+        #  existingClaim: "harbor-redis"
         trivy:
-          existingClaim: "harbor-trivy-v2"
+          storageClass: longhorn
+          size: 30Gi
 
     redis:
       type: internal
-      internal:
-        image:
-          repository: ghcr.io/octohelm/harbor/redis-photon
-          tag: v2.14.0
-      podAnnotations: {}
-    exporter:
-      replicas: 1
-      revisionHistoryLimit: 3
-      image:
-        repository: ghcr.io/octohelm/harbor/harbor-exporter
-        tag: v2.14.0
-    portal:
-      image:
-        repository: ghcr.io/octohelm/harbor/harbor-portal
-        tag: v2.14.0
-      revisionHistoryLimit: 3
+      #internal:
+      #  image:
+      #    repository: ghcr.io/octohelm/harbor/redis-photon
+      #    tag: v2.14.0
+      #podAnnotations: {}
+    #exporter:
+    #  replicas: 1
+    #  revisionHistoryLimit: 3
+    #  image:
+    #    repository: ghcr.io/octohelm/harbor/harbor-exporter
+    #    tag: v2.14.0
+    #portal:
+    #  image:
+    #    repository: ghcr.io/octohelm/harbor/harbor-portal
+    #    tag: v2.14.0
+    #  revisionHistoryLimit: 3
     core:
-      image:
-        repository: ghcr.io/octohelm/harbor/harbor-core
-        tag: v2.14.0
-      revisionHistoryLimit: 3
+      #image:
+      #  repository: ghcr.io/octohelm/harbor/harbor-core
+      #  tag: v2.14.0
+      #revisionHistoryLimit: 3
       podAnnotations:
         secret.reloader.stakater.com/reload: *app
-    jobservice:
-      image:
-        repository: ghcr.io/octohelm/harbor/harbor-jobservice
-        tag: v2.14.0
-      revisionHistoryLimit: 3
+    #jobservice:
+    #  image:
+    #    repository: ghcr.io/octohelm/harbor/harbor-jobservice
+    #    tag: v2.14.0
+    #  revisionHistoryLimit: 3
     registry:
-      registry:
-        image:
-          repository: ghcr.io/octohelm/harbor/registry-photon
-          tag: v2.14.0
-      controller:
-        image:
-          repository: ghcr.io/octohelm/harbor/harbor-registryctl
-          tag: v2.14.0
+      #registry:
+      #  image:
+      #    repository: ghcr.io/octohelm/harbor/registry-photon
+      #    tag: v2.14.0
+      #controller:
+      #  image:
+      #    repository: ghcr.io/octohelm/harbor/harbor-registryctl
+      #    tag: v2.14.0
       upload_purging:
         enabled: true
         # remove files in _upload directories which exist for a period of time, default is one week.
@@ -154,9 +149,9 @@ spec:
       enabled: false
     trivy:
       enabled: true
-      image:
-        repository: ghcr.io/octohelm/harbor/trivy-adapter-photon
-        tag: v2.14.0
+      #image:
+      #  repository: ghcr.io/octohelm/harbor/trivy-adapter-photon
+      #  tag: v2.14.0
     notary:
       enabled: false
 

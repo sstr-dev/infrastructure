@@ -10,4 +10,5 @@ replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
   - ./forgejo.yaml
+  - ./harbor.yaml
 #resources: []
