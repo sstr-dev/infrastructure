@@ -23,6 +23,13 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         strategy: Recreate
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 99
+            runAsGroup: 100
+            fsGroup: 100
+            fsGroupChangePolicy: OnRootMismatch
         containers:
           app:
             image:
@@ -32,8 +39,8 @@ spec:
               TZ: ${CLUSTER_TIMEZONE}
               ALLOW_SIGNUP: "false"
               BASE_URL: https://home-mealie.${SECRET_DOMAIN}
-              PGID: 1000
-              PUID: 1000
+              PGID: 100
+              PUID: 99
               API_DOCS: false
               ALLOW_PASSWORD_LOGIN: false
               #TOKEN_TIME: "24" # hours
@@ -97,7 +104,7 @@ spec:
         hostnames:
           - "home-mealie.${SECRET_DOMAIN}"
         parentRefs:
-          - name: base
+          - name: envoy-external
             namespace: network
             sectionName: https
         rules:
