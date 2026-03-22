@@ -25,5 +25,5 @@ resources:
   #- ./ocis.yaml
   #- ./convertx.yaml
   - ./change-detection.yaml
-  - ./privatebin.yaml
+  #- ./privatebin.yaml
   - ./ocsinventory.yaml

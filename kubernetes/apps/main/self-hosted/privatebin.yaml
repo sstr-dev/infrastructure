@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app privatebin
+spec:
+  interval: 1h
+  #path: ./kubernetes/apps/base/self-hosted/privatebin
+  path: ./kubernetes/apps/base/migration/common
+  components:
+    - ../../../../components/volsync
+    - ../../../../components/volmigrate/nfs
+  postBuild:
+    substitute:
+      APP: *app
+      REPLICAS: "1"
+      CLUSTER: ${CLUSTER}
+      VOLSYNC_CAPACITY: 1Gi
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  timeout: 5m
+
+
+
