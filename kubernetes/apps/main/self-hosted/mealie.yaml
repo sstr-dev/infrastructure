@@ -26,7 +26,7 @@ spec:
       - kind: Secret
         name: cluster-secrets
   dependsOn:
-    - name: postgres-cluster
+    - name: cloudnative-pg-cluster
       namespace: database
     - name: external-secrets
       namespace: security
