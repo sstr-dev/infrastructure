@@ -19,7 +19,7 @@ resources:
   #- ./paperless-gotenberg.yaml
   #- ./paperless-tika.yaml
   #- ./paperless.yaml
-  #- ./mealie.yaml
+  - ./mealie.yaml
   #- ./opencloud.yaml
   #- ./change-detection.yaml
   #- ./privatebin.yaml

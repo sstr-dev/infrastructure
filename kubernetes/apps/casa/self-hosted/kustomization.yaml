@@ -20,7 +20,7 @@ resources:
   - ./paperless-tika.yaml
   - ./paperless.yaml
   #- ./tandoor.yaml
-  - ./mealie.yaml
+  #- ./mealie.yaml
   - ./opencloud.yaml
   #- ./ocis.yaml
   #- ./convertx.yaml
