@@ -16,9 +16,7 @@ resources:
   - ./homepage.yaml
   #- ./snipe-it.yaml
   - ./drawio.yaml
-  #- ./paperless-gotenberg.yaml
-  #- ./paperless-tika.yaml
-  #- ./paperless.yaml
+  - ./paperless.yaml
   - ./mealie.yaml
   - ./opencloud.yaml
   #- ./change-detection.yaml
