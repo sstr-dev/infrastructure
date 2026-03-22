@@ -51,7 +51,7 @@ spec:
         hostnames:
           - "{{ .Release.Name }}.${SECRET_DEV_DOMAIN}"
         parentRefs:
-          - name: dev
+          - name: envoy-external
             namespace: network
             sectionName: https
         rules:

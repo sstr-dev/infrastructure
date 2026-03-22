@@ -5,11 +5,11 @@ metadata:
   name: &app privatebin
 spec:
   interval: 1h
-  #path: ./kubernetes/apps/base/self-hosted/privatebin
-  path: ./kubernetes/apps/base/migration/common
+  path: ./kubernetes/apps/base/self-hosted/privatebin
+  #path: ./kubernetes/apps/base/migration/common
   components:
     - ../../../../components/volsync
-    - ../../../../components/volmigrate/nfs
+    #- ../../../../components/volmigrate/nfs
   postBuild:
     substitute:
       APP: *app
