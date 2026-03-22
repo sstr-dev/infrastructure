@@ -18,13 +18,13 @@ spec:
           configmap.reloader.stakater.com/reload: &configmap opencloud-config
         pod:
           securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
+            runAsUser: 99
+            runAsGroup: 100
+            fsGroup: 100
             runAsNonRoot: true
-            fsGroup: 1000
             fsGroupChangePolicy: OnRootMismatch
-            supplementalGroups:
-              - 65542 # gladius:external-services
+            #supplementalGroups:
+            #  - 65542 # gladius:external-services
 
         containers:
           app:

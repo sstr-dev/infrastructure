@@ -21,7 +21,7 @@ resources:
   - ./paperless.yaml
   #- ./tandoor.yaml
   #- ./mealie.yaml
-  - ./opencloud.yaml
+  #- ./opencloud.yaml
   #- ./ocis.yaml
   #- ./convertx.yaml
   - ./change-detection.yaml
