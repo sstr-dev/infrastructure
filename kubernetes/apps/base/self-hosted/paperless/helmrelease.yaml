@@ -127,35 +127,6 @@ spec:
         ports:
           http:
             port: 6379
-    #ingress:
-    #  app:
-    #    enabled: true
-    #    className: iot-nginx
-    #    annotations:
-    #      nginx.ingress.kubernetes.io/proxy-body-size: 4G
-    #      nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    #      gethomepage.dev/enabled: "true"
-    #      gethomepage.dev/group: Home
-    #      gethomepage.dev/name: Paperless
-    #      gethomepage.dev/icon: paperless-ngx.png
-    #      gethomepage.dev/description: Document OCR Software
-    #      gethomepage.dev/widget.type: paperlessngx
-    #      gethomepage.dev/widget.url: "http://{{ .Release.Name }}.{{ .Release.Namespace }}:8000"
-    #      gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}` }}"
-    #      gethomepage.dev/pod-selector: >-
-    #        app.kubernetes.io/name in (
-    #          paperless
-    #        )
-    #    hosts:
-    #      - host: &host "dms.${SECRET_MAIN_DOMAIN_NAME}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      - hosts:
-    #        - *host
     route:
       app:
         hostnames:
@@ -164,13 +135,7 @@ spec:
           - name: main
             namespace: network
             sectionName: https
-        #rules:
-        #  - backendRefs:
-        #      - identifier: *app
-        #        port: *port
         annotations:
-          nginx.ingress.kubernetes.io/proxy-body-size: 4G
-          nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
           #gethomepage.dev/enabled: "true"
           #gethomepage.dev/group: Home
           #gethomepage.dev/name: Paperless

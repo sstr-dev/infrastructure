@@ -14,7 +14,7 @@ resources:
   #- ./photon/ks.yaml
   - ./homepage.yaml
   - ./snipe-it.yaml
-  - ./drawio.yaml
+  #- ./drawio.yaml
   #- ./part-db.yaml # mysql not work, remove it
   - ./paperless-gotenberg.yaml
   - ./paperless-tika.yaml
@@ -26,4 +26,4 @@ resources:
   #- ./convertx.yaml
   - ./change-detection.yaml
   #- ./privatebin.yaml
-  - ./ocsinventory.yaml
+  #- ./ocsinventory.yaml
