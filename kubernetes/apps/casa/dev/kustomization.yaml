@@ -7,5 +7,5 @@ components:
   - ../../../components/common
   - ../../../vars/casa
 resources:
-  - ./harbor.yaml
+  #- ./harbor.yaml
   - ./postgres-dev-cluster.yaml
