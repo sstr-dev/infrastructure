@@ -27,7 +27,7 @@ spec:
           *app :
             image:
               repository: ghcr.io/prometheus-pve/prometheus-pve-exporter
-              tag: 3.8.1
+              tag: 3.8.2
             env:
               PYTHONWARNINGS: once
             resources:
