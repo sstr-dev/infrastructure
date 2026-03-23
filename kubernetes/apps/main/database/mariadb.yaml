@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app mariadb
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/base/database/mariadb/server
+  components:
+    - ../../../../components/vol/base
+  postBuild:
+    substitute:
+      APP: *app
+      APP_UID: "99"
+      APP_GID: "100"
+      VOL_CAPACITY: 5Gi
+      VOL_STORAGECLASS: nfs-retain
+      VOL_ACCESSMODES: ReadWriteMany
+      VOL_RESOURCEPOLICY: keep
+      LB_SERVICE_IP: 10.0.60.60
+      LB_SERVICE_SEGMENT: servers
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+  dependsOn:
+    - name: external-secrets
+      namespace: external-secrets
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  timeout: 5m
+  wait: false

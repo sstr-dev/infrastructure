@@ -11,4 +11,5 @@ replacements:
 resources:
   - ./cloudnative-pg.yaml
   - ./dragonfly.yaml
+  - ./mariadb.yaml
 # TODO: optional: mariadb, mongodb, kafka
