@@ -62,6 +62,7 @@ spec:
       app:
         controller: mariadb
         type: LoadBalancer
+        externalTrafficPolicy: Cluster
         # ipFamilyPolicy: PreferDualStack
         labels:
           network.l2.cilium/segment: ${LB_SERVICE_SEGMENT}
