@@ -59,7 +59,21 @@ spec:
         folder: observability
         matchLabels:
           grafana.internal/instance: grafana
+    kubelet:
+      enabled: true
+      serviceMonitor:
+        metricRelabelings:
+          # Drop high cardinality labels
+          - action: labeldrop
+            regex: (uid)
+          - action: labeldrop
+            regex: (id|name)
+          - action: drop
+            sourceLabels:
+              - "__name__"
+            regex: (rest_client_request_duration_seconds_bucket|rest_client_request_duration_seconds_sum|rest_client_request_duration_seconds_count)
     kubeEtcd:
+      enabled: false
       service:
         selector:
           component: kube-apiserver # etcd runs on control plane nodes
@@ -71,9 +85,16 @@ spec:
         - pods=[*]
         - deployments=[*]
         - persistentvolumeclaims=[*]
+    nodeExporter:
+      enabled: false
     prometheus-node-exporter:
-      enabled: false # vmms
+      #enabled: false # vmms
       fullnameOverride: node-exporter
+    kubeScheduler:
+      enabled: false
+
+    kubeStateMetrics:
+      enabled: false
     additionalPrometheusRulesMap:
       dockerhub-rules:
         groups:
