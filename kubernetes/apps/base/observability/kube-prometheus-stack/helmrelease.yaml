@@ -72,7 +72,7 @@ spec:
         - deployments=[*]
         - persistentvolumeclaims=[*]
     prometheus-node-exporter:
-      # enabled: false # vmms
+      enabled: false # vmms
       fullnameOverride: node-exporter
     additionalPrometheusRulesMap:
       dockerhub-rules:

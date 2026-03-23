@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app node-exporter-probes
+spec:
+  dependsOn:
+    - name: kube-prometheus-stack
+  path: ./kubernetes/apps/${CLUSTER}/observability/node-exporter-probes
+  prune: true
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  interval: 30m
+  retryInterval: 1m
+  timeout: 5m
