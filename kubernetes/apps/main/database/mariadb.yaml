@@ -5,7 +5,7 @@ metadata:
   name: &app mariadb
 spec:
   interval: 1h
-  path: ./kubernetes/apps/base/database/mariadb/server
+  path: ./kubernetes/apps/base/database/mariadb-server
   components:
     - ../../../../components/vol/base
   postBuild:
