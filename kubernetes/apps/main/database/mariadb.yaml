@@ -19,6 +19,7 @@ spec:
       VOL_RESOURCEPOLICY: keep
       LB_SERVICE_IP: 10.0.60.60
       LB_SERVICE_SEGMENT: servers
+      CLUSTER: ${CLUSTER}
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
