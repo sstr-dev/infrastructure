@@ -36,7 +36,7 @@ spec:
               # REQUIRED: OUTGOING MAIL SERVER SETTINGS
               # --------------------------------------------
               MAIL_MAILER: smtp
-              MAIL_HOST: smtp-relay.default.svc.cluster.local
+              MAIL_HOST: smtp-relay.network.svc.cluster.local
               MAIL_PORT: "25"
               MAIL_TLS_VERIFY_PEER: 'false'
               MAIL_FROM_ADDR: "${SECRET_SMTP_FROM_FULL}"
@@ -77,7 +77,13 @@ spec:
                 memory: 300M
               limits:
                 memory: 500M
-
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+        fsGroupChangePolicy: OnRootMismatch
     #serviceMonitor:
     #  app:
     #    serviceName: *app
@@ -94,38 +100,13 @@ spec:
         ports:
           http:
             port: 80
-    #ingress:
-    #  iot:
-    #    enabled: ${IOTINGRESS:=false}
-    #    className: iot-nginx
-    #    annotations:
-    #      # Homepage-Integration aktivieren
-    #      gethomepage.dev/enabled: "true"
-    #      # Gruppe im Dashboard
-    #      gethomepage.dev/group: "Home"
-    #      # Anzeigename
-    #      gethomepage.dev/name: "Snipe-IT"
-    #      # Beschreibung / Tooltip
-    #      gethomepage.dev/description: "Asset-Management mit Snipe-IT"
-    #      # Icon (muss in /app/public/icons liegen)
-    #      gethomepage.dev/icon: "snipe-it.png"
-    #    hosts:
-    #      - host: &host "inventory.${SECRET_MAIN_DOMAIN_NAME}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      #- secretName: chart-example-tls
-    #      - hosts:
-    #        - *host
+
     route:
       app:
         hostnames:
           - "inventory.${SECRET_MAIN_DOMAIN_NAME}"
         parentRefs:
-          - name: main
+          - name: envoy-external
             namespace: network
             sectionName: https
         rules:
@@ -150,9 +131,6 @@ spec:
         enabled: true
         type: persistentVolumeClaim
         existingClaim: *app
-        #storageClass: "sc-standard"
-        #accessMode: ReadWriteMany
-        #size: 5Gi
         advancedMounts:
           snipe-it:
             app:

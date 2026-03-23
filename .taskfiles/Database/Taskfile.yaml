@@ -387,7 +387,7 @@ tasks:
         msg: "❌ CNPG cluster '{{.dbcluster}}' not found in namespace '{{.ns}}'!"
 
 
-
+  # mariadb clusters
   mariadb:clusters:
     desc: List MariaDB cluster resources
     summary: |
@@ -409,6 +409,54 @@ tasks:
       - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get crd mariadbs.k8s.mariadb.com
         msg: "❌ MariaDB CRDs not found in cluster '{{.cluster}}'!"
 
+  # task db:mariadb:dump cluster=main database=app
+  # task db:mariadb:dump cluster=main name=mariadb database=app file=.local/mariadb/dump/mariadb-app.sql
+  mariadb:dump:
+    desc: Create a local dump from a k8s.mariadb.com MariaDB cluster
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the MariaDB cluster (default: database)
+        name: MariaDB resource / pod prefix (default: mariadb)
+        database: Database to dump (required)
+        secret: Secret containing the root password (default: mariadb-secret)
+        passwordKey: Secret key for the root password (default: rootPassword)
+        folder: Local output directory (default: {{.ROOT_DIR}}/.local/mariadb/dump)
+        file: Output file name (optional)
+    vars:
+      ns: '{{.ns | default "database"}}'
+      name: '{{.name | default "mariadb"}}'
+      database: '{{ or .database (fail "Argument (database) is required") }}'
+      secret: '{{.secret | default "mariadb-secret"}}'
+      passwordKey: '{{.passwordKey | default "rootPassword"}}'
+      folder: '{{.folder | default (printf "%s/.local/mariadb/dump" .ROOT_DIR)}}'
+      file: '{{.file | default (printf "%s/%s-%s.sql" .folder .name .database)}}'
+      pod:
+        sh: |
+          kubectl --context {{.cluster}} --namespace {{.ns}} get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep '^{{.name}}-' | head -n1
+    cmds:
+      - mkdir -p {{.folder}}
+      - |
+        set -euo pipefail
+
+        ROOT_PASSWORD=$(kubectl --context {{.cluster}} --namespace {{.ns}} get secret {{.secret}} -o jsonpath='{.data.{{.passwordKey}}}' | base64 -d)
+        kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.pod}} -- sh -c           'exec mariadb-dump -uroot -p"$1" --databases "$2"' -- "$ROOT_PASSWORD" '{{.database}}' > {{.file}}
+      - echo "Wrote dump to {{.file}}"
+    requires:
+      vars: ["cluster", "database"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: which kubectl
+        msg: "❌ kubectl not found in PATH"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get mariadb.k8s.mariadb.com {{.name}}
+        msg: "❌ MariaDB cluster '{{.name}}' not found in namespace '{{.ns}}'!"
+      - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get secret {{.secret}} -o jsonpath='{.data.{{.passwordKey}}}'
+        msg: "❌ Secret '{{.secret}}' with key '{{.passwordKey}}' not found in namespace '{{.ns}}'!"
+      - sh: |
+          kubectl --context {{.cluster}} --namespace {{.ns}} get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep -q '^{{.name}}-'
+        msg: "❌ MariaDB pod with prefix '{{.name}}-' not found in namespace '{{.ns}}'!"
+
   mariadb:backup:
     desc: Show MariaDB backup resources for a cluster
     summary: |
@@ -427,6 +475,135 @@ tasks:
         msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
       - sh: kubectl --context {{.cluster}} --namespace {{.ns}} get backup.k8s.mariadb.com {{.name}}
         msg: "❌ MariaDB backup '{{.name}}' not found in namespace '{{.ns}}'!"
+
+
+  # task db:mariadb-server:exec cluster=main
+  # task db:mariadb-server:exec cluster=main cmd='mariadb -uroot -e "SHOW DATABASES;"'
+  mariadb-server:exec:
+    desc: Run a command in the MariaDB single-server pod
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the MariaDB server (default: database)
+        release: Pod name prefix / Helm release name (default: mariadb)
+        cmd: Command to run inside the pod (default: mariadb shell)
+    interactive: true
+    vars:
+      ns: '{{.ns | default "database"}}'
+      release: '{{.release | default "mariadb"}}'
+      cmd: '{{.cmd | default `mariadb -uroot`}}'
+      pod:
+        sh: |
+          kubectl --context {{.cluster}} --namespace {{.ns}} get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep '^{{.release}}-' | head -n1
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec -it {{.pod}} -- sh -c '{{.cmd}}'
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: which kubectl
+        msg: "❌ kubectl not found in PATH"
+      - sh: |
+          kubectl --context {{.cluster}} --namespace {{.ns}} get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep -q '^{{.release}}-'
+        msg: "❌ MariaDB server pod with prefix '{{.release}}-' not found in namespace '{{.ns}}'!"
+
+  # task db:mariadb-server:databases cluster=main
+  mariadb-server:databases:
+    desc: List databases in the MariaDB single-server pod
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the MariaDB server (default: database)
+        release: Pod name prefix / Helm release name (default: mariadb)
+    vars:
+      ns: '{{.ns | default "database"}}'
+      release: '{{.release | default "mariadb"}}'
+      pod:
+        sh: |
+          kubectl --context {{.cluster}} --namespace {{.ns}} get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep '^{{.release}}-' | head -n1
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.pod}} -- mariadb -N -B -uroot -e "SHOW DATABASES;"
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: which kubectl
+        msg: "❌ kubectl not found in PATH"
+      - sh: |
+          kubectl --context {{.cluster}} --namespace {{.ns}} get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep -q '^{{.release}}-'
+        msg: "❌ MariaDB server pod with prefix '{{.release}}-' not found in namespace '{{.ns}}'!"
+
+  # task db:mariadb-server:dump cluster=main database=nextcloud
+  # task db:mariadb-server:dump cluster=main database=nextcloud file=.local/mariadb/dump/mariadb-nextcloud.sql
+  mariadb-server:dump:
+    desc: Create a local dump from the MariaDB single-server pod
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the MariaDB server (default: database)
+        release: Pod name prefix / Helm release name (default: mariadb)
+        database: Database to dump (required)
+        folder: Local output directory (default: {{.ROOT_DIR}}/.local/mariadb/dump)
+        file: Output file name (optional)
+    vars:
+      ns: '{{.ns | default "database"}}'
+      release: '{{.release | default "mariadb"}}'
+      database: '{{ or .database (fail "Argument (database) is required") }}'
+      folder: '{{.folder | default (printf "%s/.local/mariadb/dump" .ROOT_DIR)}}'
+      file: '{{.file | default (printf "%s/%s-%s.sql" .folder .release .database)}}'
+      pod:
+        sh: |
+          kubectl --context {{.cluster}} --namespace {{.ns}} get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep '^{{.release}}-' | head -n1
+    cmds:
+      - mkdir -p {{.folder}}
+      - kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.pod}} -- mariadb-dump -uroot --databases {{.database}} > {{.file}}
+      - echo "Wrote dump to {{.file}}"
+    requires:
+      vars: ["cluster", "database"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: which kubectl
+        msg: "❌ kubectl not found in PATH"
+      - sh: |
+          kubectl --context {{.cluster}} --namespace {{.ns}} get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep -q '^{{.release}}-'
+        msg: "❌ MariaDB server pod with prefix '{{.release}}-' not found in namespace '{{.ns}}'!"
+
+  # task db:mariadb-server:restore cluster=main database=nextcloud file=.local/mariadb/dump/mariadb-nextcloud.sql
+  mariadb-server:restore:
+    desc: Restore a local dump into the MariaDB single-server pod
+    summary: |
+      Args:
+        cluster: Cluster context (required)
+        ns: Namespace of the MariaDB server (default: database)
+        release: Pod name prefix / Helm release name (default: mariadb)
+        database: Target database to restore into (required)
+        file: Local dump file to restore (required)
+    vars:
+      ns: '{{.ns | default "database"}}'
+      release: '{{.release | default "mariadb"}}'
+      database: '{{ or .database (fail "Argument (database) is required") }}'
+      file: '{{.file | default ""}}'
+      pod:
+        sh: |
+          kubectl --context {{.cluster}} --namespace {{.ns}} get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep '^{{.release}}-' | head -n1
+    cmds:
+      - |
+        set -euo pipefail
+        cat '{{.file}}' | kubectl --context {{.cluster}} --namespace {{.ns}} exec -i {{.pod}} --           mariadb -uroot {{.database}}
+      - echo "Restored {{.file}} into {{.release}}/{{.database}}"
+    requires:
+      vars: ["cluster", "database", "file"]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: which kubectl
+        msg: "❌ kubectl not found in PATH"
+      - sh: test -f {{.file}}
+        msg: "❌ dump file '{{.file}}' not found!"
+      - sh: |
+          kubectl --context {{.cluster}} --namespace {{.ns}} get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep -q '^{{.release}}-'
+        msg: "❌ MariaDB server pod with prefix '{{.release}}-' not found in namespace '{{.ns}}'!"
 
   mongo:clusters:
     desc: List MongoDBCommunity clusters

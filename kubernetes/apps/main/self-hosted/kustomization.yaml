@@ -14,7 +14,7 @@ resources:
   #- ./cyberchef.yaml
   #- ./photon/ks.yaml
   - ./homepage.yaml
-  #- ./snipe-it.yaml
+  - ./snipe-it.yaml
   - ./drawio.yaml
   - ./paperless.yaml
   - ./mealie.yaml
