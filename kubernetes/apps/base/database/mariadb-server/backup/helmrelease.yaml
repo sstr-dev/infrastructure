@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: postgres17-backup
+  name: mariadb-backup
 spec:
   interval: 1h
   chartRef:
@@ -26,9 +26,9 @@ spec:
             env:
               TZ: ${CLUSTER_TIMEZONE}
               EXCLUDE_DBS: app
-              DB_TYPE: postgres
-              POSTGRES_EXTRA_OPTS: "--blobs --clean --create --compress=9"
-              BACKUP_DIR: /backups/database/postgres17
+              DB_TYPE: mariadb
+              MARIADB_EXTRA_OPTS: "--single-transaction --quick --routines --events --triggers --hex-blob --add-drop-table"
+              BACKUP_DIR: /backups/database/mariadb
               BACKUP_KEEP_DAYS: "7"
               BACKUP_KEEP_WEEKS: "4"
               BACKUP_KEEP_MONTHS: "6"
