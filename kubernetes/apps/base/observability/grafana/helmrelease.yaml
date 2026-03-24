@@ -277,17 +277,18 @@ spec:
               database: teslamate
               postgresVersion: 1000
               sslmode: disable
-          - name: InfluxDB
-            type: influxdb
-            access: proxy
-            url: http://influx.database.svc:8086
-            secureJsonData:
-              token: "$INFLUX_GRAFANA_TOKEN"
-            jsonData:
-              version: Flux
-              organization: default
-              defaultBucket: home_assistant
-              tlsSkipVerify: true
+          ## remove influx dependecy
+          #- name: InfluxDB
+          #  type: influxdb
+          #  access: proxy
+          #  url: http://influx.database.svc:8086
+          #  secureJsonData:
+          #    token: "$INFLUX_GRAFANA_TOKEN"
+          #  jsonData:
+          #    version: Flux
+          #    organization: default
+          #    defaultBucket: home_assistant
+          #    tlsSkipVerify: true
         deleteDatasources:
           - name: Alertmanager
             orgId: 1
