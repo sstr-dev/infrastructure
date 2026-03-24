@@ -61,11 +61,11 @@ spec:
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
 
-    defaultPodOptions:
-      dnsConfig:
-        options:
-          - name: ndots
-            value: "1"
+    #defaultPodOptions:
+    #  dnsConfig:
+    #    options:
+    #      - name: ndots
+    #        value: "1"
       #securityContext:
       #  runAsUser: 99
       #  runAsGroup: 100
