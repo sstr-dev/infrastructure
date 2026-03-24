@@ -50,13 +50,17 @@ spec:
               PAPERLESS_DBENGINE: postgresql
               PAPERLESS_DBPORT: "5432"
               PAPERLESS_DBNAME: *app
-              PAPERLESS_DBHOST: postgres-cluster-rw.database.svc.cluster.local
+              PAPERLESS_DBHOST: postgres-rw.database.svc.cluster.local
               PAPERLESS_DBUSER: *app
               # Folders
-              PAPERLESS_CONSUMPTION_DIR: /data/df/incoming
-              PAPERLESS_DATA_DIR: /data/local/data
-              PAPERLESS_EXPORT_DIR: /data/df/export
-              PAPERLESS_MEDIA_ROOT: /data/local/media
+              #PAPERLESS_CONSUMPTION_DIR: /data/df/incoming
+              #PAPERLESS_DATA_DIR: /data/local/data
+              #PAPERLESS_EXPORT_DIR: /data/df/export
+              #PAPERLESS_MEDIA_ROOT: /data/local/media
+              PAPERLESS_CONSUMPTION_DIR: /data/nas/consume
+              PAPERLESS_DATA_DIR: /data/nas/data
+              PAPERLESS_EXPORT_DIR: /data/nas/export
+              PAPERLESS_MEDIA_ROOT: /data/nas/media
               # OCR
               PAPERLESS_OCR_LANGUAGES: deu+eng
               PAPERLESS_OCR_LANGUAGE: deu
@@ -72,10 +76,10 @@ spec:
               PAPERLESS_TIKA_ENDPOINT: http://tika.self-hosted.svc.cluster.local:9998
               # Configure redis integration
               #PAPERLESS_REDIS: redis://dragonfly-cluster.database.svc.cluster.local:6379/1
-              PAPERLESS_REDIS: redis://paperless-redis.self-hosted.svc.cluster.local:6379
+              # PAPERLESS_REDIS: redis://paperless-redis.self-hosted.svc.cluster.local:6379
               # Configure user permissions
-              USERMAP_UID: 1000
-              USERMAP_GID: 1000
+              USERMAP_UID: 99
+              USERMAP_GID: 100
               # Configure SSO
               PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
               PAPERLESS_ACCOUNT_ALLOW_SIGNUPS: 'false'
@@ -103,18 +107,18 @@ spec:
                 memory: 768Mi
               limits:
                 memory: 2Gi
-      redis:
-        containers:
-          redis:
-            image:
-              repository: ghcr.io/valkey-io/valkey
-              tag: 9.0.2
-            resources:
-              requests:
-                cpu: 5m
-                memory: 32Mi
-              limits:
-                memory: 128Mi
+      #redis:
+      #  containers:
+      #    redis:
+      #      image:
+      #        repository: ghcr.io/valkey-io/valkey
+      #        tag: 9.0.2
+      #      resources:
+      #        requests:
+      #          cpu: 5m
+      #          memory: 32Mi
+      #        limits:
+      #          memory: 128Mi
     service:
       app:
         primary: true
@@ -122,17 +126,17 @@ spec:
         ports:
           http:
             port: *port
-      redis:
-        controller: redis
-        ports:
-          http:
-            port: 6379
+      #redis:
+      #  controller: redis
+      #  ports:
+      #    http:
+      #      port: 6379
     route:
       app:
         hostnames:
           - "dms.${SECRET_MAIN_DOMAIN_NAME}"
         parentRefs:
-          - name: main
+          - name: envoy-external
             namespace: network
             sectionName: https
         annotations:
@@ -150,28 +154,68 @@ spec:
                 port: http
 
     persistence:
+      # data to pvc
+      # media and consume to data nfs
+      # export nfs backup
       data:
-        enabled: true
-        type: hostPath
-        hostPath: ${DMS_DATA_PATH}/paperless
+        type: persistentVolumeClaim
+        storageClass: ${VOL_STORAGECLASS:=nfs-retain}
+        accessMode: ReadWriteOnce
+        size: 1Gi
         advancedMounts:
           *app :
             app:
-              - path: /data/local
+              - path: /data/nas/data
+      media:
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/data/paperless/media
+        advancedMounts:
+          *app :
+            app:
+              - path: /data/nas/media
+      #  python3 /usr/src/paperless/src/manage.py document_exporter /data/nas/export --compare-checksums --delete --use-filename-format --use-folder-prefix
+      #  python3 /usr/src/paperless/src/manage.py document_exporter /data/df/export --compare-checksums --delete --use-filename-format --use-folder-prefix
       export:
-        enabled: true
-        type: hostPath
-        hostPath: ${SHARED_DATA_PATH}/dms_export
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/main-backup/paperless-export
         advancedMounts:
           *app :
             app:
-              - path: /data/df/export
-      incoming:
-        enabled: true
-        type: hostPath
-        hostPath: ${SHARED_DATA_PATH}/dms_import
+              - path: /data/nas/export
+      consume:
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/data/consume
         advancedMounts:
           *app :
             app:
-              - path: /data/df/incoming
+              - path: /data/nas/consume
+
+
+      #data:
+      #  enabled: true
+      #  type: hostPath
+      #  hostPath: ${DMS_DATA_PATH}/paperless
+      #  advancedMounts:
+      #    *app :
+      #      app:
+      #        - path: /data/local
+      #export:
+      #  enabled: true
+      #  type: hostPath
+      #  hostPath: ${SHARED_DATA_PATH}/dms_export
+      #  advancedMounts:
+      #    *app :
+      #      app:
+      #        - path: /data/df/export
+      #incoming:
+      #  enabled: true
+      #  type: hostPath
+      #  hostPath: ${SHARED_DATA_PATH}/dms_import
+      #  advancedMounts:
+      #    *app :
+      #      app:
+      #        - path: /data/df/incoming
 
