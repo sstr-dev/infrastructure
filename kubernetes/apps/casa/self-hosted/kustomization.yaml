@@ -16,9 +16,9 @@ resources:
   #- ./snipe-it.yaml
   #- ./drawio.yaml
   #- ./part-db.yaml # mysql not work, remove it
-  - ./paperless-gotenberg.yaml
-  - ./paperless-tika.yaml
-  - ./paperless.yaml
+  #- ./paperless-gotenberg.yaml
+  #- ./paperless-tika.yaml
+  #- ./paperless.yaml
   #- ./tandoor.yaml
   #- ./mealie.yaml
   #- ./opencloud.yaml
