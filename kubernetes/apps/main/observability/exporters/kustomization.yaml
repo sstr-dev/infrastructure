@@ -7,3 +7,4 @@ resources:
   - ./pve-exporter.yaml
   - ./nut-exporter.yaml
   - ./node-exporter.yaml
+  - ./unpoller.yamls

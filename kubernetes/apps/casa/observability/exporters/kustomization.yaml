@@ -6,3 +6,4 @@ resources:
   - ./blackbox-exporter.yaml
   - ./pve-exporter.yaml
   - ./nut-exporter.yaml
+
