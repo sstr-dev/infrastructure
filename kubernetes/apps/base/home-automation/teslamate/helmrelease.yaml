@@ -26,15 +26,6 @@ spec:
       teslamate:
         annotations:
           reloader.stakater.com/auto: "true"
-        #initContainers:
-        #  init-db:
-        #    image:
-        #      repository: ghcr.io/sstr-dev/postgres-init
-        #      tag: 17.7@sha256:7f4c3051706da3025f97b73c6acc60000e9c1c7a12cbfede5837e2a19d2e96f2
-        #      pullPolicy: IfNotPresent
-        #    envFrom:
-        #      - secretRef:
-        #          name: *app
         containers:
           app:
             image:
@@ -63,7 +54,7 @@ spec:
         hostnames:
           - "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
         parentRefs:
-          - name: main
+          - name: ${GATEWAY:=envoy-internal}
             namespace: network
             sectionName: https
 

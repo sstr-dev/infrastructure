@@ -5,8 +5,8 @@ kind: Kustomization
 namespace: home-automation
 components:
   - ../../../components/common
-  - ../../../vars/casa
-resources:
-  - ./scrypted.yaml
-  - ./go2rtc.yaml
-  #- ./teslamate.yaml
+  - ../../../vars/main/cluster
+replacements:
+  - path: ../../../components/replacements/ks.yaml
+resources: []
+#  - ./teslamate.yaml
