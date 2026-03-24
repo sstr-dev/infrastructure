@@ -1,0 +1,59 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: unpoller
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  values:
+    controllers:
+      unpoller:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/unpoller/unpoller
+              tag: v2.38.0@sha256:006cf7b8139fd7e3ced6b0ade7f822a0657a09a727b26befa635a09226efc6db
+            env:
+              TZ: ${CLUSTER_TIMEZONE}
+              UP_UNIFI_DEFAULT_ROLE: home-ops
+              UP_UNIFI_DEFAULT_VERIFY_SSL: false
+              UP_PROMETHEUS_HTTP_LISTEN: 0.0.0.0:80
+              UP_INFLUXDB_DISABLE: true
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: &port 80
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 128Mi
+    service:
+      app:
+        ports:
+          metrics:
+            enabled: true
+            protocol: TCP
+            port: *port
