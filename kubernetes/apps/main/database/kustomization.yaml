@@ -12,4 +12,5 @@ resources:
   - ./cloudnative-pg.yaml
   - ./dragonfly.yaml
   - ./mariadb.yaml
+  - ./dbgate.yaml
 # TODO: optional: mariadb, mongodb, kafka
