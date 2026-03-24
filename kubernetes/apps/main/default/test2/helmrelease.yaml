@@ -32,13 +32,35 @@ spec:
               - -ec
               - |
                 while true; do
-                  date -Iseconds >> /data/heartbeat2.log
                   sleep 30
                 done
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
+        fsGroupChangePolicy: OnRootMismatch
 
     persistence:
-      data:
-        enabled: true
-        existingClaim: *app
-        globalMounts:
-          - path: /data
+      export:
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/main-backup/paperless-export
+        advancedMounts:
+          *app :
+            app:
+              - path: /data/nas/export
+      consume:
+        type: nfs
+        server: nas.main.internal
+        path: /data/user/data/dms_import
+        advancedMounts:
+          *app :
+            app:
+              - path: /data/nas/consume
+      #data:
+      #  enabled: true
+      #  existingClaim: *app
+      #  globalMounts:
+      #    - path: /data

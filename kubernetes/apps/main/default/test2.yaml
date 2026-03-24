@@ -5,9 +5,9 @@ kind: Kustomization
 metadata:
   name: &app test2
 spec:
-  components:
-    - ../../../../components/volsync
-    #- ../../../../components/volmigrate/nfs
+  #components:
+  #  - ../../../../components/volsync
+  #  #- ../../../../components/volmigrate/nfs
   interval: 1h
   path: ./kubernetes/apps/${CLUSTER}/default/test2
   #path: ./kubernetes/apps/base/migration/common
