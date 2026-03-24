@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/sstr-dev/backup-local
-              tag: 18@sha256:c75a3a9f178d454f4d8d7ad1970fdfd7e41d22266bc3425885cf61d1376ba7bb
+              tag: 18@sha256:72e17efe98a8e6ea46dbbe5158a638e7b47913f313af3316051468c75ba1027f
             command: ["/bin/bash", "/backup.sh"]
             env:
               TZ: ${CLUSTER_TIMEZONE}
