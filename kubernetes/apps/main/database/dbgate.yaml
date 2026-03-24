@@ -5,27 +5,23 @@ kind: Kustomization
 metadata:
   name: &app dbgate
 spec:
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
   interval: 1h
-  path: ./kubernetes/apps/casa/database/dbgate
+  path: ./kubernetes/apps/base/database/dbgate
   prune: true
   postBuild:
     substitute:
       APP: *app
-      CLUSTER: casa
-      INGRESSCLASS: internal-nginx
-      DOMAIN: casa.lokis-casa.internal
-      GATEWAY: internal
-      # VOL_STORAGECLASS: nfs-retain
-  components:
-    - ../../../../components/ext-auth
+      CLUSTER: ${CLUSTER}
+      VOL_STORAGECLASS: nfs-retain
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+  #components:
+  #  - ../../../../components/ext-auth
   retryInterval: 2m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: database
   timeout: 5m
-  wait: true
+  wait: false
