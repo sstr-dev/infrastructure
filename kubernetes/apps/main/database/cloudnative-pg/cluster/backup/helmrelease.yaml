@@ -17,33 +17,25 @@ spec:
           concurrencyPolicy: Forbid
           successfulJobsHistory: 1
           failedJobsHistory: 1
-        initContainers:
-          init-db:
-            image:
-              repository: ghcr.io/sstr-dev/postgres-init
-              tag: 18@sha256:5e6db27183f1bd4a9ba03449b4a17170ba523313af987bce9f1ed73c9be5effc
-            command: ["/list_dbs.sh"]
-            env:
-              EXCLUDE_DBS: app readarr_cache readarr_log postgres template0 template1
-            envFrom: &envFrom
-              - secretRef:
-                  name: "{{ .Release.Name }}-secret"
         containers:
           app:
             image:
-              repository: docker.io/prodrigestivill/postgres-backup-local
-              tag: 18@sha256:f70742ebe42b2277689b028d1fd15aa80f77cffa01da163cc9f85a6ff1866e7f
+              repository: ghcr.io/sstr-dev/backup-local
+              tag: 18@sha256:72e17efe98a8e6ea46dbbe5158a638e7b47913f313af3316051468c75ba1027f
             command: ["/bin/bash", "/backup.sh"]
             env:
               TZ: ${CLUSTER_TIMEZONE}
-              POSTGRES_DB_FILE: /config/db_list
+              EXCLUDE_DBS: app readarr_cache readarr_log
+              DB_TYPE: postgres
               POSTGRES_EXTRA_OPTS: "--blobs --clean --create --compress=9"
               BACKUP_DIR: /backups/database/postgresql
               BACKUP_KEEP_DAYS: "7"
               BACKUP_KEEP_WEEKS: "4"
               BACKUP_KEEP_MONTHS: "6"
               BACKUP_LATEST_TYPE: none
-            envFrom: *envFrom
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
