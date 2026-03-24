@@ -8,5 +8,5 @@ components:
   - ../../../vars/main/cluster
 replacements:
   - path: ../../../components/replacements/ks.yaml
-resources: []
-#  - ./teslamate.yaml
+resources:
+  - ./teslamate.yaml
