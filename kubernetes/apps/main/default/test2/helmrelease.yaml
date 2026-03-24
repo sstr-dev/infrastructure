@@ -54,7 +54,7 @@ spec:
       consume:
         type: nfs
         server: nas.main.internal
-        path: /data/user/data/dms_import
+        path: /mnt/user/data/dms_import
         advancedMounts:
           *app :
             app:
