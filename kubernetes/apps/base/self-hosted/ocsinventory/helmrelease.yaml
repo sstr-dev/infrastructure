@@ -26,7 +26,7 @@ spec:
           app:
             image:
               repository: ocsinventory/ocsinventory-docker-image
-              tag: 2.12.3
+              tag: 2.12.4
             env:
               OCS_DB_SERVER: mariadb.database.svc.cluster.local
               OCS_DB_PORT: 3306
