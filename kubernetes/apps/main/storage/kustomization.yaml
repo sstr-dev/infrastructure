@@ -5,7 +5,7 @@ kind: Kustomization
 namespace: storage
 components:
   - ../../../components/common
-  - ../../../vars/main/settings
+  - ../../../vars/main/cluster
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
