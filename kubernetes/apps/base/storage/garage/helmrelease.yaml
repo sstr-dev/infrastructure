@@ -86,14 +86,14 @@ spec:
       data:
         type: nfs
         server: nas.main.internal
-        path: /mnt/s3/main/data
+        path: /mnt/user/s3/main/data
         globalMounts:
           - path: /mnt/data
             readOnly: false
       meta:
         type: nfs
         server: nas.main.internal
-        path: /mnt/s3/main/meta
+        path: /mnt/user/s3/main/meta
         globalMounts:
           - path: /mnt/meta
             readOnly: false
