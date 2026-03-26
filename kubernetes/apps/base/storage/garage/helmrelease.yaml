@@ -63,6 +63,8 @@ spec:
             port: 3903
     route:
       app:
+        annotations:
+          external-dns.alpha.kubernetes.io/controller: "ignore"
         hostnames: ["${SECRET_S3_DOMAIN}", "*.${SECRET_S3_DOMAIN}"]
         parentRefs:
           - name: envoy-external
@@ -73,6 +75,8 @@ spec:
                 port: *s3-port
       web:
         enabled: true
+        annotations:
+          external-dns.alpha.kubernetes.io/controller: "ignore"
         hostnames: ["*.web.${SECRET_S3_WEB_DOMAIN}"]
         parentRefs:
           - name: envoy-external
