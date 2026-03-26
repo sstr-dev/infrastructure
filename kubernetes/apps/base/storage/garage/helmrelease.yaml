@@ -66,7 +66,7 @@ spec:
         hostnames: ["${SECRET_S3_DOMAIN}", "*.${SECRET_S3_DOMAIN}"]
         parentRefs:
           - name: envoy-external
-            namespace: gateway
+            namespace: network
         rules:
           - backendRefs:
               - name: *app
@@ -76,7 +76,7 @@ spec:
         hostnames: ["*.web.${SECRET_S3_WEB_DOMAIN}"]
         parentRefs:
           - name: envoy-external
-            namespace: gateway
+            namespace: network
         rules:
           - backendRefs:
               - identifier: app
