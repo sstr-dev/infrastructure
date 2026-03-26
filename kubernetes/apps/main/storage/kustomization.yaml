@@ -16,3 +16,4 @@ resources:
   - ./longhorn.yaml
   - ./volsync.yaml
   - ./volsync-maintenance.yaml
+  - ./garage.yaml
