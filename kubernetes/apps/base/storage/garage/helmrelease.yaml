@@ -67,7 +67,7 @@ spec:
           external-dns.alpha.kubernetes.io/controller: "ignore"
         hostnames: ["${SECRET_S3_DOMAIN}", "*.${SECRET_S3_DOMAIN}"]
         parentRefs:
-          - name: envoy-external
+          - name: envoy-public
             namespace: network
         rules:
           - backendRefs:
@@ -79,7 +79,7 @@ spec:
           external-dns.alpha.kubernetes.io/controller: "ignore"
         hostnames: ["*.${SECRET_S3_WEB_DOMAIN}"]
         parentRefs:
-          - name: envoy-external
+          - name: envoy-public
             namespace: network
         rules:
           - backendRefs:
