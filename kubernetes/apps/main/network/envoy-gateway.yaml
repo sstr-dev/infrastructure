@@ -30,8 +30,10 @@ spec:
       CLUSTER: ${CLUSTER}
       EXTERNAL_DOMAIN: external
       INTERNAL_DOMAIN: internal
+      PUBLIC_DOMAIN: public
       REPLICAS: "2"
       SVC_GATEWAY_EXTERNAL: 10.0.69.55
+      SVC_GATEWAY_PUBLIC: 10.0.69.56
       SVC_GATEWAY_INTERNAL: 10.0.60.55
     substituteFrom:
       #- kind: ConfigMap

@@ -90,6 +90,41 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
+  name: envoy-public
+  annotations:
+    external-dns.alpha.kubernetes.io/target: &hostname ${PUBLIC_DOMAIN}.${CERT_DOMAIN}
+    gatus.home-operations.com/endpoint: |
+      group: public
+spec:
+  gatewayClassName: envoy
+  infrastructure:
+    labels:
+      network.l2.cilium/segment: services
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: *hostname
+      lbipam.cilium.io/ips: ${SVC_GATEWAY_PUBLIC}
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https
+      protocol: HTTPS
+      port: 443
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: multi-domain-tls
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/gateway.networking.k8s.io/gateway_v1.json
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
   name: envoy-internal
   annotations:
     external-dns.alpha.kubernetes.io/target: &hostname ${INTERNAL_DOMAIN}.${CERT_DOMAIN}
@@ -179,6 +214,9 @@ spec:
       namespace: network
       sectionName: http
     - name: envoy-internal
+      namespace: network
+      sectionName: http
+    - name: envoy-public
       namespace: network
       sectionName: http
   rules:
