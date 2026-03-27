@@ -25,7 +25,8 @@ spec:
             command: ["/bin/bash", "/backup.sh"]
             env:
               TZ: ${CLUSTER_TIMEZONE}
-              EXCLUDE_DBS: app
+              #EXCLUDE_DBS: app
+              EXCLUDE_DBS: experimental
               DB_TYPE: postgres
               POSTGRES_EXTRA_OPTS: "--blobs --clean --create --compress=9"
               BACKUP_DIR: /backups/database/postgresql-timescale
