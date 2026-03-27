@@ -1,0 +1,101 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: webhook
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  interval: 1h
+  values:
+    controllers:
+      webhook:
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          init-config:
+            image:
+              repository: ghcr.io/sstr-dev/k8s-sidecar
+              tag: 2.5.0@sha256:830bed394818af8e0b78f9c616065687f921bb78c2007b9b5597f747a8051834
+            env:
+              FOLDER: /config
+              LABEL: webhook.home.arpa/enabled
+              NAMESPACE: ALL
+              RESOURCE: both
+              UNIQUE_FILENAMES: true
+              METHOD: WATCH
+            restartPolicy: Always
+            resources:
+              requests:
+                cpu: 50m
+                memory: 240Mi
+              limits:
+                memory: 320Mi
+        containers:
+          app:
+            image:
+              repository: ghcr.io/sstr-dev/webhook
+              tag: 2.8.3@sha256:defde0974f6078d1d06e421dbc907130fc45ab6585525f36b9916230d1b7de40
+            env:
+              WEBHOOK__PORT: &port 80
+              TZ: ${CLUSTER_TIMEZONE}
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 100m
+              limits:
+                memory: 512Mi
+        serviceAccount:
+          identifier: webhook
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames: ["{{ .Release.Name }}.${DOMAIN}"]
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    rbac:
+      roles:
+        webhook:
+          type: ClusterRole
+          rules:
+            - apiGroups: [""]
+              resources: ["configmaps", "secrets"]
+              verbs: ["get", "watch", "list"]
+      bindings:
+        webhook:
+          type: ClusterRoleBinding
+          roleRef:
+            identifier: webhook
+          subjects:
+            - identifier: webhook
+    serviceAccount:
+      webhook: {}
+    persistence:
+      config:
+        type: configMap
+        name: webhook-configmap
+        defaultMode: 0775
+        globalMounts:
+          - readOnly: true
