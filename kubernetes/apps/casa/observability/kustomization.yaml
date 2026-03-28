@@ -14,5 +14,5 @@ resources:
   - ./kube-prometheus-stack.yaml
   - ./config/kube-prometheus-stack
   # Exporters
-  - ./exporters
+  #- ./exporters
 
