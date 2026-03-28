@@ -11,7 +11,7 @@ replacements:
 resources:
   - ./fluent-bit.yaml
   #- ./gatus.yaml
-  #- ./grafana.yaml
+  - ./grafana.yaml
   - ./karma.yaml
   - ./keda.yaml
   - ./kromgo.yaml
