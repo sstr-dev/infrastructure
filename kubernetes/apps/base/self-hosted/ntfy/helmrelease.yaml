@@ -53,7 +53,7 @@ spec:
               NTFY_REQUIRE_LOGIN: "true"
               # Cache
               NTFY_CACHE_DURATION: "24h"
-              NTFY_CACHE_FILE: "/data/cache.db"
+              #NTFY_CACHE_FILE: "/data/cache.db"
               NTFY_ATTACHMENT_CACHE_DIR: "/data/attachments"
             envFrom:
               - secretRef:
