@@ -17,25 +17,31 @@ spec:
     namespace: flux-system
   wait: false
 ---
-## yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-#apiVersion: kustomize.toolkit.fluxcd.io/v1
-#kind: Kustomization
-#metadata:
-#  name: grafana-instance
-#spec:
-#  dependsOn:
-#    - name: grafana
-#  interval: 1h
-#  path: ./kubernetes/apps/base/observability/grafana/instance
-#  postBuild:
-#    substitute:
-#      SUBDOMAIN: grafana
-#  prune: true
-#  sourceRef:
-#    kind: GitRepository
-#    name: flux-system
-#    namespace: flux-system
-#  wait: false
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: grafana-instance
+spec:
+  dependsOn:
+    - name: grafana
+  interval: 1h
+  path: ./kubernetes/apps/base/observability/grafana/instance
+  postBuild:
+    substitute:
+      CLUSTER: ${CLUSTER}
+      GATUS_SUBDOMAIN: grafana
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false
 ---
 #TODO set for main cluster
 # yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
