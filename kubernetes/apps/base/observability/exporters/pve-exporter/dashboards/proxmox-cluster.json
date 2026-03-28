@@ -89,7 +89,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "description": "",
       "fieldConfig": {
@@ -398,7 +398,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -413,7 +413,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -428,7 +428,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -443,7 +443,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -458,7 +458,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -473,7 +473,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -488,7 +488,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -548,7 +548,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -636,7 +636,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -655,7 +655,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "description": "",
       "fieldConfig": {
@@ -722,7 +722,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -750,7 +750,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -814,7 +814,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -832,7 +832,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -919,7 +919,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "pve_memory_usage_bytes{instance=\"$instance\"} and on(id) pve_node_info",
@@ -930,7 +930,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -963,7 +963,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "description": "",
       "fieldConfig": {
@@ -1032,7 +1032,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "pve_memory_usage_bytes{instance=\"$instance\", id=~\"$node\"} / pve_memory_size_bytes and on(id) pve_node_info",
@@ -1058,7 +1058,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "description": "",
       "fieldConfig": {
@@ -1150,7 +1150,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -1164,7 +1164,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -1179,7 +1179,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -1211,7 +1211,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1297,7 +1297,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "((pve_cpu_usage_ratio{instance=\"$instance\"} / pve_cpu_usage_limit) * on(id, instance) group_left(name, type) pve_guest_info{node=~\"$${node:text}|.*($${node})\"}) and on(id, instance) pve_up == 1",
@@ -1315,7 +1315,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1401,7 +1401,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "(pve_memory_usage_bytes{instance=\"$instance\"} / pve_memory_size_bytes * on(id, instance) group_left(name, type) pve_guest_info{node=~\"$${node:text}|.*($${node})\"}) and on(id, instance) pve_up == 1",
@@ -1419,7 +1419,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1486,7 +1486,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -1505,7 +1505,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "description": "",
       "fieldConfig": {
@@ -1588,7 +1588,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -1622,7 +1622,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "description": "",
       "fieldConfig": {
@@ -1720,7 +1720,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "(rate(pve_network_receive_bytes{instance=\"$instance\"}[5m]) * on(id, instance) group_left(name, type) pve_guest_info{node=~\"$${node:text}|.*($${node})\"}) and on(id, instance) pve_up == 1",
@@ -1734,7 +1734,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "(rate(pve_network_transmit_bytes{instance=\"$instance\"}[5m])* on(id, instance) group_left(name, type) pve_guest_info{node=~\"$${node:text}|.*($${node})\"}) and on(id, instance) pve_up == 1",
@@ -1752,7 +1752,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "description": "",
       "fieldConfig": {
@@ -1838,7 +1838,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "((rate(pve_disk_write_bytes{instance=\"$instance\"}[5m]) + rate(pve_disk_read_bytes[5m])) * on(id, instance) group_left(name, type) pve_guest_info{node=~\"$${node:text}|.*($${node})\"}) and on(id, instance) pve_up == 1",
@@ -1863,7 +1863,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "Prometheus"
+          "uid": "${DS_PROMETHEUS}"
         },
         "definition": "label_values(pve_node_info, instance)",
         "includeAll": false,
@@ -1883,7 +1883,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "Prometheus"
+          "uid": "${DS_PROMETHEUS}"
         },
         "definition": "label_values(id)",
         "includeAll": true,
@@ -1902,7 +1902,7 @@
         "baseFilters": [],
         "datasource": {
           "type": "prometheus",
-          "uid": "Prometheus"
+          "uid": "${DS_PROMETHEUS}"
         },
         "filters": [],
         "name": "Filters",
