@@ -5,7 +5,7 @@ kind: Kustomization
 resources:
   - ./alertmanagerconfig.yaml
   - ./externalsecret.yaml
-  - ./grafanadashboard.yaml
+  #- ./grafanadashboard.yaml
   - ./helmrelease.yaml
 configMapGenerator:
   - name: flux-metrics-configmap
