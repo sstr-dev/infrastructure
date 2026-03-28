@@ -9,8 +9,8 @@ configMapGenerator:
       - ./proxmox-cluster.json
 generatorOptions:
   disableNameSuffixHash: true
-  labels:
-    grafana_dashboard: "1"
+#  labels:
+#    grafana_dashboard: "1"
   annotations:
     kustomize.toolkit.fluxcd.io/substitute: disabled
     grafana_folder: "Proxmox"
