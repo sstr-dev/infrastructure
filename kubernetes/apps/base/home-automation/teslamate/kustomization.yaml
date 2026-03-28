@@ -5,7 +5,9 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
-  - ./dashboards
-  - ./dashboards/custom
-  - ./dashboards/internal
-  - ./dashboards/reports
+  - ./grafanadatasource.yaml
+  #- ./grafanadashboard.yaml
+  #- ./dashboards
+  #- ./dashboards/custom
+  #- ./dashboards/internal
+  #- ./dashboards/reports
