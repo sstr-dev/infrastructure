@@ -32,33 +32,33 @@ spec:
       implementation: prometheus
     url: http://alertmanager-operated.observability.svc.cluster.local:9093
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadatasource_v1beta1.json
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDatasource
-metadata:
-  name: teslamate-pg
-spec:
-  instanceSelector:
-    matchLabels:
-      grafana.internal/instance: grafana
-  valuesFrom:
-    - targetPath: secureJsonData.password
-      valueFrom:
-        secretKeyRef:
-          name: grafana-teslamate-pg-secret
-          key: TESLAMATE_POSTGRES_PASS
-    - targetPath: user
-      valueFrom:
-        secretKeyRef:
-          name: grafana-teslamate-pg-secret
-          key: TESLAMATE_POSTGRES_USER
-  datasource:
-    type: postgres
-    name: TeslaMate
-    access: proxy
-    url: postgres-ro.database.svc.cluster.local:5432
-    database: teslamate
-    basicAuth: false
-    jsonData:
-      postgresVersion: 1000
-      sslmode: disable
+## yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadatasource_v1beta1.json
+#apiVersion: grafana.integreatly.org/v1beta1
+#kind: GrafanaDatasource
+#metadata:
+#  name: teslamate-pg
+#spec:
+#  instanceSelector:
+#    matchLabels:
+#      grafana.internal/instance: grafana
+#  valuesFrom:
+#    - targetPath: secureJsonData.password
+#      valueFrom:
+#        secretKeyRef:
+#          name: grafana-teslamate-pg-secret
+#          key: TESLAMATE_POSTGRES_PASS
+#    - targetPath: user
+#      valueFrom:
+#        secretKeyRef:
+#          name: grafana-teslamate-pg-secret
+#          key: TESLAMATE_POSTGRES_USER
+#  datasource:
+#    type: postgres
+#    name: TeslaMate
+#    access: proxy
+#    url: postgres-ro.database.svc.cluster.local:5432
+#    database: teslamate
+#    basicAuth: false
+#    jsonData:
+#      postgresVersion: 1000
+#      sslmode: disable
