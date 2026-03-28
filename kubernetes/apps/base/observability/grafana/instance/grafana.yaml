@@ -13,14 +13,17 @@ spec:
       check_for_plugin_updates: "false"
       feedback_links_enabled: "false"
       reporting_enabled: "false"
+    database:
+      type: postgres
     auth:
       signout_redirect_url: https://${SECRET_SSO_DOMAIN}/application/o/grafana/end-session/
       oauth_auto_login: "false"
       oauth_allow_insecure_email_lookup: "true"
     auth.anonymous:
-      enabled: "true"
-      org_name: Main Org.
-      org_role: Viewer
+      enabled: 'false'
+      #enabled: "true"
+      #org_name: Main Org.
+      #org_role: Viewer
       hide_version: "true"
     auth.generic_oauth:
       name: authentik
@@ -69,6 +72,32 @@ spec:
                     secretKeyRef:
                       name: grafana-secret
                       key: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
+                - name: GF_DATABASE_SSL_MODE
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-secret
+                      key: GF_DATABASE_SSL_MODE
+
+                - name: GF_DATABASE_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-secret
+                      key: GF_DATABASE_NAME
+                - name: GF_DATABASE_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-secret
+                      key: GF_DATABASE_HOST
+                - name: GF_DATABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-secret
+                      key: GF_DATABASE_USER
+                - name: GF_DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-secret
+                      key: GF_DATABASE_PASSWORD
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
@@ -79,10 +108,10 @@ spec:
             runAsGroup: 1000
             fsGroup: 1000
             fsGroupChangePolicy: OnRootMismatch
-          volumes:
-            - name: grafana-data
-              persistentVolumeClaim:
-                claimName: grafana-pvc
+          #volumes:
+          #  - name: grafana-data
+          #    persistentVolumeClaim:
+          #      claimName: grafana-pvc
   httpRoute:
     spec:
       hostnames:
@@ -94,11 +123,11 @@ spec:
         - backendRefs:
             - name: grafana-service
               port: 3000
-  persistentVolumeClaim:
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: 10Gi
+  #persistentVolumeClaim:
+  #  spec:
+  #    accessModes:
+  #      - ReadWriteOnce
+  #    resources:
+  #      requests:
+  #        storage: 10Gi
   disableDefaultSecurityContext: All
