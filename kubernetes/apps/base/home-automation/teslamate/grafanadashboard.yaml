@@ -301,6 +301,86 @@ spec:
       datasourceName: TeslaMate
   url: https://raw.githubusercontent.com/teslamate-org/teslamate/master/grafana/dashboards/visited.json
 
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanafolder_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: teslamateinternal
+spec:
+  allowCrossNamespaceImport: true
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  title: "Teslamate (Internal)"
 
 
-# https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/
+
+
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanafolder_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: teslamatereports
+spec:
+  allowCrossNamespaceImport: true
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  title: "Teslamate (Reports)"
+
+---
+
+
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-internal-charge-details
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamateinternal"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/teslamate-org/teslamate/master/grafana/dashboards/internal/charge-details.json
+
+
+
+
+#dashboards:
+#  charge-details:
+#    url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/internal/charge-details.json
+#  drive-details:
+#    url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/internal/drive-details.json
+#  home:
+#    url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/internal/home.json
+#
+#
+#
+## to get the liust of dashboards: for f in ./*.json; do echo "      - ${f}"; done
+## yaml-language-server: $schema=https://json.schemastore.org/kustomization
+#apiVersion: kustomize.config.k8s.io/v1beta1
+#kind: Kustomization
+#configMapGenerator:
+#  - name: teslamate-int-dashboards
+#    files:
+#      - ./charge-details.json
+#      - ./drive-details.json
+#      - ./home.json
+#generatorOptions:
+#  disableNameSuffixHash: true
+#  labels:
+#    grafana_dashboard: "1"
+#  annotations:
+#    kustomize.toolkit.fluxcd.io/substitute: disabled
+#    grafana_folder: "Teslamate (Internal)"
+#
+#
+## https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/
+#
