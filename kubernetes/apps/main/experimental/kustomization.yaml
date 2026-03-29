@@ -8,7 +8,6 @@ components:
   - ../../../vars/main/namespaces/experimental
 replacements:
   - path: ../../../components/replacements/ks.yaml
-#resources:
-#  - ./forgejo.yaml
-#  - ./harbor.yaml
-resources: []
+resources:
+  - ./oidc-test.yaml
+

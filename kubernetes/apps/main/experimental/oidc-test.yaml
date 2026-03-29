@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app oidc-test
+spec:
+  components:
+    - ../../../../components/envoy/oidc/authentik/internal
+  interval: 1h
+  path: ./kubernetes/apps/${CLUSTER}/experimental/oidc-test
+  postBuild:
+    substitute:
+      APP: *app
+      APP_UPPER: OIDC_TEST
+      APP_SLUG: oidc-test
+      CLUSTER: ${CLUSTER}
+      GATEWAY: envoy-internal
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false
