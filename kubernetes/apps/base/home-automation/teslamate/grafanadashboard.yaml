@@ -382,7 +382,7 @@ spec:
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
-  name: teslamate-custom-AmortizationTracker
+  name: teslamate-custom-amortizationtracker
 spec:
   allowCrossNamespaceImport: true
   folderRef: "teslamatecustom"
@@ -398,7 +398,7 @@ spec:
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
-  name: teslamate-custom-ChargingCostsStats
+  name: teslamate-custom-chargingcostsstats
 spec:
   allowCrossNamespaceImport: true
   folderRef: "teslamatecustom"
@@ -410,25 +410,194 @@ spec:
       datasourceName: TeslaMate
   url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/ChargingCostsStats.json
 ---
-#dashboard:
-#  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/
-#  files:s
-#    - ChargingCurveStats.json
-#    - ContinuousTrips.json
-#    - CurrentChargeView.json
-#    - CurrentDriveView.json
-#    - CurrentState.json
-#    - DCChargingCurvesByCarrier.json
-#    - IncompleteData.json
-#    - MileageStats.json
-#    - RangeDegradation.json
-#    - SpeedRates.json
-#    - SpeedTemperature.json
-#    - TrackingDrives.json
-
-
-
-#
-#
-## https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/
-#
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-custom-chargingcurvestats
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamatecustom"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/ChargingCurveStats.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-custom-continuoustrips
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamatecustom"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/ContinuousTrips.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-custom-currentchargeview
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamatecustom"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/CurrentChargeView.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-custom-currentdriveview
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamatecustom"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/CurrentDriveView.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-custom-currentstate
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamatecustom"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/CurrentState.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-custom-dcchargingcurvesbycarrier
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamatecustom"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/DCChargingCurvesByCarrier.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-custom-incompletedata
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamatecustom"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/IncompleteData.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-custom-mileagestats
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamatecustom"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/MileageStats.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-custom-rangedegradation
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamatecustom"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/RangeDegradation.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-custom-speedrates
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamatecustom"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/SpeedRates.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-custom-speedtemperature
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamatecustom"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/SpeedTemperature.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-custom-trackingdrives
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamatecustom"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/TrackingDrives.json
