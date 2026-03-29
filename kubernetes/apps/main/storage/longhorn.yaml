@@ -3,17 +3,27 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: longhorn
+  name: &app longhorn
 spec:
   dependsOn:
     - name: snapshot-controller
   interval: 1h
   path: ./kubernetes/apps/base/storage/longhorn
+  components:
+    - ../../../../components/envoy/oidc/authentik/internal
   prune: true
   postBuild:
+    substitute:
+      APP: *app
+      APP_UPPER: LONGHORN
+      APP_SLUG: longhorn
+      CLUSTER: ${CLUSTER}
+      SUBDOMAIN: longhorn
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
   sourceRef:
     kind: GitRepository
     name: flux-system

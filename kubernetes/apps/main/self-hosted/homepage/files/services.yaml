@@ -120,6 +120,12 @@
     #    icon: sh-dbgate
     #    app: dbgate
     #    namespace: database
+    - Longhorn:
+        description: Kubernetes Storage
+        href: https://longhorn.${DOMAIN}/#/dashboard
+        icon: longhorn.png
+        app: longhorn
+        namespace: storage
 
 - Home:
     #- Mealie:
