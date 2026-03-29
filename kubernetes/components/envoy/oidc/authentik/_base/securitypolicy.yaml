@@ -5,9 +5,9 @@ metadata:
   name: ${APP}-oidc
 spec:
   targetRefs:
-    - group: gateway.networking.k8s.io
-      kind: HTTPRoute
-      name: ${APP}
+    - group: ${EXT_AUTH_GROUP:-gateway.networking.k8s.io}
+      kind: ${EXT_AUTH_KIND:-HTTPRoute}
+      name: ${EXT_AUTH_TARGET:-${APP}}
   oidc:
     provider:
       issuer: "https://${SECRET_SSO_DOMAIN}/application/o/${APP_SLUG:-${APP}}/"
