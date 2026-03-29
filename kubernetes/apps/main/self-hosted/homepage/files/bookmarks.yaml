@@ -9,16 +9,16 @@
     - Google Calendar:
         - icon: google-calendar.png
           href: 'https://calendar.google.com'
-- Media:
-    - YouTube:
-        - icon: youtube.png
-          href: 'https://youtube.com/feed/subscriptions'
-    - Spotify:
-        - icon: spotify.png
-          href: 'http://open.spotify.com'
-    - Disney+:
-        - icon: disney-plus-light
-          href: https://www.disneyplus.com/
+#- Media:
+#    - YouTube:
+#        - icon: youtube.png
+#          href: 'https://youtube.com/feed/subscriptions'
+#    - Spotify:
+#        - icon: spotify.png
+#          href: 'http://open.spotify.com'
+#    - Disney+:
+#        - icon: disney-plus-light
+#          href: https://www.disneyplus.com/
 - Reading:
     - Reddit:
         - icon: reddit.png
@@ -30,7 +30,7 @@
       - href: "https://theverge.com/"
     - Arstechnica:
       - href: "https://www.arstechnica.com/"
-- Infrastructure:
+- Infra:
     - kubesearch:
       - icon: kubernetes-dashboard.png
         href: 'https://kubesearch.dev/'
@@ -42,7 +42,7 @@
           href: https://kubernetes.io/
     - home-flux-ops:
       - icon: github.png
-        href: "https://github.com/gznzeus/flux-ops/"
+        href: "https://github.com/sstr-dev/infrastructure"
     - ChatGPT:
       - icon: openai.png
         href: "https://chat.openai.com/"

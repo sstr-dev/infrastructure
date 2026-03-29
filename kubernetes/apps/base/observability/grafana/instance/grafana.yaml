@@ -121,6 +121,7 @@ spec:
         gethomepage.dev/name: Grafana
         gethomepage.dev/icon: grafana.svg
         gethomepage.dev/pod-selector: "app=grafana"
+        gethomepage.dev/description: Grafana dashboard
     spec:
       hostnames:
         - ${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
