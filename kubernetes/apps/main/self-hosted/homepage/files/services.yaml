@@ -307,24 +307,12 @@
     #    #  type: sabnzbd
     #    #  url: http://sabnzbd.download.svc
     #    #  key: {{HOMEPAGE_VAR_SABNZBD_TOKEN}}
-#- Observability:
-#    - Grafana:
-#        icon: grafana.png
-#        href: https://grafana.${SECRET_MAIN_DOMAIN_NAME}
-#        description: Dashboard
-#
-#    - Prometheus:
-#        icon: prometheus.png
-#        href: https://prometheus.${SECRET_MAIN_DOMAIN_NAME}
-#        description: Prometheus
-#        #widget:
-#        #  type: prometheus
-#        #  url: http://prometheus-operated.monitoring.svc:9090
-#
-#    - Alert Manager:
-#        icon: alertmanager.png
-#        href: https://alertmanager.${SECRET_MAIN_DOMAIN_NAME}
-#        description: Alert Manager
+
+- Observability:
+    - Grafana:
+        icon: grafana.svg
+        href: https://grafana.${SECRET_MAIN_DOMAIN_NAME}
+        description: Grafana dashboard
 
     #- Speed Tracker:
     #    icon: speedtest-tracker.png
