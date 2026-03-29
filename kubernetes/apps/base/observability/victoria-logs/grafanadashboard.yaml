@@ -31,19 +31,19 @@ spec:
       inputName: DS_PROMETHEUS
   url: https://grafana.com/api/dashboards/22759/revisions/9/download
 ---
-# yaml-language-server: $schema=https://kube-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-  name: victoria-logs-vector
-spec:
-  allowCrossNamespaceImport: true
-  instanceSelector:
-    matchLabels:
-      dashboards: grafana
-  datasources:
-    - datasourceName: prometheus
-      inputName: DS_PROMETHEUS
-  configMapRef:
-    name: victoria-logs-vector-k8s-monitoring
-    key: vector-k8s-monitoring.json
+## yaml-language-server: $schema=https://kube-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+#apiVersion: grafana.integreatly.org/v1beta1
+#kind: GrafanaDashboard
+#metadata:
+#  name: victoria-logs-vector
+#spec:
+#  allowCrossNamespaceImport: true
+#  instanceSelector:
+#    matchLabels:
+#      dashboards: grafana
+#  datasources:
+#    - datasourceName: prometheus
+#      inputName: DS_PROMETHEUS
+#  configMapRef:
+#    name: victoria-logs-vector-k8s-monitoring
+#    key: vector-k8s-monitoring.json
