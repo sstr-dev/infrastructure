@@ -46,7 +46,7 @@ spec:
       #   - alertmanager.${SECRET_MAIN_DOMAIN_NAME}
       route:
         main:
-          enabled: true
+          enabled: false
           hostnames:
             - alertmanager.${SECRET_MAIN_DOMAIN_NAME}
           parentRefs:
@@ -158,7 +158,7 @@ spec:
     prometheus:
       route:
         main:
-          enabled: true
+          enabled: false
           hostnames: ["prometheus.${SECRET_MAIN_DOMAIN_NAME}"]
           parentRefs:
             - name: main
