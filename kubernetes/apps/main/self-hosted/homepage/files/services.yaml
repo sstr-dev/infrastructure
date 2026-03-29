@@ -157,36 +157,36 @@
         description: Search services
         app: searxng
         namespace: llm
-    #- SSO:
-    #    description: SSO solution for the homelab
-    #    href: https://${SECRET_SSO_DOMAIN}
-    #    icon: authentik.png
-    #    app: authentik
-    #    namespace: sso
+    - SSO:
+        description: SSO solution for the homelab
+        href: https://${SECRET_SSO_DOMAIN}
+        icon: authentik.png
+        app: authentik
+        namespace: sso
     - Drawio:
         description: Diagramming Tool
         href: https://drawio.${SECRET_MAIN_DOMAIN_NAME}
         icon: draw-io.png
         app: drawio
         namespace: self-hosted
-    #- IT-Tools:
-    #    description: Swiss army knife for IT
-    #    href: https://it-tools.${SECRET_DEV_DOMAIN}
-    #    icon: it-tools.svg
-    #    app: it-tools
-    #    namespace: self-hosted
+    - IT-Tools:
+        description: Swiss army knife for IT
+        href: https://it-tools.${SECRET_DEV_DOMAIN}
+        icon: it-tools.svg
+        app: it-tools
+        namespace: self-hosted
     #- Inventory:
     #    description: Asset-Management with Snipe-IT
     #    href: https://inventory.${SECRET_MAIN_DOMAIN_NAME}
     #    icon: snipe-it.png
     #    app: snipe-it
     #    namespace: self-hosted
-    #- OpenCloud:
-    #    description: File sharing and collaboration solution
-    #    href: https://home-files.${SECRET_DOMAIN}
-    #    icon: open-cloud.png
-    #    app: opencloud
-    #    namespace: self-hosted
+    - OpenCloud:
+        description: File sharing and collaboration solution
+        href: https://home-files.${SECRET_DOMAIN}
+        icon: open-cloud.png
+        app: opencloud
+        namespace: self-hosted
     #- Minio:
     #    description: S3 storage
     #    href: https://minio.${SECRET_MAIN_DOMAIN_NAME}
@@ -205,24 +205,24 @@
     #    icon: si-convertio
     #    app: convertx
     #    namespace: self-hosted
-    #- n8n:
-    #    description: Flexible AI workflow automation
-    #    href: https://n8n.${SECRET_MAIN_DOMAIN_NAME}
-    #    icon: n8n
-    #    app: n8n
-    #    namespace: automation
+    - n8n:
+        description: Flexible AI workflow automation
+        href: https://n8n.${SECRET_MAIN_DOMAIN_NAME}
+        icon: n8n
+        app: n8n
+        namespace: automation
     #- Change Detection:
     #    description: Detect website content changes and perform meaningful actions
     #    href: https://change-detection.${SECRET_MAIN_DOMAIN_NAME}
     #    icon: changedetection.svg
     #    app: change-detection
     #    namespace: self-hosted
-    #- Privatebin:
-    #    description: Pastebin services
-    #    href: https://privatebin.${SECRET_DEV_DOMAIN}
-    #    icon: privatebin.png
-    #    app: privatebin
-    #    namespace: self-hosted
+    - Privatebin:
+        description: Pastebin services
+        href: https://privatebin.${SECRET_DEV_DOMAIN}
+        icon: privatebin.png
+        app: privatebin
+        namespace: self-hosted
     #- Scrypted:
     #    description: NVR
     #    href: https://scrypted.${SECRET_MAIN_DOMAIN_NAME}
@@ -234,12 +234,12 @@
     #    icon: go2rtc.webp
     #    app: go2rtc
     #    namespace: home-automation
-    #- TeslaMate:
-    #    description: Vehicle Stats
-    #    href: https://teslamate.${SECRET_MAIN_DOMAIN_NAME}
-    #    icon: teslamate
-    #    app: teslamate
-    #    namespace: home-automation
+    - TeslaMate:
+        description: Vehicle Stats
+        href: https://teslamate.${DOMAIN}
+        icon: teslamate
+        app: teslamate
+        namespace: home-automation
     #- Epic Games Free:
     #    description: Free Epic Games Aggregator
     #    href: https://epic.${SECRET_MAIN_DOMAIN_NAME}
@@ -314,11 +314,11 @@
     #    #  url: http://sabnzbd.download.svc
     #    #  key: {{HOMEPAGE_VAR_SABNZBD_TOKEN}}
 
-- Observability:
-    - Grafana:
-        icon: grafana.svg
-        href: https://grafana.${SECRET_MAIN_DOMAIN_NAME}
-        description: Grafana dashboard
+#- Observability:
+#    - Grafana:
+#        icon: grafana.svg
+#        href: https://grafana.${SECRET_DOMAIN}
+#        description: Grafana dashboard
 
     #- Speed Tracker:
     #    icon: speedtest-tracker.png
