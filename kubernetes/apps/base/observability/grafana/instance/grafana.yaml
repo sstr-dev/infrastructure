@@ -120,6 +120,7 @@ spec:
         gethomepage.dev/group: Observability
         gethomepage.dev/name: Grafana
         gethomepage.dev/icon: grafana.svg
+        gethomepage.dev/pod-selector: ""
     spec:
       hostnames:
         - ${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
