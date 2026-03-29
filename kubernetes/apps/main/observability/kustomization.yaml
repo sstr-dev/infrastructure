@@ -17,7 +17,8 @@ resources:
   - ./kromgo.yaml
 
   - ./kube-prometheus-stack.yaml
-  # TODO seperate scrape config? ./kube-prometheus-stack-scrapeconfig.yaml
+
+  - ./grafanadashboards.yaml
 
 
   - ./silence-operator.yaml
