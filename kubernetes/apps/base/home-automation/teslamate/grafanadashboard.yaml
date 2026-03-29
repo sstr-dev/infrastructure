@@ -378,8 +378,53 @@ spec:
   parentFolderRef: teslamate
 
 ---
-
-
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-custom-AmortizationTracker
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamatecustom"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/AmortizationTracker.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-custom-ChargingCostsStats
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamatecustom"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/ChargingCostsStats.json
+---
+#dashboard:
+#  url: https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/
+#  files:s
+#    - ChargingCurveStats.json
+#    - ContinuousTrips.json
+#    - CurrentChargeView.json
+#    - CurrentDriveView.json
+#    - CurrentState.json
+#    - DCChargingCurvesByCarrier.json
+#    - IncompleteData.json
+#    - MileageStats.json
+#    - RangeDegradation.json
+#    - SpeedRates.json
+#    - SpeedTemperature.json
+#    - TrackingDrives.json
 
 
 
