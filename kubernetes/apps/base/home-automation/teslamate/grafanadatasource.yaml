@@ -42,5 +42,6 @@ spec:
     secureJsonData:
       password: ${DATABASE_PASS}
     jsonData:
+      database: ${DATABASE_NAME}
       postgresVersion: 1000
       sslmode: disable
