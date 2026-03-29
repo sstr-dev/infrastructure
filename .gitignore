@@ -74,3 +74,4 @@ talosconfig
 talos-secrets.yaml
 
 .local
+.codex

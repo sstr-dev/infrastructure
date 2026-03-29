@@ -1,0 +1,8 @@
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: ${APP}-oidc
+spec:
+  oidc:
+    redirectURL: "https://${GATUS_SUBDOMAIN:-${SUBDOMAIN:-${APP}}}.${SECRET_DOMAIN}/oauth2/callback"

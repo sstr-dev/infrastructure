@@ -10,15 +10,18 @@ spec:
       name: ${APP}
   oidc:
     provider:
-      issuer: "https://id.${SECRET_DOMAIN}"
+      issuer: "https://${SECRET_SSO_DOMAIN}/application/o/${APP_SLUG:-${APP}}/"
     clientIDRef:
       kind: Secret
       name: ${APP}-oidc-secret
     clientSecret:
       name: ${APP}-oidc-secret
+    # redirectURL: "https://${APP}.${APP_DOMAIN}/oauth2/callback"
     refreshToken: true
-    cookieDomain: ${SECRET_DOMAIN}
-    redirectURL: "https://${APP}.${SECRET_DOMAIN}/oauth2/callback"
+    # cookieDomain: ${SECRET_DOMAIN}
     logoutPath: "${LOGOUT_PATH:-/logout}"
-    scopes: ["openid", "profile", "email"]
-
+    scopes:
+      - openid
+      - profile
+      - email
+      # - offline_access
