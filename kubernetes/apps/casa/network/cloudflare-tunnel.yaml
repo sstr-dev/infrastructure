@@ -9,7 +9,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 1h
-  path: ./kubernetes/apps/base/network/cloudflare-tunnel
+  path: ./kubernetes/apps/casa/network/cloudflare-tunnel
   postBuild:
     substitute:
       REPLICAS: "2"
