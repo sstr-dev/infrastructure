@@ -114,12 +114,12 @@
     #    href: https://pg.${DOMAIN}
     #    icon: pgadmin.svg
     #    siteMonitor: http://pgadmin.database.svc.cluster.local
-    #- DbGate:
-    #    description: Powerful and easy to use (no)SQL database client
-    #    href: https://dbgate.${DOMAIN}
-    #    icon: sh-dbgate
-    #    app: dbgate
-    #    namespace: database
+    - DbGate:
+        description: Powerful and easy to use (no)SQL database client
+        href: https://dbgate.${DOMAIN}
+        icon: sh-dbgate
+        app: dbgate
+        namespace: database
     - Longhorn:
         description: Kubernetes Storage
         href: https://longhorn.${DOMAIN}/#/dashboard
