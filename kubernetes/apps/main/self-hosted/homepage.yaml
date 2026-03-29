@@ -26,15 +26,19 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: homepage
+  name: &app homepage
 spec:
   interval: 1h
   path: ./kubernetes/apps/base/self-hosted/homepage
-  #components:
-  #  - ../../../../components/ext-auth
+  components:
+    - ../../../../components/envoy/oidc/authentik/main
   postBuild:
     substitute:
+      APP: *app
+      APP_UPPER: HOMEPAGE
+      APP_SLUG: homepage
       GATEWAY: "envoy-external"
+      CLUSTER: ${CLUSTER}
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
