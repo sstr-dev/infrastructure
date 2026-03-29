@@ -13,4 +13,5 @@ resources:
   - ./dragonfly.yaml
   - ./mariadb.yaml
   - ./dbgate.yaml
-# TODO: optional: mariadb, mongodb, kafka
+  - ./grafanadashboards.yaml
+# optional: mongodb, kafka
