@@ -9,6 +9,7 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: grafana
+  title: "Teslamate"
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
 apiVersion: grafana.integreatly.org/v1beta1
@@ -312,27 +313,8 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: grafana
-  title: "Teslamate (Internal)"
-
-
-
-
----
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanafolder_v1beta1.json
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaFolder
-metadata:
-  name: teslamatereports
-spec:
-  allowCrossNamespaceImport: true
-  instanceSelector:
-    matchLabels:
-      dashboards: grafana
-  title: "Teslamate (Reports)"
-
----
-
-
+  title: "Internal"
+  parentFolderRef: teslamate
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
 apiVersion: grafana.integreatly.org/v1beta1
@@ -349,37 +331,58 @@ spec:
     - inputName: DS_TESLAMATE
       datasourceName: TeslaMate
   url: https://raw.githubusercontent.com/teslamate-org/teslamate/master/grafana/dashboards/internal/charge-details.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-internal-drive-details
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamateinternal"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/teslamate-org/teslamate/master/grafana/dashboards/internal/drive-details.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: teslamate-internal-home
+spec:
+  allowCrossNamespaceImport: true
+  folderRef: "teslamateinternal"
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  datasources:
+    - inputName: DS_TESLAMATE
+      datasourceName: TeslaMate
+  url: https://raw.githubusercontent.com/teslamate-org/teslamate/master/grafana/dashboards/internal/home.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanafolder_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: teslamatecustom
+spec:
+  allowCrossNamespaceImport: true
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana
+  title: "Custom"
+  parentFolderRef: teslamate
+
+---
 
 
 
 
-#dashboards:
-#  charge-details:
-#    url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/internal/charge-details.json
-#  drive-details:
-#    url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/internal/drive-details.json
-#  home:
-#    url: https://raw.githubusercontent.com/teslamate-org/teslamate/main/grafana/dashboards/internal/home.json
-#
-#
-#
-## to get the liust of dashboards: for f in ./*.json; do echo "      - ${f}"; done
-## yaml-language-server: $schema=https://json.schemastore.org/kustomization
-#apiVersion: kustomize.config.k8s.io/v1beta1
-#kind: Kustomization
-#configMapGenerator:
-#  - name: teslamate-int-dashboards
-#    files:
-#      - ./charge-details.json
-#      - ./drive-details.json
-#      - ./home.json
-#generatorOptions:
-#  disableNameSuffixHash: true
-#  labels:
-#    grafana_dashboard: "1"
-#  annotations:
-#    kustomize.toolkit.fluxcd.io/substitute: disabled
-#    grafana_folder: "Teslamate (Internal)"
+
 #
 #
 ## https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/refs/heads/main/dashboards/
