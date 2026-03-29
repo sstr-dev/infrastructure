@@ -12,7 +12,7 @@ resources:
   #- ./openspeedtest/ks.yaml
   - ./cyberchef.yaml
   #- ./photon/ks.yaml
-  - ./homepage.yaml
+  #- ./homepage.yaml
   #- ./snipe-it.yaml
   #- ./drawio.yaml
   #- ./part-db.yaml # mysql not work, remove it
