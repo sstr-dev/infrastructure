@@ -70,8 +70,6 @@ spec:
           gethomepage.dev/name: Kopia
           gethomepage.dev/icon: kopia.png
           gethomepage.dev/description: Backup and Restore for PVCs.
-          gethomepage.dev/widget.type: kopia
-          gethomepage.dev/widget.url: "http://kopia.storage.svc.cluster.local"
         hostnames: ["{{ .Release.Name }}.${DOMAIN}"]
         parentRefs:
           - name: envoy-internal
