@@ -5,6 +5,7 @@ kind: GrafanaFolder
 metadata:
   name: teslamate
 spec:
+  allowCrossNamespaceImport: true
   instanceSelector:
     matchLabels:
       dashboards: grafana
