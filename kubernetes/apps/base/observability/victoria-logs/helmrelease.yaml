@@ -41,8 +41,10 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: Observability
           gethomepage.dev/name: VictoriaLogs
-          gethomepage.dev/icon: victoria-logs.png
+          gethomepage.dev/icon: si-victoriametrics
           gethomepage.dev/description: System & Application Logs
+          gethomepage.dev/pod-selector: app.kubernetes.io/instance=victoria-logs
+          # gethomepage.dev/siteMonitor: http://victoria-logs-server.observability.svc.cluster.local:9428/health
         extraRules:
           - filters:
               - type: RequestRedirect
