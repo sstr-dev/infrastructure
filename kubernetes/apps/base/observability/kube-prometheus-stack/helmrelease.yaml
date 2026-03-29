@@ -148,6 +148,7 @@ spec:
             gethomepage.dev/pod-selector: operator.prometheus.io/name=kube-prometheus-stack
             gethomepage.dev/widget.type: prometheus
             gethomepage.dev/widget.url: 'http://kube-prometheus-stack-prometheus.observability.svc.cluster.local.:9090'
+            gethomepage.dev/href: https://${SUBDOMAIN}.${DOMAIN}/graph
       prometheusSpec:
         externalLabels:
           cluster: ${CLUSTER}
