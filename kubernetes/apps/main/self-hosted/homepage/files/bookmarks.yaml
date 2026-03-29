@@ -41,7 +41,7 @@
         - icon: kubernetes
           href: https://kubernetes.io/
     - home-flux-ops:
-      - icon: github.png
+      - icon: si-github
         href: "https://github.com/sstr-dev/infrastructure"
     - ChatGPT:
       - icon: openai.png
