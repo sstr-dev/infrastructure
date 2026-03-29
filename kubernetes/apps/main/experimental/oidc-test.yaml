@@ -6,7 +6,7 @@ metadata:
   name: &app oidc-test
 spec:
   components:
-    - ../../../../components/envoy/oidc/authentik/internal
+    - ../../../../components/envoy/oidc/authentik/main
   interval: 1h
   path: ./kubernetes/apps/${CLUSTER}/experimental/oidc-test
   postBuild:
@@ -15,7 +15,7 @@ spec:
       APP_UPPER: OIDC_TEST
       APP_SLUG: oidc-test
       CLUSTER: ${CLUSTER}
-      GATEWAY: envoy-internal
+      GATEWAY: envoy-external
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
