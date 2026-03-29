@@ -32,11 +32,6 @@ spec:
         secretKeyRef:
           name: teslamate
           key: DATABASE_PASS
-    - targetPath: "jsonData.database"
-      valueFrom:
-        secretKeyRef:
-          name: teslamate
-          key: DATABASE_NAME
   datasource:
     name: TeslaMate
     type: postgres
@@ -47,6 +42,6 @@ spec:
     secureJsonData:
       password: ${DATABASE_PASS}
     jsonData:
-      database: ${DATABASE_NAME}
+      database: teslamate
       postgresVersion: 1000
       sslmode: disable
