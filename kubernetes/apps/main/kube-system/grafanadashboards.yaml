@@ -11,6 +11,7 @@ spec:
   retryInterval: 2m
   dependsOn:
     - name: grafana
+      namespace: observability
   sourceRef:
     kind: GitRepository
     name: flux-system
