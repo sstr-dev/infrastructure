@@ -10,6 +10,8 @@ replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
   - ./cloudnative-pg.yaml
+  # ./cloudnative-pg-cluster-timescale.yaml
+  # ./cloudnative-pg-cluster-vector.yaml
   - ./dragonfly.yaml
   - ./mariadb.yaml
   - ./dbgate.yaml
