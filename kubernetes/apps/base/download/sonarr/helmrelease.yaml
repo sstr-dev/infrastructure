@@ -19,8 +19,6 @@ spec:
   values:
 
     defaultPodOptions:
-      #annotations:
-      #  setDownloadGateway: "true"
       dnsConfig:
         options:
           - name: ndots
@@ -42,7 +40,7 @@ spec:
           app:
             image:
               repository: ghcr.io/home-operations/sonarr
-              tag: 4.0.16.2946@sha256:22651c750eedb091f6d76ade95dbecae0eeafe2b55432c3b8d8b042e8745f344
+              tag: 4.0.17.2953@sha256:83607d2b741ec9469db09489e88c473ae6fdf7d85f3b55d4fa809b43e25a2a6c
               pullPolicy: IfNotPresent
             env:
               TZ: ${CLUSTER_TIMEZONE}
@@ -76,79 +74,19 @@ spec:
               limits:
                 memory: 1Gi
 
-    #serviceMonitor:
-    #  app:
-    #    serviceName: *app
-    #    endpoints:
-    #      - port: http
-    #        scheme: http
-    #        path: /metrics
-    #        interval: 1m
-    #        scrapeTimeout: 10s
-
     service:
       app:
         controller: *app
         ports:
           http:
             port: *port
-    #ingress:
-    #  app:
-    #    enabled: ${DEFAULTINGRESSEN:=true}
-    #    className: ${INGRESSCLASS}
-    #    #annotations:
-    #    #  gethomepage.dev/enabled: "true"
-    #    #  gethomepage.dev/description: Swiss army knife for IT
-    #    #  gethomepage.dev/group: Home
-    #    #  gethomepage.dev/icon: it-tools.svg
-    #    #  gethomepage.dev/name: IT-Tools
-    #    #  gethomepage.dev/pod-selector: >-
-    #    #    app.kubernetes.io/name in (
-    #    #      it-tools
-    #    #    )
-    #    hosts:
-    #      - host: &host "{{ .Release.Name }}.${DOMAIN}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      - hosts:
-    #          - *host
-    #  iot:
-    #    enabled: ${IOTINGRESS:=false}
-    #    className: iot-nginx
-    #    annotations:
-    #      gethomepage.dev/enabled: "true"
-    #      gethomepage.dev/group: Downloads
-    #      gethomepage.dev/name: Sonarr
-    #      gethomepage.dev/icon: sonarr.png
-    #      gethomepage.dev/description: TV Downloads
-    #      gethomepage.dev/pod-selector: >-
-    #        app.kubernetes.io/name in (
-    #          sonarr
-    #        )
-    #      gethomepage.dev/widget.type: sonarr
-    #      gethomepage.dev/widget.url: http://{{ .Release.Name }}.{{ .Release.Namespace }}:8989
-    #      gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_SONARR_TOKEN}}` }}"
-    #    hosts:
-    #      - host: &host "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      #- secretName: chart-example-tls
-    #      - hosts:
-    #        - *host
+
     route:
       app:
         hostnames:
           - "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
         parentRefs:
-          - name: main
+          - name: ${GATEWAY:=envoy-external}
             namespace: network
             sectionName: https
         rules:
@@ -159,58 +97,18 @@ spec:
           gethomepage.dev/name: Sonarr
           gethomepage.dev/icon: sonarr.png
           gethomepage.dev/description: TV Downloads
-          gethomepage.dev/widget.type: sonarr
-          gethomepage.dev/widget.url: http://{{ .Release.Name }}.{{ .Release.Namespace }}:8989
-          gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_SONARR_TOKEN}}` }}"
+          #gethomepage.dev/widget.type: sonarr
+          #gethomepage.dev/widget.url: http://{{ .Release.Name }}.{{ .Release.Namespace }}:8989
+          #gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_SONARR_TOKEN}}` }}"
 
     persistence:
       config:
-        enabled: true
-        type: persistentVolumeClaim
-        existingClaim: *app
-
-
-      #media:
-      #  type: nfs
-      #  server: 10.0.60.10
-      #  path: /mnt/user/media
-      #  globalMounts:
-      #    - path: /media
-      #      readOnly: false
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/applications/sonarr
       media:
-        type: hostPath
-        hostPath: /media
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/media
         globalMounts:
           - path: /media
-            readOnly: false
-
-      #tv:
-      #  type: nfs
-      #  server: 10.0.60.10
-      #  path: /mnt/user/media/tv
-      #  globalMounts:
-      #    - path: /tv
-      #      readOnly: false
-#
-      #downloads:
-      #  type: nfs
-      #  server: 10.0.60.10
-      #  path: /mnt/user/media/download/tv
-      #  globalMounts:
-      #    - path: /downloads
-      #      readOnly: false
-
-      #tv:
-      #  enabled: true
-      #  type: hostPath
-      #  hostPath: ${SHARED_MEDIA_PATH}/tv
-      #  globalMounts:
-      #    - path: /tv
-      #      readOnly: false
-      #downloads:
-      #  enabled: true
-      #  type: hostPath
-      #  hostPath: ${SHARED_MEDIA_PATH}/download/tv
-      #  globalMounts:
-      #    - path: /downloads
-      #      readOnly: false
