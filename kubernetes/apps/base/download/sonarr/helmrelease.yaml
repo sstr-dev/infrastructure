@@ -97,9 +97,9 @@ spec:
           gethomepage.dev/name: Sonarr
           gethomepage.dev/icon: sonarr.png
           gethomepage.dev/description: TV Downloads
-          #gethomepage.dev/widget.type: sonarr
-          #gethomepage.dev/widget.url: http://{{ .Release.Name }}.{{ .Release.Namespace }}:8989
-          #gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_SONARR_TOKEN}}` }}"
+          gethomepage.dev/widget.type: sonarr
+          gethomepage.dev/widget.url: http://{{ .Release.Name }}.{{ .Release.Namespace }}:8989
+          gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_SONARR_TOKEN}}` }}"
 
     persistence:
       config:

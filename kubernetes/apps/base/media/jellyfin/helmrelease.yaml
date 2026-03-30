@@ -129,7 +129,10 @@ spec:
           gethomepage.dev/group: "Media"
           gethomepage.dev/icon: "jellyfin"
           gethomepage.dev/description: "Open-source Media Server"
-
+          gethomepage.dev/widget.type: jellyfin
+          gethomepage.dev/widget.url: http://jellyfin.media:8096
+          gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_JELLYFIN_TOKEN}}` }}"
+          gethomepage.dev/widget.enableNowPlaying: "true"
     persistence:
       #config:
       #  enabled: true

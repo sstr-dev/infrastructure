@@ -79,9 +79,9 @@ spec:
           gethomepage.dev/name: Radarr
           gethomepage.dev/icon: radarr.png
           gethomepage.dev/description: Movie Downloads
-          #gethomepage.dev/widget.type: radarr
-          #gethomepage.dev/widget.url: "http://{{ .Release.Name }}.{{ .Release.Namespace }}:7878"
-          #gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_RADARR_TOKEN}}` }}"
+          gethomepage.dev/widget.type: radarr
+          gethomepage.dev/widget.url: "http://{{ .Release.Name }}.{{ .Release.Namespace }}:7878"
+          gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_RADARR_TOKEN}}` }}"
     service:
       app:
         controller: *app
