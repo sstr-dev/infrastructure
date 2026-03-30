@@ -15,19 +15,19 @@
 #          key: {{HOMEPAGE_VAR_CLOUDFLARED_API_TOKEN}}
 #          fields: ["status"]
 
-#- Calendar:
-#    - Agenda:
-#        widget:
-#          type: calendar
-#          view: agenda # optional - possible values monthly, agenda
-#          maxEvents: 7 # optional - defaults to 10
-#          integrations: # optional
-#            - type: sonarr # active widget type that is currently enabled on homepage - possible values: radarr, sonarr>
-#              service_group: Downloads # group name where widget exists
-#              service_name: Sonarr # service name for that widget
-#            - type: radarr # active widget type that is currently enabled on homepage - possible values: radarr, sonarr>
-#              service_group: Downloads # group name where widget exists
-#              service_name: Radarr # service name for that widget
+- Calendar:
+    - Agenda:
+        widget:
+          type: calendar
+          view: agenda # optional - possible values monthly, agenda
+          maxEvents: 7 # optional - defaults to 10
+          integrations: # optional
+            - type: sonarr # active widget type that is currently enabled on homepage - possible values: radarr, sonarr>
+              service_group: Downloads # group name where widget exists
+              service_name: Sonarr # service name for that widget
+            - type: radarr # active widget type that is currently enabled on homepage - possible values: radarr, sonarr>
+              service_group: Downloads # group name where widget exists
+              service_name: Radarr # service name for that widget
 
 - Infrastructure:
     #- Fritz!Box:
@@ -128,28 +128,28 @@
         namespace: storage
 
 - Home:
-    #- Mealie:
-    #    icon: mealie.png
-    #    href: https://home-mealie.${SECRET_DOMAIN}
-    #    description: Recipe management for the modern household.
-    #    app: mealie
-    #    namespace: self-hosted
-    #    widget:
-    #      type: mealie
-    #      url: http://mealie.self-hosted:9000
-    #      key: '{{HOMEPAGE_VAR_MEALIE_API_KEY}}'
-    #      version: "2"
-    #      fields: '["recipes", "users", "categories", "tags"]'
-    #- Paperless:
-    #    icon: paperless-ngx.png
-    #    href: https://dms.${SECRET_MAIN_DOMAIN_NAME}
-    #    description: Document OCR Software
-    #    app: paperless
-    #    namespace: self-hosted
-    #    widget:
-    #      type: paperlessngx
-    #      url: http://paperless.self-hosted:8000
-    #      key: '{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}'
+    - Mealie:
+        icon: mealie.png
+        href: https://home-mealie.${SECRET_DOMAIN}
+        description: Recipe management for the modern household.
+        app: mealie
+        namespace: self-hosted
+        widget:
+          type: mealie
+          url: http://mealie.self-hosted:9000
+          key: '{{HOMEPAGE_VAR_MEALIE_API_KEY}}'
+          version: "2"
+          fields: '["recipes", "users", "categories", "tags"]'
+    - Paperless:
+        icon: paperless-ngx.png
+        href: https://dms.${SECRET_MAIN_DOMAIN_NAME}
+        description: Document OCR Software
+        app: paperless
+        namespace: self-hosted
+        widget:
+          type: paperlessngx
+          url: http://paperless.self-hosted:8000
+          key: '{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}'
     ### no widgets at bottom of list
     - SearXNG Search:
         icon: searxng.svg
