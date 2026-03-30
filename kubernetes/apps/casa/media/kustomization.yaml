@@ -6,9 +6,9 @@ namespace: media
 components:
   - ../../../components/common
   - ../../../vars/casa
-resources:
+resources: []
   #- ./jellyfin.yaml
-  - ./jellyseerr.yaml
+  #- ./jellyseerr.yaml
   # temporary deactivated
   #- ./calibre-web-automated.yaml
 

@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app jellyseerr
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/base/media/jellyseerr
+  postBuild:
+    substitute:
+      APP: *app
+      REPLICAS: "1"
+      CLUSTER: ${CLUSTER}
+      GATEWAY: envoy-external
+      #VOL_STORAGECLASS: longhorn
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+  prune: true
+  dependsOn:
+    - name: cloudnative-pg-cluster
+      namespace: database
+    - name: external-secrets
+      namespace: external-secrets
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  timeout: 5m
+  wait: false
+

@@ -33,7 +33,7 @@ spec:
               TZ: ${CLUSTER_TIMEZONE}
             envFrom:
               - secretRef:
-                  name: *app
+                  name: jellyseerr-secret
             resources:
               requests:
                 cpu: 10m
@@ -61,7 +61,7 @@ spec:
       app:
         hostnames: ["requests.${SECRET_MAIN_DOMAIN_NAME}"]
         parentRefs:
-          - name: main
+          - name: ${GATEWAY:=envoy-external}
             namespace: network
             sectionName: https
         rules:
@@ -74,58 +74,25 @@ spec:
           gethomepage.dev/name: jellyseerr
           gethomepage.dev/icon: jellyseerr.png
           gethomepage.dev/description: Media Request Management
-          gethomepage.dev/widget.type: jellyseerr
-          gethomepage.dev/widget.url: http://jellyseerr.media:80
-          gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_JELLYSEERR_TOKEN}}` }}"
-    #ingress:
-    #  app:
-    #    enabled: ${DEFAULTINGRESSEN:=true}
-    #    className: ${INGRESSCLASS}
-    #    hosts:
-    #      - host: &host "{{ .Release.Name }}.${DOMAIN}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      - hosts:
-    #          - *host
-    #  iot:
-    #    enabled: ${IOTINGRESS:=false}
-    #    className: iot-nginx
-    #    annotations:
-    #      gethomepage.dev/enabled: "true"
-    #      gethomepage.dev/group: Media
-    #      gethomepage.dev/name: jellyseerr
-    #      gethomepage.dev/icon: jellyseerr.png
-    #      gethomepage.dev/description: Media Request Management
-    #      gethomepage.dev/widget.type: jellyseerr
-    #      gethomepage.dev/widget.url: http://jellyseerr.media:80
-    #      gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_JELLYSEERR_TOKEN}}` }}"
-    #      gethomepage.dev/pod-selector: >-
-    #        app.kubernetes.io/name in (
-    #          jellyseerr
-    #        )
-    #    hosts:
-    #      - host: &host "requests.${SECRET_MAIN_DOMAIN_NAME}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      #- secretName: chart-example-tls
-    #      - hosts:
-    #        - *host
+          #gethomepage.dev/widget.type: jellyseerr
+          #gethomepage.dev/widget.url: http://jellyseerr.media:80
+          #gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_JELLYSEERR_TOKEN}}` }}"
+
 
     persistence:
       config:
-        existingClaim: *app
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/applications/jellyseerr
+        #existingClaim: *app
         globalMounts:
           - path: /app/config
       cache:
-        existingClaim: jellyseerr-cache
+        type: persistentVolumeClaim
+        storageClass: ${VOL_STORAGECLASS:=local-hostpath}
+        accessMode: ReadWriteOnce
+        size: 2Gi
+        #existingClaim: jellyseerr-cache
         globalMounts:
           - path: /app/config/cache
       logs:

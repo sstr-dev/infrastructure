@@ -10,4 +10,4 @@ replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
   - ./jellyfin.yaml
-  #- ./jellyseerr.yaml
+  - ./jellyseerr.yaml
