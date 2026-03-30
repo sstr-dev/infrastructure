@@ -319,7 +319,12 @@
 #        icon: grafana.svg
 #        href: https://grafana.${SECRET_DOMAIN}
 #        description: Grafana dashboard
-
+    - Dozzle:
+        description: Log Aggregation
+        href: https://dozzle.${DOMAIN}
+        icon: dozzle
+        app: dozzle
+        namespace: observability
     #- Speed Tracker:
     #    icon: speedtest-tracker.png
     #    href: https://speedtest.${SECRET_MAIN_DOMAIN_NAME}
