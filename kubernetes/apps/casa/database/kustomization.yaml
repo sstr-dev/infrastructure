@@ -19,5 +19,5 @@ resources:
   #- ./kubeblocks/backups/ks.yaml
   #- ./kubeblocks/clusters/ks.yaml
   #- ./kubeblocks/ingress/ks.yaml
-  - ./dbgate.yaml
+  #- ./dbgate.yaml
   - ./influx.yaml

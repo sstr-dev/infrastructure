@@ -11,13 +11,17 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      APP_UPPER: DBGATE
+      APP_SLUG: dbgate
       CLUSTER: ${CLUSTER}
       VOL_STORAGECLASS: nfs-retain
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
-  #components:
-  #  - ../../../../components/ext-auth
+      - kind: Secret
+        name: cluster-secrets
+  components:
+    - ../../../../components/envoy/oidc/authentik/internal
   retryInterval: 2m
   sourceRef:
     kind: GitRepository
