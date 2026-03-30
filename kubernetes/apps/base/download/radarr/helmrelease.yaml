@@ -97,6 +97,6 @@ spec:
       media:
         type: nfs
         server: nas.main.internal
-        path: /mnt/users/media
+        path: /mnt/user/media
         globalMounts:
           - path: /media
