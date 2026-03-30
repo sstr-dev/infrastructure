@@ -54,7 +54,7 @@ spec:
               SONARR__LOG__ANALYTICSENABLED: "False"
             envFrom:
               - secretRef:
-                  name: *app
+                  name: sonarr-secret
             probes:
               liveness: &probes
                 enabled: true

@@ -10,5 +10,5 @@ replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
   - ./radarr.yaml
-  #- ./sonarr.yaml
+  - ./sonarr.yaml
   #- ./calibre-downloader.yaml
