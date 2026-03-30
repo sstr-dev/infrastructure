@@ -47,7 +47,7 @@ metadata:
   name: alertmanager-oidc
 spec:
   interval: 1h
-  path: ./kubernetes/apps/base/virtuel/common
+  path: ./kubernetes/apps/base/virtual/common
   components:
     - ../../../../components/envoy/oidc/authentik/internal
   dependsOn:
