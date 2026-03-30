@@ -24,6 +24,6 @@ resources:
   #- ./opencloud.yaml
   #- ./ocis.yaml
   #- ./convertx.yaml
-  - ./change-detection.yaml
+  #- ./change-detection.yaml
   #- ./privatebin.yaml
   #- ./ocsinventory.yaml

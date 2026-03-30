@@ -31,6 +31,7 @@ spec:
             env:
               PORT: &port 5000
               USE_X_SETTINGS: 1
+              DISABLE_VERSION_CHECK: "true"
               BASE_URL: &host 'https://{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}'
               PLAYWRIGHT_DRIVER_URL: 'ws://localhost:3000/chrome?stealth=1&--disable-web-security=true'
             securityContext:
@@ -42,17 +43,18 @@ spec:
                 cpu: 10m
               limits:
                 memory: 250Mi
-          browserless:
+          browser:
             image:
-              repository: ghcr.io/browserless/chrome
-              tag: v2.38.4@sha256:5a8233bd0bbb05b70c2359733a660a3a17d83b7ad898eb89eb57803e13685c91
+              repository: ghcr.io/browserless/chromium
+              tag: v2.46.0@sha256:7754b85d822000a15df9bfcc9872016bd163384f3c223e2f4b5971f0a5e9c038
             env:
-              TIMEOUT: 60000
+              CONCURRENT: "10"
+              DATA_DIR: /profile
+              DOWNLOAD_DIR: /downloads
+              TIMEOUT: "60000"
             securityContext:
-              runAsUser: 999
-              runAsGroup: 999
               allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: false
+              readOnlyRootFilesystem: true
               capabilities: { drop: ['ALL'] }
             resources:
               requests:
@@ -63,9 +65,9 @@ spec:
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 99
+        runAsGroup: 100
+        fsGroup: 100
         fsGroupChangePolicy: OnRootMismatch
     service:
       app:
@@ -77,18 +79,32 @@ spec:
         hostnames:
           - '{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}'
         parentRefs:
-          - name: main
+          - name: envoy-external
             namespace: network
             sectionName: https
         rules:
           - backendRefs: [{}]
     persistence:
       datastore:
-        existingClaim: *app
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/applications/change-detection
         advancedMounts:
           *app :
             app:
               - path: /datastore
+                subPath: changedetection
+            browser:
+              - path: /downloads
+                subPath: downloads
+              - path: /profile
+                subPath: profile
+      #datastore:
+      #  existingClaim: *app
+      #  advancedMounts:
+      #    *app :
+      #      app:
+      #        - path: /datastore
       tmp:
         type: emptyDir
         globalMounts:
