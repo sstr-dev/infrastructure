@@ -19,12 +19,10 @@ spec:
   values:
 
     defaultPodOptions:
-      dnsConfig:
-        options:
-          - name: ndots
-            value: "1"
-      #annotations:
-      #  setDownloadGateway: "true"
+      #dnsConfig:
+      #  options:
+      #    - name: ndots
+      #      value: "1"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -59,41 +57,18 @@ spec:
               RADARR__LOG__ANALYTICSENABLED: "False"
             envFrom:
               - secretRef:
-                  name: *app
-            #probes:
-            #  liveness: &probes
-            #    enabled: true
-            #    custom: true
-            #    spec:
-            #      httpGet:
-            #        path: /ping
-            #        port: *port
-            #      initialDelaySeconds: 0
-            #      periodSeconds: 10
-            #      timeoutSeconds: 1
-            #      failureThreshold: 3
-            #  readiness: *probes
+                  name: radarr-secret
             resources:
               requests:
                 cpu: 100m
               limits:
                 memory: 1Gi
-
-    #serviceMonitor:
-    #  app:
-    #    serviceName: *app
-    #    endpoints:
-    #      - port: http
-    #        scheme: http
-    #        path: /metrics
-    #        interval: 1m
-    #        scrapeTimeout: 10s
     route:
       app:
         hostnames:
           - "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
         parentRefs:
-          - name: main
+          - name: ${GATEWAY:=envoy-external}
             namespace: network
             sectionName: https
         rules:
@@ -104,100 +79,24 @@ spec:
           gethomepage.dev/name: Radarr
           gethomepage.dev/icon: radarr.png
           gethomepage.dev/description: Movie Downloads
-          gethomepage.dev/widget.type: radarr
-          gethomepage.dev/widget.url: "http://{{ .Release.Name }}.{{ .Release.Namespace }}:7878"
-          gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_RADARR_TOKEN}}` }}"
-
+          #gethomepage.dev/widget.type: radarr
+          #gethomepage.dev/widget.url: "http://{{ .Release.Name }}.{{ .Release.Namespace }}:7878"
+          #gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_RADARR_TOKEN}}` }}"
     service:
       app:
         controller: *app
         ports:
           http:
             port: *port
-    #ingress:
-    #  app:
-    #    enabled: ${DEFAULTINGRESSEN:=true}
-    #    className: ${INGRESSCLASS}
-    #    #annotations:
-    #    #  gethomepage.dev/enabled: "true"
-    #    #  gethomepage.dev/description: Swiss army knife for IT
-    #    #  gethomepage.dev/group: Home
-    #    #  gethomepage.dev/icon: it-tools.svg
-    #    #  gethomepage.dev/name: IT-Tools
-    #    #  gethomepage.dev/pod-selector: >-
-    #    #    app.kubernetes.io/name in (
-    #    #      it-tools
-    #    #    )
-    #    hosts:
-    #      - host: &host "{{ .Release.Name }}.${DOMAIN}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      - hosts:
-    #          - *host
-    #  iot:
-    #    enabled: ${IOTINGRESS:=false}
-    #    className: iot-nginx
-    #    annotations:
-    #      gethomepage.dev/enabled: "true"
-    #      gethomepage.dev/group: Downloads
-    #      gethomepage.dev/name: Radarr
-    #      gethomepage.dev/icon: radarr.png
-    #      gethomepage.dev/description: Movie Downloads
-    #      gethomepage.dev/pod-selector: >-
-    #        app.kubernetes.io/name in (
-    #          radarr
-    #        )
-    #      gethomepage.dev/widget.type: radarr
-    #      gethomepage.dev/widget.url: "http://{{ .Release.Name }}.{{ .Release.Namespace }}:7878"
-    #      gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_RADARR_TOKEN}}` }}"
-    #    hosts:
-    #      - host: &host "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      #- secretName: chart-example-tls
-    #      - hosts:
-    #        - *host
 
     persistence:
       config:
-        enabled: true
-        type: persistentVolumeClaim
-        existingClaim: *app
-
-      #media:
-      #  type: nfs
-      #  server: 10.0.60.10
-      #  path: /mnt/user/media
-      #  globalMounts:
-      #    - path: /media
-      #      readOnly: false
-
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/applications/radarr
       media:
-        type: hostPath
-        hostPath: /media
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/users/media
         globalMounts:
           - path: /media
-            readOnly: false
-
-      #movies:
-      #  enabled: true
-      #  type: hostPath
-      #  hostPath: ${SHARED_MEDIA_PATH}/movies
-      #  globalMounts:
-      #    - path: /movies
-      #      readOnly: false
-      #downloads:
-      #  enabled: true
-      #  type: hostPath
-      #  hostPath: ${SHARED_MEDIA_PATH}/download/movies
-      #  globalMounts:
-      #    - path: /downloads
-      #      readOnly: false

@@ -18,10 +18,10 @@ spec:
       name: ${APP}-oidc-secret
     # redirectURL: "https://${APP}.${APP_DOMAIN}/oauth2/callback"
     refreshToken: true
-    # cookieDomain: ${SECRET_DOMAIN}
+    # cookieDomain: ${APP_DOMAIN}
     logoutPath: "${LOGOUT_PATH:-/logout}"
     scopes:
       - openid
       - profile
       - email
-      # - offline_access
+      #- offline_access
