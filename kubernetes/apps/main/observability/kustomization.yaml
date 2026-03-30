@@ -20,7 +20,7 @@ resources:
 
   - ./grafanadashboards.yaml
 
-
+  - ./dozzle.yaml
   - ./silence-operator.yaml
   - ./victoria-logs.yaml
   # Exporters
