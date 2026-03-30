@@ -8,6 +8,6 @@ components:
   - ../../../vars/main/namespaces/media
 replacements:
   - path: ../../../components/replacements/ks.yaml
-resources: []
-  #- ./jellyfin.yaml
+resources:
+  - ./jellyfin.yaml
   #- ./jellyseerr.yaml
