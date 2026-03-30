@@ -314,7 +314,7 @@
     #    #  url: http://sabnzbd.download.svc
     #    #  key: {{HOMEPAGE_VAR_SABNZBD_TOKEN}}
 
-#- Observability:
+- Observability:
 #    - Grafana:
 #        icon: grafana.svg
 #        href: https://grafana.${SECRET_DOMAIN}
