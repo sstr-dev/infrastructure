@@ -43,7 +43,7 @@ spec:
               PUID: 1000
               PGID: 1000
               DOTNET_SYSTEM_IO_DISABLEFILELOCKING: "true"
-              # JELLYFIN_PublishedServerUrl: &ip 192.168.40.247
+              JELLYFIN_PublishedServerUrl: ${LB_SERVICE_IP}
 
               #JELLYFIN_FFmpeg__probesize: 50000000
               #JELLYFIN_FFmpeg__analyzeduration: 50000000
@@ -97,10 +97,15 @@ spec:
       app:
         controller: *app
         type: LoadBalancer
+        externalTrafficPolicy: Cluster
+        labels:
+          network.l2.cilium/segment: ${LB_SERVICE_SEGMENT}
         annotations:
-          kube-vip.io/pool: ${LB_SERVICE_POOL}
-          kube-vip.io/serviceInterface: ${LB_SERVICE_INTERFACE}
-          kube-vip.io/loadbalancerIPs: ${LB_V4_JELLIFIN}
+          io.cilium/lb-ipam-ips: ${LB_SERVICE_IP}
+          external-dns.alpha.kubernetes.io/hostname: jellyfin-server.${DOMAIN}
+          #kube-vip.io/pool: ${LB_SERVICE_POOL}
+          #kube-vip.io/serviceInterface: ${LB_SERVICE_INTERFACE}
+          #kube-vip.io/loadbalancerIPs: ${LB_V4_JELLIFIN}
         ports:
           http:
             port: 8096
@@ -111,7 +116,7 @@ spec:
       app:
         hostnames: ["{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"]
         parentRefs:
-          - name: main
+          - name: ${GATEWAY:=envoy-external}
             namespace: network
             sectionName: https
         rules:
@@ -124,75 +129,41 @@ spec:
           gethomepage.dev/group: "Media"
           gethomepage.dev/icon: "jellyfin"
           gethomepage.dev/description: "Open-source Media Server"
-    #ingress:
-    #  app:
-    #    enabled: ${DEFAULTINGRESSEN:=true}
-    #    className: ${INGRESSCLASS}
-    #    hosts:
-    #      - host: &host "{{ .Release.Name }}.${DOMAIN}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      - hosts:
-    #          - *host
-    #  iot:
-    #    enabled: ${IOTINGRESS:=false}
-    #    className: iot-nginx
-    #    annotations:
-    #      gethomepage.dev/enabled: "true"
-    #      gethomepage.dev/name: "Jellyfin"
-    #      gethomepage.dev/group: "Media"
-    #      gethomepage.dev/icon: "jellyfin"
-    #      gethomepage.dev/description: "Open-source Media Server"
-    #      gethomepage.dev/pod-selector: >-
-    #        app.kubernetes.io/name in (
-    #          jellyfin
-    #        )
-    #      #gethomepage.dev/widget.type: jellyfin
-    #      #gethomepage.dev/widget.url: http://{{ .Release.Name }}.{{ .Release.Namespace }}:8096
-    #      #gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_JELLYFIN_TOKEN}}` }}"
-    #    hosts:
-    #      - host: &host "{{ .Release.Name }}.${SECRET_MAIN_DOMAIN_NAME}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      #- secretName: chart-example-tls
-    #      - hosts:
-    #        - *host
+
     persistence:
+      #config:
+      #  enabled: true
+      #  existingClaim: *app
+      #  globalMounts:
+      #    - path: /config
       config:
-        enabled: true
-        existingClaim: *app
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/applications/jellyfin
         globalMounts:
           - path: /config
-      transcode:
-        enabled: true
-        existingClaim: jellyfin-transcode
-        globalMounts:
-          - path: /config/transcodes
-      config-cache:
-        existingClaim: jellyfin-cache
-        globalMounts:
-          - path: /config/metadata
+      #transcode:
+      #  enabled: true
+      #  existingClaim: jellyfin-transcode
+      #  globalMounts:
+      #    - path: /config/transcodes
+      #config-cache:
+      #  existingClaim: jellyfin-cache
+      #  globalMounts:
+      #    - path: /config/metadata
       #media:
-      #  type: nfs
-      #  server: 10.0.60.10
-      #  path: /mnt/user/media
+      #  enabled: true
+      #  type: hostPath
+      #  hostPath: /media
       #  globalMounts:
       #    - path: /media
-      #      readOnly: true
       media:
-        enabled: true
-        type: hostPath
-        hostPath: /media
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/media
         globalMounts:
           - path: /media
+            readOnly: true
       #media:
       #  enabled: true
       #  type: hostPath
@@ -208,5 +179,7 @@ spec:
                 subPath: cache
               - path: /config/log
                 subPath: log
+              - path: /config/transcodes
+                subPath: transcode
               - path: /tmp
                 subPath: tmp

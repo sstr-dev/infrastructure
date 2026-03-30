@@ -9,6 +9,5 @@ components:
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources: []
-  #- ./radarr.yaml
-  #- ./sonarr.yaml
-  #- ./calibre-downloader.yaml
+  #- ./jellyfin.yaml
+  #- ./jellyseerr.yaml
