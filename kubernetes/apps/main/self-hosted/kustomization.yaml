@@ -19,7 +19,7 @@ resources:
   - ./paperless.yaml
   - ./mealie.yaml
   - ./opencloud.yaml
-  #- ./change-detection.yaml
+  - ./change-detection.yaml
   - ./privatebin.yaml
   #- ./ocsinventory.yaml
   - ./ntfy.yaml
