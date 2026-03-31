@@ -7,7 +7,8 @@ metadata:
 spec:
   components:
     - ../../../../components/nfs-scaler
-    - ../../../../components/envoy/oidc/authentik/internal
+    - ../../../../components/ext-auth
+    #- ../../../../components/envoy/oidc/authentik/internal
   dependsOn:
     - name: volsync
   interval: 1h
@@ -15,15 +16,15 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      APP_UPPER: KOPIA
-      APP_SLUG: kopia
+      #APP_UPPER: KOPIA
+      #APP_SLUG: kopia
       CLUSTER: ${CLUSTER}
       SUBDOMAIN: kopia
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
-      - kind: Secret
-        name: cluster-secrets
+      #- kind: Secret
+      #  name: cluster-secrets
   prune: true
   sourceRef:
     kind: GitRepository
