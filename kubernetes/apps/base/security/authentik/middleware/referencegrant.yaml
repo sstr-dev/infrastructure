@@ -27,8 +27,8 @@ spec:
       namespace: security
     spec:
       from:
-        - group: gateway.networking.k8s.io
-          kind: HTTPRoute
+        - group: gateway.envoyproxy.io
+          kind: SecurityPolicy
           namespace: << inputs.namespace >>
       to:
         - group: ""
