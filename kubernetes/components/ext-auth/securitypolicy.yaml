@@ -8,11 +8,11 @@ spec:
     failOpen: false
     # recomputeRoute: true
     headersToExtAuth:
-      - X-Forwarded-For # this is here so we can get the real IP
-      - X-Forwarded-Proto
-      - authorization
-      - proxy-authorization
-      - accept
+      #- X-Forwarded-For # this is here so we can get the real IP
+      #- X-Forwarded-Proto
+      #- authorization
+      #- proxy-authorization
+      #- accept
       - cookie
     http:
       backendRefs:
@@ -21,11 +21,11 @@ spec:
           port: 9000
       path: /outpost.goauthentik.io/auth/envoy
       headersToBackend:
-        - set-cookie
-        - location
-        - content-type
-        - x-authentik-*
         - authorization
+        - location
+        - set-cookie
+        - x-authentik-*
+        - content-type
   targetRefs:
     - group: ${EXT_AUTH_GROUP:-gateway.networking.k8s.io}
       kind: ${EXT_AUTH_KIND:-HTTPRoute}
