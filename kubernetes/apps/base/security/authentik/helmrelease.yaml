@@ -42,12 +42,18 @@ spec:
     authentik:
       # -- whether to create the authentik configuration secret
       enabled: true
+      #error_reporting:
+      #  enabled: true
+      #  environment: home
+      #  send_pii: true
+      #  sentry_dsn: https://xxxxxx@sentry.${SECRET_DOMAIN}/3
+      #  sample_rate: 0.5
       #postgresql:
       #  host: pg-cluster-postgresql.database.svc.cluster.local
       #  user: file:///postgres-creds/username
       #  password: file:///postgres-creds/password
       #email:
-      #  from: "${SECRET_SMTP_FROM_FULL}"
+      #  from: "${SECRETv_SMTP_FROM_FULL}"
       #  host: smtp-relay.default.svc.cluster.local
       #  port: 25
       #  use_tls: false
@@ -97,4 +103,9 @@ spec:
           cpu: 300m
         limits:
           memory: 1Gi
-
+      metrics:
+         # -- deploy metrics service
+        enabled: true
+        serviceMonitor:
+          # -- enable a prometheus ServiceMonitor
+          enabled: true
