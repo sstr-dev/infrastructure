@@ -162,7 +162,7 @@
         href: https://${SECRET_SSO_DOMAIN}
         icon: authentik.png
         app: authentik
-        namespace: sso
+        namespace: security
     - Drawio:
         description: Diagramming Tool
         href: https://drawio.${SECRET_MAIN_DOMAIN_NAME}
