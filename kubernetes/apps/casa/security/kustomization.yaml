@@ -9,4 +9,4 @@ components:
 resources:
   - ../../../vars/casa/ns/security-secrets.sops.yaml
   - ./external-secrets.yaml
-  - ./lldap.yaml
+  #- ./lldap.yaml

@@ -6,8 +6,8 @@ namespace: sso
 components:
   - ../../../components/common
   - ../../../vars/casa
-resources:
+resources: []
   #- ./keycloak.yaml
-  - ./authentik.yaml
+  #- ./authentik.yaml
 
 
