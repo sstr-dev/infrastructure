@@ -8,15 +8,15 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/base/observability/kube-prometheus-stack
   components:
-    - ../../../../components/envoy/oidc/authentik/internal
-  #  - ../../../../components/ext-auth
-  #  - ../../../../components/ext-auth/two
+    #- ../../../../components/envoy/oidc/authentik/internal
+    - ../../../../components/ext-auth
+    #- ../../../../components/ext-auth/two
   postBuild:
     substitute:
       # for ext auth
       APP: prometheus
-      APP_UPPER: PROMETHEUS
-      APP_SLUG: prometheus
+      #APP_UPPER: PROMETHEUS
+      #APP_SLUG: prometheus
       ALERTMANAGER_SUBDOMAIN: alertmanager
       CLUSTER: ${CLUSTER}
       PVC_CAPACITY: "75"
@@ -29,8 +29,8 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
-      - kind: Secret
-        name: cluster-secrets
+      #- kind: Secret
+      #  name: cluster-secrets
   prune: true
   retryInterval: 2m
   sourceRef:
@@ -44,28 +44,29 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: alertmanager-oidc
+  name: alertmanager-auth
 spec:
   interval: 1h
   path: ./kubernetes/apps/base/virtual/common
   components:
-    - ../../../../components/envoy/oidc/authentik/internal
+    - ../../../../components/ext-auth
+    #- ../../../../components/envoy/oidc/authentik/internal
   dependsOn:
     - name: kube-prometheus-stack
   postBuild:
     substitute:
       # for ext auth
       APP: alertmanager
-      APP_UPPER: ALERTMANAGER
-      APP_SLUG: alertmanager
+      #APP_UPPER: ALERTMANAGER
+      #APP_SLUG: alertmanager
       CLUSTER: ${CLUSTER}
       SUBDOMAIN: alertmanager
       EXT_AUTH_TARGET: kube-prometheus-stack-alertmanager
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
-      - kind: Secret
-        name: cluster-secrets
+      #- kind: Secret
+      #  name: cluster-secrets
   prune: true
   retryInterval: 2m
   sourceRef:

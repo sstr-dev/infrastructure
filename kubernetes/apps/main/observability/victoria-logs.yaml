@@ -8,13 +8,14 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/base/observability/victoria-logs
   components:
-    - ../../../../components/envoy/oidc/authentik/internal
+    #- ../../../../components/envoy/oidc/authentik/internal
+    - ../../../../components/ext-auth
   prune: true
   postBuild:
     substitute:
       APP: *app
-      APP_UPPER: VICTORIA_LOGS
-      APP_SLUG: victoria-logs
+      #APP_UPPER: VICTORIA_LOGS
+      #APP_SLUG: victoria-logs
       CLUSTER: ${CLUSTER}
       SUBDOMAIN: victoria-logs
       EXT_AUTH_TARGET: victoria-logs-server
@@ -23,8 +24,8 @@ spec:
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
-      - kind: Secret
-        name: cluster-secrets
+      #- kind: Secret
+      #  name: cluster-secrets
   sourceRef:
     kind: GitRepository
     name: flux-system

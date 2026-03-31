@@ -10,16 +10,17 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      APP_UPPER: DOZZLE
-      APP_SLUG: dozzle
+      #APP_UPPER: DOZZLE
+      #APP_SLUG: dozzle
       CLUSTER: ${CLUSTER}
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
-      - kind: Secret
-        name: cluster-secrets
+      #- kind: Secret
+      #  name: cluster-secrets
   components:
-    - ../../../../components/envoy/oidc/authentik/internal
+    #- ../../../../components/envoy/oidc/authentik/internal
+    - ../../../../components/ext-auth
   prune: true
   retryInterval: 2m
   sourceRef:
