@@ -20,19 +20,10 @@ spec:
       retries: 3
   values:
     defaultPodOptions:
-      #annotations:
-      #  setDownloadGateway: "true"
       dnsConfig:
         options:
           - name: ndots
             value: "1"
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
-        fsGroupChangePolicy: OnRootMismatch
-        seccompProfile: { type: RuntimeDefault }
     controllers:
       lldap:
         replicas: ${REPLICAS:=1}
@@ -55,10 +46,10 @@ spec:
               LLDAP_SMTP_OPTIONS__SMTP_ENCRYPTION: NONE
               LLDAP_SMTP_OPTIONS__ENABLE_PASSWORD_RESET: true
               LLDAP_SMTP_OPTIONS__FROM: LLDAP Admin <lldap@${DOMAIN}>
-              LLDAP_SMTP_OPTIONS__SERVER: smtp-relay.default.svc.cluster.local
+              LLDAP_SMTP_OPTIONS__SERVER: smtp-relay.network.svc.cluster.local
             envFrom:
               - secretRef:
-                  name: *app
+                  name: lldap-secret
             probes:
               liveness: &probes
                 enabled: true
@@ -105,36 +96,12 @@ spec:
             primary: true
           ldap:
             port: *ldapPort
-    #ingress:
-    #  app:
-    #    enabled: ${DEFAULTINGRESSEN:=true}
-    #    className: ${INGRESSCLASS}
-    #    annotations:
-    #      gethomepage.dev/enabled: "true"
-    #      gethomepage.dev/description: "Lightweight LDAP interface for authentication"
-    #      gethomepage.dev/group: Infrastructure
-    #      gethomepage.dev/icon: mdi-account-lock
-    #      gethomepage.dev/name: lldap
-    #    #  gethomepage.dev/pod-selector: >-
-    #    #    app.kubernetes.io/name in (
-    #    #      it-tools
-    #    #    )
-    #    hosts:
-    #      - host: &host "{{ .Release.Name }}.${DOMAIN}"
-    #        paths:
-    #          - path: /
-    #            service:
-    #              identifier: app
-    #              port: http
-    #    tls:
-    #      - hosts:
-    #          - *host
     route:
       app:
         hostnames:
           - "{{ .Release.Name }}.${DOMAIN}"
         parentRefs:
-          - name: internal
+          - name: envoy-internal
             namespace: network
             sectionName: https
         rules:

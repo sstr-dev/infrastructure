@@ -92,12 +92,12 @@
 #          url: https://pbs.local
 #          username: {{HOMEPAGE_VAR_PBS_USER}}
 #          password: {{HOMEPAGE_VAR_PBS_PASS}}
-    #- LLDAP:
-    #    description: Lightweight LDAP interface for authentication
-    #    href: https://lldap.${DOMAIN}
-    #    icon: mdi-account-lock
-    #    app: lldap
-    #    namespace: security
+    - LLDAP:
+        description: Lightweight LDAP interface for authentication
+        href: https://lldap.${DOMAIN}
+        icon: mdi-account-lock
+        app: lldap
+        namespace: security
     #- Registry (Harbor):
     #    description: Container Registry
     #    href: https://registry.${SECRET_DEV_DOMAIN}

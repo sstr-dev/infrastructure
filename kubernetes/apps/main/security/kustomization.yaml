@@ -5,6 +5,8 @@ kind: Kustomization
 namespace: security
 components:
   - ../../../components/common
+  - ../../../vars/main/namespaces/security
 replacements:
   - path: ../../../components/replacements/ks.yaml
-resources: []
+resources:
+  - ./lldap.yaml

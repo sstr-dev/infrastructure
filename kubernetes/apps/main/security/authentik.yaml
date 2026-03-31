@@ -22,6 +22,10 @@ spec:
   dependsOn:
     - name: dragonfly
       namespace: database
+    - name: cloudnative-pg-cluster
+      namespace: database
+    - name: external-secrets
+      namespace: external-secrets
   postBuild:
     substitute:
       APP: authentik
