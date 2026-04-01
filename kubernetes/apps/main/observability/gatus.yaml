@@ -34,7 +34,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      SUBDOMAIN: status
+      GATUS_SUBDOMAIN: status
       CLUSTER: ${CLUSTER}
     substituteFrom:
       - kind: ConfigMap
