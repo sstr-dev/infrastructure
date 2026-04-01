@@ -77,6 +77,7 @@ spec:
           gethomepage.dev/widget.type: jellyseerr
           gethomepage.dev/widget.url: http://jellyseerr.media:80
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_JELLYSEERR_TOKEN}}` }}"
+          gatus.home-operations.com/enabled: "false"
 
 
     persistence:

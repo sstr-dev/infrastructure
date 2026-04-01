@@ -82,6 +82,8 @@ spec:
           gethomepage.dev/widget.type: radarr
           gethomepage.dev/widget.url: "http://{{ .Release.Name }}.{{ .Release.Namespace }}:7878"
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_RADARR_TOKEN}}` }}"
+          gatus.home-operations.com/enabled: "false"
+
     service:
       app:
         controller: *app

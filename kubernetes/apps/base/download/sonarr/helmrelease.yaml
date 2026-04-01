@@ -100,6 +100,7 @@ spec:
           gethomepage.dev/widget.type: sonarr
           gethomepage.dev/widget.url: http://{{ .Release.Name }}.{{ .Release.Namespace }}:8989
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_SONARR_TOKEN}}` }}"
+          gatus.home-operations.com/enabled: "false"
 
     persistence:
       config:

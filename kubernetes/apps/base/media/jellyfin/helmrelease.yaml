@@ -133,6 +133,8 @@ spec:
           gethomepage.dev/widget.url: http://jellyfin.media:8096
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_JELLYFIN_TOKEN}}` }}"
           gethomepage.dev/widget.enableNowPlaying: "true"
+          gatus.home-operations.com/enabled: "false"
+
     persistence:
       #config:
       #  enabled: true

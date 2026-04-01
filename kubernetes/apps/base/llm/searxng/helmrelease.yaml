@@ -65,6 +65,8 @@ spec:
             port: *port
     route:
       app:
+        annotations:
+          gatus.home-operations.com/enabled: "false"
         hostnames: ["search.${SECRET_MAIN_DOMAIN_NAME}"]
         parentRefs:
           - name: ${GATEWAY:=envoy-internal}
