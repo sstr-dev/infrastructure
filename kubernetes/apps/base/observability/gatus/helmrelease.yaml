@@ -21,25 +21,25 @@ spec:
       gatus:
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          gatus-sidecar:
-            image:
-              repository: ghcr.io/sstr-dev/k8s-sidecar
-              tag: 2.5.0@sha256:830bed394818af8e0b78f9c616065687f921bb78c2007b9b5597f747a8051834
-            env:
-              FOLDER: /config
-              LABEL: gatus.io/enabled
-              NAMESPACE: ALL
-              RESOURCE: both
-              UNIQUE_FILENAMES: true
-              METHOD: WATCH
-            restartPolicy: Always
-            resources:
-              requests:
-                cpu: 10m
-                memory: 240Mi
-              limits:
-                memory: 320Mi
+        #initContainers:
+        #  gatus-sidecar:
+        #    image:
+        #      repository: ghcr.io/sstr-dev/k8s-sidecar
+        #      tag: 2.5.0@sha256:830bed394818af8e0b78f9c616065687f921bb78c2007b9b5597f747a8051834
+        #    env:
+        #      FOLDER: /config
+        #      LABEL: gatus.io/enabled
+        #      NAMESPACE: ALL
+        #      RESOURCE: both
+        #      UNIQUE_FILENAMES: true
+        #      METHOD: WATCH
+        #    restartPolicy: Always
+        #    resources:
+        #      requests:
+        #        cpu: 10m
+        #        memory: 240Mi
+        #      limits:
+        #        memory: 320Mi
         containers:
           app:
             image:
