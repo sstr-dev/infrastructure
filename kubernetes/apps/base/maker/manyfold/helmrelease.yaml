@@ -1,0 +1,150 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app manyfold
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      manyfold:
+        replicas: ${REPLICAS:=1}
+        forceRename: manyfold
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          chown-tmpdirs:
+            image:
+              repository: docker.io/library/alpine
+              tag: "3.23"
+            command:
+              - /bin/sh
+              - -c
+            args:
+              - |
+                chmod o-rwx /tmp
+            securityContext:
+              runAsUser: 0
+        containers:
+          app:
+            image:
+              repository: ghcr.io/bjw-s-labs/manyfold
+              tag: 0.136.0@sha256:321fe84f696c3f25e52334fd33ee3af540df3a14ebd7977ef66cee2eccaf4eb3
+            env:
+              # manyfold.MAINDOMAIN (main)
+              PORT: &port 3214
+              PUID: 1000
+              PGID: 1000
+              MULTIUSER: "enabled"
+              #REGISTRATION: false
+              PUBLIC_HOSTNAME: manyfold.${SECRET_DOMAIN}
+
+              # image: ghcr.io/manyfold3d/manyfold:latest
+
+              #===SMTP CONFIGURATION===
+              SMTP_SERVER: smtp-relay.network.svc.cluster.local
+              SMTP_PORT: 25
+              SMTP_FROM_ADDRESS: "Manyfold <${SECRET_SMTP_FROM_FULL}>"
+              SMTP_OPENSSL_VERIFY_MODE: "none"
+
+
+              TZ: ${CLUSTER_TIMEZONE}
+            envFrom:
+              - secretRef:
+                  name: manyfold-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 10
+              readiness: *probes
+            resources:
+              requests:
+                cpu: 20m
+                memory: 128Mi
+              limits:
+                memory: 1536Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+
+    defaultPodOptions:
+      #dnsConfig:
+      #  options:
+      #    - name: ndots
+      #      value: "1"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        controller: *app
+        forceRename: manyfold
+        primary: true
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames: ["manyfold.${SECRET_DOMAIN}"]
+        parentRefs:
+          - name: ${GATEWAY:=envoy-external}
+            namespace: network
+            sectionName: https
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Home
+          gethomepage.dev/name: Manyfold
+          gethomepage.dev/icon: manyfold.png
+          gethomepage.dev/description: STL Library
+          gatus.home-operations.com/endpoint: |
+            group: Maker
+
+    persistence:
+      data:
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/applications/manyfold
+        advancedMounts:
+          manyfold:
+            app:
+              - path: /data/database
+                subPath: database
+              - path: /data/libraries
+                subPath: libraries
+      tmpfs:
+        type: emptyDir
+        advancedMounts:
+          manyfold:
+            app: &tmpdirs
+              - path: /tmp
+                subPath: host-tmp
+              - path: /app/tmp
+                subPath: app-tmp
+              - path: /app/log
+                subPath: app-log
+            chown-tmpdirs: *tmpdirs
