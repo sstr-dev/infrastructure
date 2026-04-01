@@ -10,7 +10,7 @@ replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
   - ./fluent-bit.yaml
-  #- ./gatus.yaml
+  - ./gatus.yaml
   - ./grafana.yaml
   - ./karma.yaml
   - ./keda.yaml
