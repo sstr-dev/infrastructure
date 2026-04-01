@@ -1,0 +1,82 @@
+---
+web:
+  port: $${WEB_PORT}
+storage:
+  type: postgres
+  path: $${POSTGRES_URI}?sslmode=require
+  caching: true
+metrics: true
+debug: false
+ui:
+  title: Status | Gatus
+  header: Status
+  link: https://github.com/sstr-dev
+  logo: https://avatars.githubusercontent.com/u/219523549
+  buttons:
+    - name: Github
+      link: https://github.com/sstr-dev
+    - name: Infrastructure
+      link: https://github.com/sstr-dev/infrastructure
+#alerting:
+#  pushover:
+#    enabled: false
+#    title: Gatus (Kubernetes)
+#    application-token: $${PUSHOVER_TOKEN}
+#    user-key: $${PUSHOVER_USER_KEY}
+#    priority: 1
+#    default-alert:
+#      description: health-check failed
+#      send-on-resolved: true
+#      failure-threshold: 4
+#      success-threshold: 3
+security:
+  oidc:
+    issuer-url: $${OIDC_ISSUER}
+    client-id: $${OIDC_CLIENT_ID}
+    client-secret: $${OIDC_CLIENT_SECRET}
+    redirect-url: https://$${GATUS_DOMAIN}/authorization-code/callback
+    scopes: [openid]
+connectivity:
+  checker:
+    target: 1.1.1.1:53
+    interval: 1m
+endpoints:
+  - name: flux-webhook
+    group: external
+    url: https://${FLUX_WEBHOOK_EXTERNAL}
+    interval: 1m
+    #ui:
+    #  hide-url: true
+    #  hide-hostname: true
+    client:
+      dns-resolver: tcp://1.1.1.1:53
+    conditions:
+      - "[STATUS] == 404"
+    #alerts:
+    #  - type: pushover
+  #- name: flux-webhook (core)
+  #  group: external
+  #  url: https://${FLUX_WEBHOOK_CORE_EXTERNAL}
+  #  interval: 1m
+  #  #ui:
+  #  #  hide-url: true
+  #  #  hide-hostname: true
+  #  client:
+  #    dns-resolver: tcp://1.1.1.1:53
+  #  conditions:
+  #    - "[STATUS] == 404"
+  #  alerts:
+  #    - type: pushover
+  - name: sso
+    group: external
+    url: https://${SECRET_SSO_DOMAIN}/-/health/live/
+    interval: 1m
+    #ui:
+    #  hide-url: true
+    #  hide-hostname: true
+    client:
+      dns-resolver: tcp://1.1.1.1:53
+    conditions:
+      - "[STATUS] == 200"
+    #alerts:
+    #  - type: pushover

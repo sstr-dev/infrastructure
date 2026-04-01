@@ -22,10 +22,10 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:
-          init-config:
+          gatus-sidecar:
             image:
-              repository: ghcr.io/home-operations/k8s-sidecar
-              tag: 2.5.0@sha256:ae958215a6124c6d09dbf6cf568dc72176791bfba8630f4300d4eaaf1caa5b10
+              repository: ghcr.io/sstr-dev/k8s-sidecar
+              tag: 2.5.0@sha256:830bed394818af8e0b78f9c616065687f921bb78c2007b9b5597f747a8051834
             env:
               FOLDER: /config
               LABEL: gatus.io/enabled
@@ -44,7 +44,7 @@ spec:
           app:
             image:
               repository: ghcr.io/twin/gatus
-              tag: v5.34.0@sha256:3fff895e77d35ee62e898860f4613755bc2344127d93e3f326429d40270e2115
+              tag: v5.35.0@sha256:21609f31be8c4e680ce3004b24276305666239c99aff58391503f3fb6142f39d
             env:
               TZ: ${CLUSTER_TIMEZONE}
               GATUS_CONFIG_PATH: /config
@@ -53,7 +53,7 @@ spec:
               WEB_PORT: &port 80
             envFrom:
               - secretRef:
-                  name: *app
+                  name: gatus-secret
             probes:
               liveness: &probes
                 enabled: true
@@ -95,12 +95,17 @@ spec:
         serviceName: *app
         endpoints:
           - port: http
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 10s
 
     route:
       app:
-        hostnames: ["${GATUS_SUBDOMAIN:=${APP}}.${SECRET_DEV_DOMAIN}"]
+        hostnames:
+          - "${GATUS_SUBDOMAIN:=${APP}}.${SECRET_DEV_DOMAIN}"
         parentRefs:
-          - name: dev
+          - name: envoy-external
             namespace: network
             sectionName: https
     rbac:
@@ -109,7 +114,10 @@ spec:
           type: ClusterRole
           rules:
             - apiGroups: [""]
-              resources: ["configmaps", "secrets"]
+              resources: ["services"]
+              verbs: ["get", "watch", "list"]
+            - apiGroups: ["gateway.networking.k8s.io"]
+              resources: ["gateways", "httproutes"]
               verbs: ["get", "watch", "list"]
       bindings:
         gatus:
@@ -122,7 +130,7 @@ spec:
       gatus: {}
     persistence:
       config:
-        existingClaim: *app
+        type: emptyDir
       config-file:
         type: configMap
         name: gatus-configmap

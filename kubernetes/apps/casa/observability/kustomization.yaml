@@ -8,7 +8,7 @@ components:
   - ../../../vars/casa
 resources:
   - ./postgres-observability-cluster.yaml
-  - ./gatus.yaml
+  #- ./gatus.yaml
   #- ./dozzle.yaml
   - ./grafana.yaml
   - ./kube-prometheus-stack.yaml
