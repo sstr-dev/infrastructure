@@ -134,6 +134,13 @@ spec:
             app:
               - path: /data/database
                 subPath: database
+      libraries:
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/data/manyfold
+        advancedMounts:
+          manyfold:
+            app:
               - path: /data/libraries
                 subPath: libraries
       tmpfs:
