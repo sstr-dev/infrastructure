@@ -63,6 +63,9 @@ spec:
           - backendRefs:
               - name: *app
                 port: *port
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            group: Dev
         #annotations:
         #  gethomepage.dev/enabled: "true"
         #  gethomepage.dev/description: Swiss army knife for IT

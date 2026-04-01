@@ -135,6 +135,7 @@ spec:
           gethomepage.dev/widget.enableNowPlaying: "true"
           gatus.home-operations.com/enabled: "true"
           gatus.home-operations.com/endpoint: |
+            group: Media
             ui:
               hide-url: true
               hide-hostname: true

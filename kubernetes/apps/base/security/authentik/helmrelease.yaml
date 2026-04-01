@@ -89,7 +89,8 @@ spec:
           hostnames:
             - ${SECRET_SSO_DOMAIN}
             - ${SECRET_SSO_DOMAIN_2}
-          # annotations:
+          annotations:
+            gatus.home-operations.com/enabled: "false"
           # external-dns.alpha.kubernetes.io/target: sso.${SECRET_DOMAIN}
           parentRefs:
             - name: envoy-external

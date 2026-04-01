@@ -84,6 +84,7 @@ spec:
           gethomepage.dev/widget.key: "{{ `{{HOMEPAGE_VAR_RADARR_TOKEN}}` }}"
           gatus.home-operations.com/enabled: "true"
           gatus.home-operations.com/endpoint: |
+            group: Media
             ui:
               hide-url: true
               hide-hostname: true

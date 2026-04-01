@@ -33,7 +33,7 @@ spec:
   serviceSpec:
     annotations:
       gatus.home-operations.com/endpoint: |-
-        group: infrastructure
+        group: Database
   topologySpreadConstraints:
     - maxSkew: 1
       topologyKey: kubernetes.io/hostname

@@ -108,6 +108,9 @@ spec:
           - backendRefs:
               - name: *app
                 port: *port
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            group: Infra
         #annotations:
         #  gethomepage.dev/enabled: "true"
         #  gethomepage.dev/description: "Lightweight LDAP interface for authentication"

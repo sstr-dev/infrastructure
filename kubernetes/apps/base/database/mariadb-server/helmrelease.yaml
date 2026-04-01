@@ -71,7 +71,7 @@ spec:
           external-dns.alpha.kubernetes.io/hostname: mariadb.${DOMAIN}
           io.cilium/lb-ipam-ips: ${LB_SERVICE_IP}
           gatus.home-operations.com/endpoint: |-
-            group: infrastructure
+            group: Database
         ports:
           mysql:
             port: 3306

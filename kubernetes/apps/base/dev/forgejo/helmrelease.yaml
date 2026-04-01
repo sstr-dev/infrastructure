@@ -36,6 +36,9 @@ spec:
     httpRoute:
       enabled: true
       hostnames: [ "${SECRET_FORGEJO_HOSTNAME}" ]
+      annotations:
+          gatus.home-operations.com/endpoint: |
+            group: Dev
       parentRefs:
         - name: envoy-external
           namespace: network
