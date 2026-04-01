@@ -99,6 +99,8 @@ spec:
 
     route:
       app:
+        annotations:
+          gatus.home-operations.com/enabled: "false"
         hostnames:
           - "${GATUS_SUBDOMAIN:=${APP}}.${SECRET_DEV_DOMAIN}"
         parentRefs:
