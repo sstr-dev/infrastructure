@@ -133,6 +133,8 @@ spec:
           - name: envoy-external
             namespace: network
             sectionName: https
+        annotations:
+          gatus.home-operations.com/enabled: "false"
         #annotations:
         #  gethomepage.dev/enabled: "true"
         #  gethomepage.dev/description: Flexible AI workflow automation
@@ -153,6 +155,8 @@ spec:
           - name: envoy-external
             namespace: network
             sectionName: https
+        annotations:
+          gatus.home-operations.com/enabled: "false"
         rules:
           - matches:
               - path:
