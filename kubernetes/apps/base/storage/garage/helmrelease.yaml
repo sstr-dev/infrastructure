@@ -79,8 +79,7 @@ spec:
         enabled: true
         annotations:
           external-dns.alpha.kubernetes.io/controller: "ignore"
-          gatus.home-operations.com/endpoint: |-
-            conditions: ["[STATUS] == 403"]
+          gatus.home-operations.com/enabled: "false"
         hostnames: ["*.${SECRET_S3_WEB_DOMAIN}"]
         parentRefs:
           - name: envoy-public
