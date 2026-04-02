@@ -15,11 +15,11 @@ spec:
       publish-k8s-schemas:
         type: cronjob
         cronjob:
-          schedule: "0 * * * *"
-          concurrencyPolicy: "Replace"
-          backoffLimit: 0
+          backoffLimit: 4
+          concurrencyPolicy: Forbid
           failedJobsHistory: 1
-          successfulJobsHistory: 0
+          schedule: "0 0 * * *"
+          successfulJobsHistory: 1
         pod:
           restartPolicy: OnFailure
           securityContext:
@@ -30,7 +30,7 @@ spec:
           generate-schemas:
             image:
               repository: ghcr.io/bjw-s-labs/k8s-crd-extractor
-              tag: 2025.12.22@sha256:176cc556053abba6fda83eeb398531cd33c3092553cab8a49a736f68972c057b
+              tag: 2026.3.11@sha256:a26844ff81905a8fac4dba61b416bed087a1944e20e38634acba5a7f65eeac93
             resources:
               requests:
                 cpu: 10m
@@ -47,7 +47,7 @@ spec:
           app:
             image:
               repository: ghcr.io/bjw-s-labs/wrangler
-              tag: 4.61.1@sha256:a9b13c1d0474cde1b29267a64f0f25357505d4f7a7ae1f7409171a65b15ed82a
+              tag: 4.78.0@sha256:bb9450fce0992b13b3b399f08a93e41af2d6e933c3597e9460916967763096f5
             envFrom:
               - secretRef:
                   name: publish-k8s-schemas-secret

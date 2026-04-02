@@ -6,6 +6,6 @@ namespace: jobs
 components:
   - ../../../components/common
   - ../../../vars/casa
-resources:
-  - ./publish-k8s-schemas.yaml
+resources: []
+  #- ./publish-k8s-schemas.yaml
 

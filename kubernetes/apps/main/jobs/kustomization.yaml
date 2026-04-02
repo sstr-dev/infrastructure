@@ -10,3 +10,4 @@ replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
   - ./nas-backup.yaml
+  - ./publish-k8s-schemas.yaml
