@@ -26,6 +26,10 @@ spec:
         pod:
           labels:
             app.kubernetes.io/component: application
+          dnsConfig:
+            options:
+              - name: ndots
+                value: "1"
           securityContext:
             fsGroup: 1000
             fsGroupChangePolicy: "OnRootMismatch"
