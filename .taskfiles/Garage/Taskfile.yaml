@@ -1,0 +1,607 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  GARAGE_FILE: "{{.ROOT_DIR}}/.secrets/garage.yaml"
+  GARAGE_ADMIN_NS: storage
+  GARAGE_ADMIN_TARGET: deployment/garage
+
+  GARAGE_DEFAULT_ADDR:
+    sh: yq -r '.garage.address' {{.GARAGE_FILE}}
+
+  GARAGE_DEFAULT_ACCESS_KEY:
+    sh: yq -r '.garage.access_key' {{.GARAGE_FILE}}
+
+  GARAGE_DEFAULT_SECRET_KEY:
+    sh: yq -r '.garage.secret_key' {{.GARAGE_FILE}}
+env:
+  GARAGE_DEFAULT_ADDR: "{{.GARAGE_DEFAULT_ADDR}}"
+  GARAGE_DEFAULT_ACCESS_KEY: "{{.GARAGE_DEFAULT_ACCESS_KEY}}"
+  GARAGE_DEFAULT_SECRET_KEY: "{{.GARAGE_DEFAULT_SECRET_KEY}}"
+
+tasks:
+
+  status:
+    desc: Show Garage cluster status
+    summary: |
+      Args:
+        cluster: Kubernetes context for kubectl fallback pod (default: inherited Task var)
+        ns: Namespace of the Garage admin target (default: storage)
+        target: Garage exec target, e.g. deployment/garage (default: deployment/garage)
+    vars:
+      ns: '{{.ns | default .GARAGE_ADMIN_NS}}'
+      target: '{{.target | default .GARAGE_ADMIN_TARGET}}'
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- /garage status
+    preconditions:
+      - sh: command -v kubectl >/dev/null 2>&1
+        msg: "❌ kubectl not found in PATH"
+
+  bucket:list:
+    desc: List Garage buckets
+    summary: |
+      Args:
+        cluster: Kubernetes context for kubectl fallback pod (default: inherited Task var)
+        ns: Namespace of the Garage admin target (default: storage)
+        target: Garage exec target, e.g. deployment/garage (default: deployment/garage)
+    vars:
+      ns: '{{.ns | default .GARAGE_ADMIN_NS}}'
+      target: '{{.target | default .GARAGE_ADMIN_TARGET}}'
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- /garage bucket list
+    preconditions:
+      - sh: command -v kubectl >/dev/null 2>&1
+        msg: "❌ kubectl not found in PATH"
+
+  bucket:info:
+    desc: Show Garage bucket details
+    summary: |
+      Args:
+        bucket: Bucket name (required)
+        cluster: Kubernetes context for kubectl fallback pod (default: inherited Task var)
+        ns: Namespace of the Garage admin target (default: storage)
+        target: Garage exec target, e.g. deployment/garage (default: deployment/garage)
+    vars:
+      bucket: '{{ or .bucket .name (fail "Argument (bucket) is required") }}'
+      ns: '{{.ns | default .GARAGE_ADMIN_NS}}'
+      target: '{{.target | default .GARAGE_ADMIN_TARGET}}'
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- /garage bucket info {{.bucket}}
+    preconditions:
+      - sh: command -v kubectl >/dev/null 2>&1
+        msg: "❌ kubectl not found in PATH"
+
+  bucket:create:
+    desc: Create a new Garage bucket
+    summary: |
+      Args:
+        bucket: Bucket name (required)
+        cluster: Kubernetes context for kubectl fallback pod (default: inherited Task var)
+        ns: Namespace of the Garage admin target (default: storage)
+        target: Garage exec target, e.g. deployment/garage (default: deployment/garage)
+    vars:
+      bucket: '{{ or .bucket .name (fail "Argument (bucket) is required") }}'
+      ns: '{{.ns | default .GARAGE_ADMIN_NS}}'
+      target: '{{.target | default .GARAGE_ADMIN_TARGET}}'
+    cmds:
+      - kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- /garage bucket create {{.bucket}}
+      - task: bucket:info
+        vars:
+          bucket: "{{.bucket}}"
+          cluster: "{{.cluster}}"
+          ns: "{{.ns}}"
+          target: "{{.target}}"
+    preconditions:
+      - sh: command -v kubectl >/dev/null 2>&1
+        msg: "❌ kubectl not found in PATH"
+
+  bucket:delete:
+    desc: Delete a Garage bucket
+    summary: |
+      Args:
+        bucket: Bucket name (required)
+        cluster: Kubernetes context for kubectl fallback pod (default: inherited Task var)
+        ns: Namespace of the Garage admin target (default: storage)
+        target: Garage exec target, e.g. deployment/garage (default: deployment/garage)
+    vars:
+      bucket: '{{ or .bucket .name (fail "Argument (bucket) is required") }}'
+      ns: '{{.ns | default .GARAGE_ADMIN_NS}}'
+      target: '{{.target | default .GARAGE_ADMIN_TARGET}}'
+    prompt: Delete bucket '{{.bucket}}'? The bucket must already be empty.
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- /garage bucket delete {{.bucket}}
+    preconditions:
+      - sh: command -v kubectl >/dev/null 2>&1
+        msg: "❌ kubectl not found in PATH"
+
+  key:list:
+    desc: List Garage access keys
+    summary: |
+      Args:
+        cluster: Kubernetes context for kubectl fallback pod (default: inherited Task var)
+        ns: Namespace of the Garage admin target (default: storage)
+        target: Garage exec target, e.g. deployment/garage (default: deployment/garage)
+    vars:
+      ns: '{{.ns | default .GARAGE_ADMIN_NS}}'
+      target: '{{.target | default .GARAGE_ADMIN_TARGET}}'
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- /garage key list
+    preconditions:
+      - sh: command -v kubectl >/dev/null 2>&1
+        msg: "❌ kubectl not found in PATH"
+
+  key:info:
+    desc: Show Garage access key details
+    summary: |
+      Args:
+        key: Garage key name or ID (required)
+        cluster: Kubernetes context for kubectl fallback pod (default: inherited Task var)
+        ns: Namespace of the Garage admin target (default: storage)
+        target: Garage exec target, e.g. deployment/garage (default: deployment/garage)
+    vars:
+      key: '{{ or .key .name (fail "Argument (key) is required") }}'
+      ns: '{{.ns | default .GARAGE_ADMIN_NS}}'
+      target: '{{.target | default .GARAGE_ADMIN_TARGET}}'
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- /garage key info {{.key}}
+    preconditions:
+      - sh: command -v kubectl >/dev/null 2>&1
+        msg: "❌ kubectl not found in PATH"
+
+  key:create:
+    desc: Create a new Garage access key
+    summary: |
+      Args:
+        key: Garage key name (required)
+        format: Output format text|env|json (default: text)
+        cluster: Kubernetes context for kubectl fallback pod (default: inherited Task var)
+        ns: Namespace of the Garage admin target (default: storage)
+        target: Garage exec target, e.g. deployment/garage (default: deployment/garage)
+    silent: true
+    vars:
+      key: '{{ or .key .name (fail "Argument (key) is required") }}'
+      format: '{{.format | default "text"}}'
+      ns: '{{.ns | default .GARAGE_ADMIN_NS}}'
+      target: '{{.target | default .GARAGE_ADMIN_TARGET}}'
+    cmds:
+      - |
+        set -euo pipefail
+
+        output="$(kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- /garage key create {{.key}})"
+
+        key_id="$(printf '%s\n' "$output" | awk -F': ' '/^Key ID:/ {print $2}')"
+        secret_key="$(printf '%s\n' "$output" | awk -F': ' '/^Secret key:/ {print $2}')"
+
+        case '{{.format}}' in
+          text)
+            printf '%s\n' "$output"
+            ;;
+          env)
+            printf 'AWS_ACCESS_KEY_ID=%s\n' "$key_id"
+            printf 'AWS_SECRET_ACCESS_KEY=%s\n' "$secret_key"
+            ;;
+          json)
+            jq -n \
+              --arg name '{{.key}}' \
+              --arg access_key "$key_id" \
+              --arg secret_key "$secret_key" \
+              '{name:$name, access_key:$access_key, secret_key:$secret_key}'
+            ;;
+          *)
+            echo "❌ Unsupported format '{{.format}}'. Use text, env, or json." >&2
+            exit 1
+            ;;
+        esac
+    preconditions:
+      - sh: command -v kubectl >/dev/null 2>&1
+        msg: "❌ kubectl not found in PATH"
+      - sh: '[[ "{{.format}}" == "text" || "{{.format}}" == "env" || "{{.format}}" == "json" ]]'
+        msg: "❌ format must be one of: text, env, json"
+      - sh: command -v jq >/dev/null 2>&1 || [[ "{{.format}}" != "json" ]]
+        msg: "❌ jq not found in PATH"
+
+  key:credentials:
+    desc: Print Garage key credentials in env or json format
+    summary: |
+      Args:
+        key: Garage key name or ID (required)
+        format: Output format env|json|text (default: env)
+        cluster: Kubernetes context for kubectl fallback pod (default: inherited Task var)
+        ns: Namespace of the Garage admin target (default: storage)
+        target: Garage exec target, e.g. deployment/garage (default: deployment/garage)
+    silent: true
+    vars:
+      key: '{{ or .key .name (fail "Argument (key) is required") }}'
+      format: '{{.format | default "env"}}'
+      ns: '{{.ns | default .GARAGE_ADMIN_NS}}'
+      target: '{{.target | default .GARAGE_ADMIN_TARGET}}'
+    cmds:
+      - |
+        set -euo pipefail
+
+        output="$(kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- /garage key info {{.key}})"
+
+        key_id="$(printf '%s\n' "$output" | awk -F': ' '/^Key ID:/ {print $2}')"
+        secret_key="$(printf '%s\n' "$output" | awk -F': ' '/^Secret key:/ {print $2}')"
+
+        case '{{.format}}' in
+          text)
+            printf '%s\n' "$output"
+            ;;
+          env)
+            printf 'AWS_ACCESS_KEY_ID=%s\n' "$key_id"
+            printf 'AWS_SECRET_ACCESS_KEY=%s\n' "$secret_key"
+            ;;
+          json)
+            jq -n \
+              --arg name '{{.key}}' \
+              --arg access_key "$key_id" \
+              --arg secret_key "$secret_key" \
+              '{name:$name, access_key:$access_key, secret_key:$secret_key}'
+            ;;
+          *)
+            echo "❌ Unsupported format '{{.format}}'. Use text, env, or json." >&2
+            exit 1
+            ;;
+        esac
+    preconditions:
+      - sh: command -v kubectl >/dev/null 2>&1
+        msg: "❌ kubectl not found in PATH"
+      - sh: '[[ "{{.format}}" == "text" || "{{.format}}" == "env" || "{{.format}}" == "json" ]]'
+        msg: "❌ format must be one of: text, env, json"
+      - sh: command -v jq >/dev/null 2>&1 || [[ "{{.format}}" != "json" ]]
+        msg: "❌ jq not found in PATH"
+
+  bucket:grant:
+    desc: Grant bucket permissions to a Garage key
+    summary: |
+      Args:
+        bucket: Bucket name (required)
+        key: Garage key name or ID (required)
+        permissions: Comma-separated permissions, e.g. read,write,owner (default: read,write,owner)
+        cluster: Kubernetes context for kubectl fallback pod (default: inherited Task var)
+        ns: Namespace of the Garage admin target (default: storage)
+        target: Garage exec target, e.g. deployment/garage (default: deployment/garage)
+    vars:
+      bucket: '{{ or .bucket (fail "Argument (bucket) is required") }}'
+      key: '{{ or .key (fail "Argument (key) is required") }}'
+      permissions: '{{.permissions | default "read,write,owner"}}'
+      ns: '{{.ns | default .GARAGE_ADMIN_NS}}'
+      target: '{{.target | default .GARAGE_ADMIN_TARGET}}'
+    cmd: |
+      set -euo pipefail
+
+      perm_flags=()
+      IFS=',' read -r -a raw_permissions <<< "{{.permissions}}"
+      for perm in "${raw_permissions[@]}"; do
+        perm="$(printf '%s' "$perm" | xargs)"
+        case "$perm" in
+          read) perm_flags+=(--read) ;;
+          write) perm_flags+=(--write) ;;
+          owner) perm_flags+=(--owner) ;;
+          "") ;;
+          *)
+            echo "❌ Unsupported permission: $perm" >&2
+            exit 1
+            ;;
+        esac
+      done
+
+      kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- /garage bucket allow "${perm_flags[@]}" {{.bucket}} --key {{.key}}
+    preconditions:
+      - sh: command -v kubectl >/dev/null 2>&1
+        msg: "❌ kubectl not found in PATH"
+
+  bucket:revoke:
+    desc: Revoke bucket permissions from a Garage key
+    summary: |
+      Args:
+        bucket: Bucket name (required)
+        key: Garage key name or ID (required)
+        permissions: Comma-separated permissions, e.g. read,write,owner (default: read,write,owner)
+        cluster: Kubernetes context for kubectl fallback pod (default: inherited Task var)
+        ns: Namespace of the Garage admin target (default: storage)
+        target: Garage exec target, e.g. deployment/garage (default: deployment/garage)
+    vars:
+      bucket: '{{ or .bucket (fail "Argument (bucket) is required") }}'
+      key: '{{ or .key (fail "Argument (key) is required") }}'
+      permissions: '{{.permissions | default "read,write,owner"}}'
+      ns: '{{.ns | default .GARAGE_ADMIN_NS}}'
+      target: '{{.target | default .GARAGE_ADMIN_TARGET}}'
+    cmd: |
+      set -euo pipefail
+
+      perm_flags=()
+      IFS=',' read -r -a raw_permissions <<< "{{.permissions}}"
+      for perm in "${raw_permissions[@]}"; do
+        perm="$(printf '%s' "$perm" | xargs)"
+        case "$perm" in
+          read) perm_flags+=(--read) ;;
+          write) perm_flags+=(--write) ;;
+          owner) perm_flags+=(--owner) ;;
+          "") ;;
+          *)
+            echo "❌ Unsupported permission: $perm" >&2
+            exit 1
+            ;;
+        esac
+      done
+
+      kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- /garage bucket deny "${perm_flags[@]}" {{.bucket}} --key {{.key}}
+    preconditions:
+      - sh: command -v kubectl >/dev/null 2>&1
+        msg: "❌ kubectl not found in PATH"
+
+  bucket:setup:
+    desc: Create a bucket, create a key, and grant permissions
+    summary: |
+      Args:
+        bucket: Bucket name (required)
+        key: Garage key name (default: <bucket>-key)
+        permissions: Comma-separated permissions, e.g. read,write,owner (default: read,write,owner)
+        format: Credential output format text|env|json (default: text)
+        cluster: Kubernetes context for kubectl fallback pod (default: inherited Task var)
+        ns: Namespace of the Garage admin target (default: storage)
+        target: Garage exec target, e.g. deployment/garage (default: deployment/garage)
+    silent: true
+    vars:
+      bucket: '{{ or .bucket (fail "Argument (bucket) is required") }}'
+      key: '{{.key | default (printf "%s-key" .bucket)}}'
+      permissions: '{{.permissions | default "read,write,owner"}}'
+      format: '{{.format | default "text"}}'
+      ns: '{{.ns | default .GARAGE_ADMIN_NS}}'
+      target: '{{.target | default .GARAGE_ADMIN_TARGET}}'
+    cmds:
+      - task: bucket:create
+        vars:
+          bucket: "{{.bucket}}"
+          cluster: "{{.cluster}}"
+          ns: "{{.ns}}"
+          target: "{{.target}}"
+      - task: key:create
+        vars:
+          key: "{{.key}}"
+          format: "{{.format}}"
+          cluster: "{{.cluster}}"
+          ns: "{{.ns}}"
+          target: "{{.target}}"
+      - task: bucket:grant
+        vars:
+          bucket: "{{.bucket}}"
+          key: "{{.key}}"
+          permissions: "{{.permissions}}"
+          cluster: "{{.cluster}}"
+          ns: "{{.ns}}"
+          target: "{{.target}}"
+      - task: bucket:info
+        vars:
+          bucket: "{{.bucket}}"
+          cluster: "{{.cluster}}"
+          ns: "{{.ns}}"
+          target: "{{.target}}"
+
+  endpoint:
+    desc: Show the default S3 endpoint for Garage
+    summary: |
+      Args:
+        endpoint: Optional S3 endpoint override
+    silent: true
+    vars:
+      endpoint: '{{.endpoint | default .GARAGE_DEFAULT_ADDR}}'
+    cmds:
+      - echo "{{.endpoint}}"
+    preconditions:
+      - sh: test -n "{{.endpoint}}"
+        msg: "❌ Missing endpoint argument or GARAGE_DEFAULT_ADDR config"
+
+  bucket:cors:get:
+    desc: Read a bucket CORS configuration from Garage
+    summary: |
+      Args:
+        bucket: Bucket name (required)
+        cluster: Kubernetes context for aws-cli fallback pod (default: inherited Task var)
+        ns: Namespace for aws-cli fallback pod (default: storage)
+        endpoint: Optional S3 endpoint override
+        access_key: S3 access key
+        secret_key: S3 secret key
+    vars:
+      bucket: '{{ or .bucket .name (fail "Argument (bucket) is required") }}'
+      ns: '{{.ns | default "storage"}}'
+      endpoint: '{{.endpoint | default .GARAGE_DEFAULT_ADDR | default ""}}'
+      access_key: '{{.access_key | default .AWS_ACCESS_KEY_ID | default .GARAGE_DEFAULT_ACCESS_KEY | default ""}}'
+      secret_key: '{{.secret_key | default .AWS_SECRET_ACCESS_KEY | default .GARAGE_DEFAULT_SECRET_KEY | default ""}}'
+    env:
+      AWS_ACCESS_KEY_ID: "{{.access_key}}"
+      AWS_SECRET_ACCESS_KEY: "{{.secret_key}}"
+      AWS_DEFAULT_REGION: '{{.region | default "us-east-1"}}'
+      AWS_EC2_METADATA_DISABLED: "true"
+    cmd: |
+      if command -v aws >/dev/null 2>&1; then
+        aws --endpoint-url {{.endpoint}} s3api get-bucket-cors --bucket {{.bucket}}
+      else
+        kubectl --context {{.cluster}} --namespace {{.ns}} run garage-aws-cli --rm -i --restart=Never \
+          --image public.ecr.aws/aws-cli/aws-cli:2.17.57 \
+          --env AWS_ACCESS_KEY_ID={{.access_key}} \
+          --env AWS_SECRET_ACCESS_KEY={{.secret_key}} \
+          --env AWS_DEFAULT_REGION={{.region | default "us-east-1"}} \
+          --env AWS_EC2_METADATA_DISABLED=true \
+          --command -- \
+          aws --endpoint-url {{.endpoint}} s3api get-bucket-cors --bucket {{.bucket}}
+      fi
+    preconditions:
+      - sh: test -n "{{.endpoint}}"
+        msg: "❌ Missing endpoint argument or GARAGE_DEFAULT_ADDR config"
+      - sh: test -n "{{.access_key}}"
+        msg: "❌ Missing access_key argument, AWS_ACCESS_KEY_ID env, or GARAGE_DEFAULT_ACCESS_KEY config"
+      - sh: test -n "{{.secret_key}}"
+        msg: "❌ Missing secret_key argument, AWS_SECRET_ACCESS_KEY env, or GARAGE_DEFAULT_SECRET_KEY config"
+      - sh: command -v aws >/dev/null 2>&1 || command -v kubectl >/dev/null 2>&1
+        msg: "❌ Neither aws CLI nor kubectl is available for fallback"
+
+  bucket:cors:set:
+    desc: Apply a bucket CORS configuration to Garage
+    summary: |
+      Args:
+        bucket: Bucket name (required)
+        origin: Single allowed origin, e.g. https://manyfold.example.com
+        origins: Comma-separated list of allowed origins
+        methods: Comma-separated methods (default: GET,HEAD)
+        allowed_headers: Comma-separated headers (default: *)
+        expose_headers: Optional comma-separated expose headers
+        max_age: Optional max age in seconds
+        cluster: Kubernetes context for aws-cli fallback pod (default: inherited Task var)
+        ns: Namespace for aws-cli fallback pod (default: storage)
+        endpoint: Optional S3 endpoint override
+        access_key: S3 access key
+        secret_key: S3 secret key
+    silent: true
+    vars:
+      bucket: '{{ or .bucket .name (fail "Argument (bucket) is required") }}'
+      ns: '{{.ns | default "storage"}}'
+      origins: '{{ .origins | default .origin | default "" }}'
+      methods: '{{.methods | default "GET,HEAD"}}'
+      allowed_headers: '{{.allowed_headers | default "*"}}'
+      expose_headers: '{{.expose_headers | default ""}}'
+      max_age: '{{.max_age | default ""}}'
+      endpoint: '{{.endpoint | default .GARAGE_DEFAULT_ADDR | default ""}}'
+      access_key: '{{.access_key | default .AWS_ACCESS_KEY_ID | default .GARAGE_DEFAULT_ACCESS_KEY | default ""}}'
+      secret_key: '{{.secret_key | default .AWS_SECRET_ACCESS_KEY | default .GARAGE_DEFAULT_SECRET_KEY | default ""}}'
+    env:
+      AWS_ACCESS_KEY_ID: "{{.access_key}}"
+      AWS_SECRET_ACCESS_KEY: "{{.secret_key}}"
+      AWS_DEFAULT_REGION: '{{.region | default "us-east-1"}}'
+      AWS_EC2_METADATA_DISABLED: "true"
+    cmds:
+      - |
+        set -euo pipefail
+
+        tmpfile="$(mktemp)"
+        trap 'rm -f "$tmpfile"' EXIT
+
+        jq -n \
+          --arg origins '{{.origins}}' \
+          --arg methods '{{.methods}}' \
+          --arg allowed_headers '{{.allowed_headers}}' \
+          --arg expose_headers '{{.expose_headers}}' \
+          --arg max_age '{{.max_age}}' \
+          '
+          {
+            CORSRules: [
+              (
+                {
+                  AllowedOrigins: ($origins | split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(length > 0))),
+                  AllowedMethods: ($methods | split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(length > 0))),
+                  AllowedHeaders: ($allowed_headers | split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(length > 0)))
+                }
+                + (if ($expose_headers | length) > 0 then
+                    {ExposeHeaders: ($expose_headers | split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(length > 0)))}
+                  else {} end)
+                + (if ($max_age | length) > 0 then
+                    {MaxAgeSeconds: ($max_age | tonumber)}
+                  else {} end)
+              )
+            ]
+          }' > "$tmpfile"
+
+        echo "▶ Applying CORS to bucket '{{.bucket}}' via {{.endpoint}}"
+        if command -v aws >/dev/null 2>&1; then
+          aws --endpoint-url {{.endpoint}} s3api put-bucket-cors --bucket {{.bucket}} --cors-configuration "file://$tmpfile"
+          echo "✅ CORS updated"
+          aws --endpoint-url {{.endpoint}} s3api get-bucket-cors --bucket {{.bucket}}
+        else
+          kubectl --context {{.cluster}} --namespace {{.ns}} run garage-aws-cli --rm -i --restart=Never \
+            --image public.ecr.aws/aws-cli/aws-cli:2.17.57 \
+            --env AWS_ACCESS_KEY_ID={{.access_key}} \
+            --env AWS_SECRET_ACCESS_KEY={{.secret_key}} \
+            --env AWS_DEFAULT_REGION={{.region | default "us-east-1"}} \
+            --env AWS_EC2_METADATA_DISABLED=true \
+            --command -- \
+            sh -ceu 'cat >/tmp/cors.json && aws --endpoint-url "$1" s3api put-bucket-cors --bucket "$2" --cors-configuration file:///tmp/cors.json && aws --endpoint-url "$1" s3api get-bucket-cors --bucket "$2"' -- {{.endpoint}} {{.bucket}} < "$tmpfile"
+          echo "✅ CORS updated"
+        fi
+    preconditions:
+      - sh: which jq
+        msg: "❌ jq not found in PATH"
+      - sh: test -n "{{.endpoint}}"
+        msg: "❌ Missing endpoint argument or GARAGE_DEFAULT_ADDR config"
+      - sh: test -n "{{.origins}}"
+        msg: "❌ Missing origin or origins argument"
+      - sh: test -n "{{.access_key}}"
+        msg: "❌ Missing access_key argument, AWS_ACCESS_KEY_ID env, or GARAGE_DEFAULT_ACCESS_KEY config"
+      - sh: test -n "{{.secret_key}}"
+        msg: "❌ Missing secret_key argument, AWS_SECRET_ACCESS_KEY env, or GARAGE_DEFAULT_SECRET_KEY config"
+      - sh: command -v aws >/dev/null 2>&1 || command -v kubectl >/dev/null 2>&1
+        msg: "❌ Neither aws CLI nor kubectl is available for fallback"
+
+  bucket:cors:update:
+    desc: Update a bucket CORS configuration in Garage
+    summary: |
+      This task is an explicit alias for bucket:cors:set.
+
+      Args:
+        bucket: Bucket name (required)
+        origin: Single allowed origin, e.g. https://manyfold.example.com
+        origins: Comma-separated list of allowed origins
+        methods: Comma-separated methods (default: GET,HEAD)
+        allowed_headers: Comma-separated headers (default: *)
+        expose_headers: Optional comma-separated expose headers
+        max_age: Optional max age in seconds
+        cluster: Kubernetes context for aws-cli fallback pod (default: inherited Task var)
+        ns: Namespace for aws-cli fallback pod (default: storage)
+        endpoint: Optional S3 endpoint override
+        access_key: S3 access key
+        secret_key: S3 secret key
+    cmds:
+      - task: bucket:cors:set
+        vars:
+          bucket: "{{.bucket}}"
+          origin: "{{.origin}}"
+          origins: "{{.origins}}"
+          methods: "{{.methods}}"
+          allowed_headers: "{{.allowed_headers}}"
+          expose_headers: "{{.expose_headers}}"
+          max_age: "{{.max_age}}"
+          cluster: "{{.cluster}}"
+          ns: "{{.ns}}"
+          endpoint: "{{.endpoint}}"
+          access_key: "{{.access_key}}"
+          secret_key: "{{.secret_key}}"
+
+  bucket:cors:delete:
+    desc: Remove a bucket CORS configuration from Garage
+    summary: |
+      Args:
+        bucket: Bucket name (required)
+        cluster: Kubernetes context for aws-cli fallback pod (default: inherited Task var)
+        ns: Namespace for aws-cli fallback pod (default: storage)
+        endpoint: Optional S3 endpoint override
+        access_key: S3 access key
+        secret_key: S3 secret key
+    vars:
+      bucket: '{{ or .bucket .name (fail "Argument (bucket) is required") }}'
+      ns: '{{.ns | default "storage"}}'
+      endpoint: '{{.endpoint | default .GARAGE_DEFAULT_ADDR | default ""}}'
+      access_key: '{{.access_key | default .AWS_ACCESS_KEY_ID | default .GARAGE_DEFAULT_ACCESS_KEY | default ""}}'
+      secret_key: '{{.secret_key | default .AWS_SECRET_ACCESS_KEY | default .GARAGE_DEFAULT_SECRET_KEY | default ""}}'
+    env:
+      AWS_ACCESS_KEY_ID: "{{.access_key}}"
+      AWS_SECRET_ACCESS_KEY: "{{.secret_key}}"
+      AWS_DEFAULT_REGION: '{{.region | default "us-east-1"}}'
+      AWS_EC2_METADATA_DISABLED: "true"
+    cmd: |
+      if command -v aws >/dev/null 2>&1; then
+        aws --endpoint-url {{.endpoint}} s3api delete-bucket-cors --bucket {{.bucket}}
+      else
+        kubectl --context {{.cluster}} --namespace {{.ns}} run garage-aws-cli --rm -i --restart=Never \
+          --image public.ecr.aws/aws-cli/aws-cli:2.17.57 \
+          --env AWS_ACCESS_KEY_ID={{.access_key}} \
+          --env AWS_SECRET_ACCESS_KEY={{.secret_key}} \
+          --env AWS_DEFAULT_REGION={{.region | default "us-east-1"}} \
+          --env AWS_EC2_METADATA_DISABLED=true \
+          --command -- \
+          aws --endpoint-url {{.endpoint}} s3api delete-bucket-cors --bucket {{.bucket}}
+      fi
+    preconditions:
+      - sh: test -n "{{.endpoint}}"
+        msg: "❌ Missing endpoint argument or GARAGE_DEFAULT_ADDR config"
+      - sh: test -n "{{.access_key}}"
+        msg: "❌ Missing access_key argument, AWS_ACCESS_KEY_ID env, or GARAGE_DEFAULT_ACCESS_KEY config"
+      - sh: test -n "{{.secret_key}}"
+        msg: "❌ Missing secret_key argument, AWS_SECRET_ACCESS_KEY env, or GARAGE_DEFAULT_SECRET_KEY config"
+      - sh: command -v aws >/dev/null 2>&1 || command -v kubectl >/dev/null 2>&1
+        msg: "❌ Neither aws CLI nor kubectl is available for fallback"

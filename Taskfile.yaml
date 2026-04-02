@@ -56,6 +56,9 @@ includes:
   database:
     aliases: ["db"]
     taskfile: .taskfiles/Database/Taskfile.yaml
+  garage:
+    aliases: ["s3"]
+    taskfile: .taskfiles/Garage/Taskfile.yaml
 
 tasks:
 
@@ -109,4 +112,3 @@ tasks:
       - { msg: "Missing Makejinja config file", sh: "test -f {{.MAKEJINJA_CONFIG_FILE}}" }
       - { msg: "Missing Makejinja plugin file", sh: "test -f {{.BOOTSTRAP_DIR}}/scripts/plugin.py" }
       - { msg: "Missing bootstrap config file", sh: "test -f {{.BOOTSTRAP_CONFIG_FILE}}" }
-
