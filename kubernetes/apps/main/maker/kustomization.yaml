@@ -9,5 +9,5 @@ components:
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
-  #- ./spoolman.yaml
+  - ./spoolman.yaml
   - ./manyfold.yaml

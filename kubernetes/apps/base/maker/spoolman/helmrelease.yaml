@@ -1,0 +1,102 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app spoolman
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      spoolman:
+        replicas: ${REPLICAS:=1}
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: RollingUpdate
+        containers:
+          app:
+            image:
+              repository: ghcr.io/donkie/spoolman
+              tag: 0.23.1@sha256:c798bcc19194949962044459e4b43c09d667d084ae9c2c2e0187a42c36d43d9e
+            command:
+              - uvicorn
+              - spoolman.main:app
+              - --host
+              - 0.0.0.0
+              - --port
+              - "8000"
+            env:
+              TZ: ${CLUSTER_TIMEZONE}
+              SPOOLMAN_METRICS_ENABLED: "true"
+              SPOOLMAN_PORT: &port 8000
+            envFrom:
+              - secretRef:
+                  name: spoolman-secret
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 5
+            resources:
+              requests:
+                cpu: 25m
+                memory: 256Mi
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+
+    serviceMonitor:
+      spoolman:
+        serviceName: *app
+        endpoints:
+          - port: http
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 10s
+            metricRelabelings:
+              - action: labeldrop
+                regex: (pod)
+    route:
+      app:
+        hostnames: ["{{ .Release.Name }}.${SECRET_DOMAIN}"]
+        parentRefs:
+          - name: ${GATEWAY:=envoy-external}
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: http
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/icon: spoolman.png
+          # Gruppierung im Dashboard
+          gethomepage.dev/group: "3D Printing"
+          # Anzeigename
+          gethomepage.dev/name: "SpoolMan"
+          # Tooltip / Beschreibung
+          gethomepage.dev/description: "Manage your filament spools"
+          gethomepage.dev/widget.type: spoolman
+          gethomepage.dev/widget.url: http://{{ .Release.Name }}.{{ .Release.Namespace }}:8000
+          gatus.home-operations.com/endpoint: |
+            group: Maker
