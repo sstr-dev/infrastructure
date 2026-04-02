@@ -20,22 +20,11 @@ spec:
       open-webui:
         annotations:
           reloader.stakater.com/auto: "true"
-        labels:
-          postgres: "true"
-        initContainers:
-          init-db:
-            image:
-              repository: ghcr.io/sstr-dev/postgres-init
-              tag: 17.7@sha256:7f4c3051706da3025f97b73c6acc60000e9c1c7a12cbfede5837e2a19d2e96f2
-              pullPolicy: IfNotPresent
-            envFrom: &envFrom
-              - secretRef:
-                  name: *app
         containers:
           app:
             image:
               repository: ghcr.io/open-webui/open-webui
-              tag: v0.8.2@sha256:7b7d324724ea4aa95d206362d8e9332544f11be167cd254ff83af9ab75734db8
+              tag: v0.8.10
             env:
               # https://docs.openwebui.com/getting-started/env-configuration
               TZ: ${CLUSTER_TIMEZONE}
@@ -57,7 +46,7 @@ spec:
               ENABLE_WEBSOCKET_SUPPORT: True
               WEBSOCKET_MANAGER: redis
               # Ollama
-              OLLAMA_BASE_URL: http://${SECRET_AI1_IP}:11434
+              OLLAMA_BASE_URL: http://vision-01.main.internal:11434
               # OIDC
               ENABLE_OAUTH_SIGNUP: True
               OAUTH_MERGE_ACCOUNTS_BY_EMAIL: True
@@ -81,7 +70,9 @@ spec:
               #AUTOMATIC1111_CFG_SCALE: 2
               #AUTOMATIC1111_SAMPLER: DPM++ SDE
               #AUTOMATIC1111_SCHEDULER: Karras
-            envFrom: *envFrom
+            envFrom:
+              - secretRef:
+                  name: open-webui-secret
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
@@ -98,19 +89,20 @@ spec:
           http:
             port: 8080
     route:
-      internal:
-        enabled: true
-        parentRefs:
-          - name: main
-            namespace: network
-            sectionName: https
+      app:
         hostnames:
-          - "ai.${SECRET_MAIN_DOMAIN_NAME}"
-
-      external:
-        hostnames: ["chat.${SECRET_DOMAIN}"]
+          - "chat.${SECRET_DOMAIN}"
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: Interact with your AI models
+          gethomepage.dev/group: LLM/Ai
+          gethomepage.dev/icon: sh-open-webui.svg
+          gethomepage.dev/name: Open WebUI
+          gethomepage.dev/app: open-webui
+          gatus.home-operations.com/endpoint: |-
+            conditions: ["[STATUS] == 200"]
         parentRefs:
-          - name: base
+          - name: ${GATEWAY:=envoy-internal}
             namespace: network
             sectionName: https
     persistence:

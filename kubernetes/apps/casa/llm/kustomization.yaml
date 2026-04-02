@@ -8,8 +8,8 @@ components:
   - ../../../vars/casa
 resources:
   - ./dragonfly-llm-cluster.yaml
-  - ./searxng.yaml
+  #- ./searxng.yaml
   - ./postgres-llm-cluster.yaml
-  - ./open-webui.yaml
+  #- ./open-webui.yaml
   # - ./paperless-ai.yaml
   - ./paperless-gpt.yaml

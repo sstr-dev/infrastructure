@@ -10,4 +10,6 @@ replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
   - ./searxng.yaml
+  #- ./open-webui.yaml
+  # paperless-gpt and co
 
