@@ -83,13 +83,13 @@ spec:
                 memory: 100Mi
               limits:
                 memory: 2000Mi
-        pod:
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 99
-            runAsGroup: 100
-            fsGroup: 100
-            fsGroupChangePolicy: OnRootMismatch
+        #pod:
+        #  securityContext:
+        #    runAsNonRoot: true
+        #    runAsUser: 99
+        #    runAsGroup: 100
+        #    fsGroup: 100
+        #    fsGroupChangePolicy: OnRootMismatch
     service:
       app:
         ports:
