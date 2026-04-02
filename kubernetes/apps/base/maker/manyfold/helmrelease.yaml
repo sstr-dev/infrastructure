@@ -31,10 +31,10 @@ spec:
               - name: ndots
                 value: "1"
           securityContext:
-            fsGroup: 1000
             fsGroupChangePolicy: "OnRootMismatch"
-            runAsGroup: 1000
-            runAsUser: 1000
+            runAsUser: 99
+            runAsGroup: 100
+            fsGroup: 100
         initContainers:
           chown-tmpdirs:
             image:
@@ -55,8 +55,8 @@ spec:
               tag: 0.136.0@sha256:321fe84f696c3f25e52334fd33ee3af540df3a14ebd7977ef66cee2eccaf4eb3
             env:
               PORT: &port 3214
-              PUID: 1000
-              PGID: 1000
+              PUID: 99
+              PGID: 100
               MULTIUSER: "enabled"
               REGISTRATION: false
               PUBLIC_HOSTNAME: manyfold.${SECRET_DOMAIN}
