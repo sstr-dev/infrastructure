@@ -24,7 +24,7 @@ spec:
           app:
             image:
               repository: ghcr.io/open-webui/open-webui
-              tag: v0.8.10
+              tag: v0.8.12
             env:
               # https://docs.openwebui.com/getting-started/env-configuration
               TZ: ${CLUSTER_TIMEZONE}
@@ -83,6 +83,13 @@ spec:
                 memory: 100Mi
               limits:
                 memory: 2000Mi
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 99
+            runAsGroup: 100
+            fsGroup: 100
+            fsGroupChangePolicy: OnRootMismatch
     service:
       app:
         ports:
