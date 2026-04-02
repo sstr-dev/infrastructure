@@ -5,11 +5,11 @@ kind: Kustomization
 metadata:
   name: &app open-webui
 spec:
-  #path: ./kubernetes/apps/base/llm/open-webui
-  path: ./kubernetes/apps/base/migration/common
-  components:
+  path: ./kubernetes/apps/base/llm/open-webui
+  #path: ./kubernetes/apps/base/migration/common
+  #components:
     #- ../../../../components/volsync
-    - ../../../../components/volmigrate/nfs
+    #- ../../../../components/volmigrate/nfs
   postBuild:
     substitute:
       APP: *app
@@ -17,15 +17,12 @@ spec:
       # APP_GID: "1000"
       CLUSTER: ${CLUSTER}
       GATEWAY: "envoy-external"
-      VOLSYNC_CAPACITY: 2Gi
+      VOL_CAPACITY: 2Gi
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
       - kind: Secret
         name: cluster-secrets
-  dependsOn:
-    - name: volsync
-      namespace: storage
   prune: true
   interval: 1h
   retryInterval: 2m
