@@ -8,6 +8,6 @@ components:
   - ../../../vars/main/cluster
 replacements:
   - path: ../../../components/replacements/ks.yaml
-resources: []
+resources:
   #- ./spoolman.yaml
-  #- ./manyfold.yaml
+  - ./manyfold.yaml

@@ -42,7 +42,6 @@ spec:
               repository: ghcr.io/bjw-s-labs/manyfold
               tag: 0.136.0@sha256:321fe84f696c3f25e52334fd33ee3af540df3a14ebd7977ef66cee2eccaf4eb3
             env:
-              # manyfold.MAINDOMAIN (main)
               PORT: &port 3214
               PUID: 1000
               PGID: 1000
@@ -50,7 +49,7 @@ spec:
               #REGISTRATION: false
               PUBLIC_HOSTNAME: manyfold.${SECRET_DOMAIN}
 
-              # image: ghcr.io/manyfold3d/manyfold:latest
+              # image: ghcr.io/manyfold3d/manyfold:latests
 
               #===SMTP CONFIGURATION===
               SMTP_SERVER: smtp-relay.network.svc.cluster.local
@@ -134,15 +133,17 @@ spec:
             app:
               - path: /data/database
                 subPath: database
-      libraries:
-        type: nfs
-        server: nas.main.internal
-        path: /mnt/user/data/manyfold
-        advancedMounts:
-          manyfold:
-            app:
               - path: /data/libraries
                 subPath: libraries
+      #libraries:
+      #  type: nfs
+      #  server: nas.main.internal
+      #  path: /mnt/user/data/manyfold
+      #  advancedMounts:
+      #    manyfold:
+      #      app:
+      #        - path: /data/libraries
+      #          subPath: libraries
       tmpfs:
         type: emptyDir
         advancedMounts:
