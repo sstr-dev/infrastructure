@@ -5,8 +5,6 @@ kind: Kustomization
 metadata:
   name: &app manyfold
 spec:
-  dependsOn:
-    - name: volsync
   interval: 1h
   path: ./kubernetes/apps/base/maker/manyfold
   postBuild:
