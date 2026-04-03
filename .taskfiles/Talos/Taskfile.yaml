@@ -197,6 +197,54 @@ tasks:
 
 
 
+  disks:
+    desc: Display Disks
+    cmds:
+      - talosctl --talosconfig {{.talos_dir}}/talosconfig get disks -n {{.node}}
+    requires:
+      vars:
+        - cluster
+        - node
+    preconditions:
+      - talosctl --talosconfig {{.talos_dir}}/talosconfig --nodes {{.node}} get machineconfig
+      - which talosctl
+
+  volumestatus:
+    desc: Display volumestatus
+    cmds:
+      - talosctl --talosconfig {{.talos_dir}}/talosconfig get volumestatus -n {{.node}}
+    requires:
+      vars:
+        - cluster
+        - node
+    preconditions:
+      - talosctl --talosconfig {{.talos_dir}}/talosconfig --nodes {{.node}} get machineconfig
+      - which talosctl
+
+  mounts:
+    desc: Display mounts
+    cmds:
+      - talosctl --talosconfig {{.talos_dir}}/talosconfig mounts -n {{.node}}
+    requires:
+      vars:
+        - cluster
+        - node
+    preconditions:
+      - talosctl --talosconfig {{.talos_dir}}/talosconfig --nodes {{.node}} get machineconfig
+      - which talosctl
+
+  # talosctl --talosconfig /home/sst/sstr-dev/infrastructure/talos/main/talosconfig usage /var/mnt/extra -n wk02
+  usage-extra:
+    desc: Display extra usage
+    cmds:
+      - talosctl --talosconfig {{.talos_dir}}/talosconfig usage /var/mnt/extra -n {{.node}}
+    requires:
+      vars:
+        - cluster
+        - node
+    preconditions:
+      - talosctl --talosconfig {{.talos_dir}}/talosconfig --nodes {{.node}} get machineconfig
+      - which talosctl
 
 
   generate-iso:
