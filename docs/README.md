@@ -106,6 +106,9 @@ flowchart LR
 - [`operations-guide.md`](./operations/operations-guide.md)
   Compact index of common bootstrap, Flux, Talos, and database operations.
 
+- [`taskfiles-pattern.md`](./operations/taskfiles-pattern.md)
+  Pattern for how the root Taskfile and its namespaces structure operational workflows across the repository.
+
 ## Reference Documents
 
 - [`redis-db-usage.md`](./reference/redis-db-usage.md)
