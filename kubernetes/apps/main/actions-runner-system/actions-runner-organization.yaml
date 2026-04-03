@@ -1,0 +1,93 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app faiph-dev-runner
+  namespace: &namespace actions-runner-system
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  retryInterval: 2m
+  path: ./kubernetes/apps/base/actions-runner-system/actions-runner-controller/runners/organization
+  prune: true
+  dependsOn:
+    - name: actions-runner-controller-runners-base
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  postBuild:
+    substitute:
+    # idea for vars:
+    # gHorg: faiph-dev
+    # APP: faiph-dev
+    # AUTHKEY: faiph_dev = faiph_dev_github_app_id
+    # runnerScaleSetName: arc-runner-set-${gHorg}
+    # minRunners, maxRunners
+      APP: *app
+      CLUSTER: casa
+      AUTHKEY: faiph_dev
+      gHorg: faiph-dev
+      VOL_STORAGECLASS: local-hostpath
+      VOL_CAPACITY: 1Gi
+  targetNamespace: *namespace
+  timeout: 5m
+  #healthChecks:
+  #  - apiVersion: helm.toolkit.fluxcd.io/v2
+  #    kind: HelmRelease
+  #    name: &runner faiph-dev-runner
+  #    namespace: *namespace
+  #  - apiVersion: &apiVersion actions.github.com/v1alpha1
+  #    kind: &kind AutoscalingRunnerSet
+  #    namespace: *namespace
+  #    name: *runner
+  #healthCheckExprs:
+  #  - apiVersion: *apiVersion
+  #    kind: *kind
+  #    failed: status.currentRunners == 0 && status.pendingEphemeralRunners == 0 && status.runningEphemeralRunners == 0
+  #    current: status.currentRunners > 0
+
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app sstr-dev-runner
+  namespace: &namespace actions-runner-system
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  retryInterval: 2m
+  path: ./kubernetes/apps/base/actions-runner-system/actions-runner-controller/runners/organization
+  prune: true
+  dependsOn:
+    - name: actions-runner-controller-runners-base
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  postBuild:
+    substitute:
+    # idea for vars:
+    # gHorg: faiph-dev
+    # APP: faiph-dev
+    # AUTHKEY: faiph_dev = faiph_dev_github_app_id
+    # runnerScaleSetName: arc-runner-set-${gHorg}
+    # minRunners, maxRunners
+      APP: *app
+      CLUSTER: casa
+      AUTHKEY: sstr_dev
+      gHorg: sstr-dev
+      VOL_STORAGECLASS: local-hostpath
+      VOL_CAPACITY: 1Gi
+  targetNamespace: *namespace
+  timeout: 5m
+
+
+
+
