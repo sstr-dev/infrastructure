@@ -10,12 +10,14 @@ This folder contains architecture notes, reference documents, and reusable platf
 flowchart LR
     bootstrap["Cluster bootstrap"]
     gitops["GitOps delivery"]
+    hardware["Hardware platform"]
     apps["Application delivery"]
     exposure["Ingress and service exposure"]
     data["Data platform"]
     ops["Operations"]
     identity["Identity and secrets"]
 
+    hardware --> bootstrap
     bootstrap --> gitops
     gitops --> apps
     apps --> exposure
@@ -38,12 +40,14 @@ flowchart LR
 flowchart LR
     bootstrap["Cluster bootstrap"]
     gitops["GitOps delivery"]
+    hardware["Hardware platform"]
     apps["Application delivery"]
     exposure["Ingress and service exposure"]
     data["Data platform"]
     identity["Identity and secrets"]
     ops["Operations"]
 
+    hardwareDocs["hardware-high-level-pattern"]
     bootstrapDocs["cluster-bootstrap-pattern<br/>cluster-variants"]
     gitopsDocs["gitops-delivery-pattern"]
     appDocs["application-pattern"]
@@ -52,6 +56,7 @@ flowchart LR
     identityDocs["secret-management-pattern<br/>identity-and-access-pattern"]
     opsDocs["operations-guide"]
 
+    hardware --> hardwareDocs
     bootstrap --> bootstrapDocs
     gitops --> gitopsDocs
     apps --> appDocs
@@ -62,6 +67,9 @@ flowchart LR
 ```
 
 ## Architecture Patterns
+
+- [`hardware-high-level-pattern.md`](./hardware-high-level-pattern.md)
+  Reusable high-level view of gateways, Proxmox, cluster compute, NAS and backup endpoints, and supporting infrastructure roles.
 
 - [`network-high-level-pattern.md`](./network-high-level-pattern.md)
   Reusable high-level network pattern for clusters such as `main`, `test`, and `registry`.
@@ -108,16 +116,17 @@ flowchart LR
 
 ## Suggested Reading Order
 
-1. [`network-high-level-pattern.md`](./network-high-level-pattern.md)
-2. [`secret-management-pattern.md`](./secret-management-pattern.md)
-3. [`cluster-bootstrap-pattern.md`](./cluster-bootstrap-pattern.md)
-4. [`gitops-delivery-pattern.md`](./gitops-delivery-pattern.md)
-5. [`cluster-variants.md`](./cluster-variants.md)
-6. [`application-pattern.md`](./application-pattern.md)
-7. [`identity-and-access-pattern.md`](./identity-and-access-pattern.md)
-8. [`ingress-and-service-exposure-pattern.md`](./ingress-and-service-exposure-pattern.md)
-9. [`database-pattern.md`](./database-pattern.md)
-10. [`storage-and-backup-pattern.md`](./storage-and-backup-pattern.md)
+1. [`hardware-high-level-pattern.md`](./hardware-high-level-pattern.md)
+2. [`network-high-level-pattern.md`](./network-high-level-pattern.md)
+3. [`secret-management-pattern.md`](./secret-management-pattern.md)
+4. [`cluster-bootstrap-pattern.md`](./cluster-bootstrap-pattern.md)
+5. [`gitops-delivery-pattern.md`](./gitops-delivery-pattern.md)
+6. [`cluster-variants.md`](./cluster-variants.md)
+7. [`application-pattern.md`](./application-pattern.md)
+8. [`identity-and-access-pattern.md`](./identity-and-access-pattern.md)
+9. [`ingress-and-service-exposure-pattern.md`](./ingress-and-service-exposure-pattern.md)
+10. [`database-pattern.md`](./database-pattern.md)
+11. [`storage-and-backup-pattern.md`](./storage-and-backup-pattern.md)
 
 ## Notes
 
