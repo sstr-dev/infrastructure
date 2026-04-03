@@ -9,6 +9,10 @@ on:
         description: Dry Run
         default: "false"
         required: false
+      ignoreMergeErrors:
+        description: Ignore Merge Errors
+        default: "false"
+        required: false
       labels:
         description: Labels
         default: "any"
@@ -52,11 +56,26 @@ jobs:
                   args+=(--label "${label}")
               done
           fi
-          for id in $(gh pr list "${args[@]}" --jq '.[].number' --json number); do
+
+          while IFS=$'\t' read -r id title; do
+              [ -n "${id}" ] || continue
+              echo "Processing PR #${id}: ${title}"
+
               if [ "${{ github.event.inputs.dryRun }}" = "true" ]; then
-                  echo "Dry run: gh pr merge $id --squash"
+                  echo "Dry run: gh pr merge ${id} --squash"
                   continue
               fi
-              gh pr merge "${id}" --squash
+
+              if ! gh pr merge "${id}" --squash; then
+                  if [ "${{ github.event.inputs.ignoreMergeErrors }}" = "true" ]; then
+                      echo "Merge failed for PR #${id}, continuing because ignoreMergeErrors=true."
+                      sleep 2
+                      continue
+                  fi
+
+                  echo "Merge failed for PR #${id}, stopping workflow."
+                  exit 1
+              fi
+
               sleep 2
-          done
+          done < <(gh pr list "${args[@]}" --json number,title --jq '.[] | "\(.number)\t\(.title)"')
