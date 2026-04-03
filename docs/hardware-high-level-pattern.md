@@ -69,7 +69,6 @@ flowchart LR
 ## Typical Repository Pattern
 
 - Network ranges, node IPs, and VIPs are documented in [`docs/network-ip-usage.md`](./network-ip-usage.md).
-- Proxmox and router inventory appears in [`ansible/inventory.yaml`](../ansible/inventory.yaml).
 - Talos cluster node templates live below [`talos/main`](../talos/main).
 - PVE observability is wired through [`kubernetes/apps/main/observability/exporters/pve-exporter.yaml`](../kubernetes/apps/main/observability/exporters/pve-exporter.yaml).
 - UPS and power observability is wired through [`kubernetes/apps/main/observability/exporters/nut-exporter.yaml`](../kubernetes/apps/main/observability/exporters/nut-exporter.yaml).
