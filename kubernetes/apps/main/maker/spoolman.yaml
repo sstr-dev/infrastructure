@@ -7,11 +7,14 @@ metadata:
 spec:
   interval: 1h
   path: ./kubernetes/apps/base/maker/spoolman
+  components:
+    - ../../../../components/envoy/basic
   postBuild:
     substitute:
       APP: *app
       CLUSTER: ${CLUSTER}
       SUBDOMAIN: spoolman
+      BASIC_AUTH_SECRET_KEY: SPOOLMAN_BASIC_AUTH
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
