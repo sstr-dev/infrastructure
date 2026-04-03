@@ -48,7 +48,7 @@ spec:
   postBuild:
     substitute:
       # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar
-      SIDECAR_IMAGE_VERSION: v0.11.0@sha256:fc8a908f639b295296b7523e6ecc38945167d5d2d8734e588ea4d53a6511851a
+      SIDECAR_IMAGE_VERSION: v0.11.0
       # docker pull ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:v0.11.0@sha256:fc8a908f639b295296b7523e6ecc38945167d5d2d8734e588ea4d53a6511851a
 ---
 # yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
