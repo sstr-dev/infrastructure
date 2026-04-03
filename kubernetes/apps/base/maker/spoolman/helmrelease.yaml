@@ -98,5 +98,7 @@ spec:
           gethomepage.dev/description: "Manage your filament spools"
           gethomepage.dev/widget.type: spoolman
           gethomepage.dev/widget.url: http://{{ .Release.Name }}.{{ .Release.Namespace }}:8000
+          gatus.home-operations.com/enabled: "false"
           gatus.home-operations.com/endpoint: |
             group: Maker
+            conditions: ["[STATUS] == 401"]
