@@ -46,9 +46,15 @@ This document tracks the configured usage of the `10.0.60.0/24` and `10.0.69.0/2
 | `10.0.69.205` | node IP | `wk02-secondary`    | worker secondary NIC         |
 | `10.0.69.206` | node IP | `wk03-secondary`    | worker secondary NIC         |
 
+## Registry Nodes
+
+| IP          | Type    | Name           | Purpose         |
+|-------------|---------|----------------|-----------------|
+| `10.0.60.1` | gateway | `main-gateway` | default gateway |
+| `TBA`       | node IP | `reg01`        | node            |
+
+
 ## Notes
 
-- `casa` is planned for removal.
-- Reserved `servers` IPs from `casa`: `10.0.60.50` to `10.0.60.53`
-- Reserved `service` IPs from `casa`: `10.0.69.50` to `10.0.69.54`
-- Additional reserved `service` IP from `casa`: `10.0.69.60`
+- 10.0.60.50-52 planned for registry (LB)
+- apps: openebs, envoy (1 gateway), cert-manager (main multi cert or only dev domain), harbor
