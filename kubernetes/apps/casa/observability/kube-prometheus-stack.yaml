@@ -11,8 +11,8 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/casa/observability/kube-prometheus-stack
   #components:
-  #  - ../../../../components/ext-auth
-  #  - ../../../../components/ext-auth/two
+  #  - ../../../../components/envoy/ext-auth
+  #  - ../../../../components/envoy/ext-auth/two
   postBuild:
     substitute:
       APP: kube-prometheus-stack

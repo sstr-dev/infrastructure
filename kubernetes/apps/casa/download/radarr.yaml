@@ -11,7 +11,7 @@ spec:
   path: ./kubernetes/apps/base/download/radarr
   components:
     - ../../../../components/vol
-    - ../../../../components/ext-auth
+    - ../../../../components/envoy/ext-auth
   postBuild:
     substitute:
       APP: *app

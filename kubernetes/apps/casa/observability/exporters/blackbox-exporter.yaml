@@ -10,7 +10,7 @@ spec:
       app.kubernetes.io/name: *app
   interval: 1h
   #components:
-  #  - ../../../../../components/ext-auth
+  #  - ../../../../../components/envoy/ext-auth
   path: ./kubernetes/apps/base/observability/exporters/blackbox-exporter
   prune: true
   retryInterval: 2m

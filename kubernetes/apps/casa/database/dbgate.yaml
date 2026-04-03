@@ -20,7 +20,7 @@ spec:
       GATEWAY: internal
       # VOL_STORAGECLASS: nfs-retain
   components:
-    - ../../../../components/ext-auth
+    - ../../../../components/envoy/ext-auth
   retryInterval: 2m
   sourceRef:
     kind: GitRepository

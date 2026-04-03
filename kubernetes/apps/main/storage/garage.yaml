@@ -35,7 +35,7 @@ spec:
   interval: 15m
   path: ./kubernetes/apps/base/storage/garage-webui
   components:
-    - ../../../../components/ext-auth
+    - ../../../../components/envoy/ext-auth
     #- ../../../../components/envoy/oidc/authentik/internal
   postBuild:
     substitute:

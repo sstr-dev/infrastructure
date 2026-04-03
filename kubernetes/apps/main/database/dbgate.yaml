@@ -22,7 +22,7 @@ spec:
       #  name: cluster-secrets
   components:
     #- ../../../../components/envoy/oidc/authentik/internal
-    - ../../../../components/ext-auth
+    - ../../../../components/envoy/ext-auth
   retryInterval: 2m
   sourceRef:
     kind: GitRepository

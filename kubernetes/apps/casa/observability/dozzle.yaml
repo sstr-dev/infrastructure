@@ -19,7 +19,7 @@ spec:
       - kind: Secret
         name: cluster-secrets
   components:
-    - ../../../../components/ext-auth
+    - ../../../../components/envoy/ext-auth
   prune: true
   retryInterval: 2m
   sourceRef:

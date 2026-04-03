@@ -43,7 +43,7 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/base/self-hosted/homepage
   components:
-    - ../../../../components/ext-auth
+    - ../../../../components/envoy/ext-auth
   postBuild:
     substitute:
       APP: *app

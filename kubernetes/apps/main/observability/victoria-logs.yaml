@@ -9,7 +9,7 @@ spec:
   path: ./kubernetes/apps/base/observability/victoria-logs
   components:
     #- ../../../../components/envoy/oidc/authentik/internal
-    - ../../../../components/ext-auth
+    - ../../../../components/envoy/ext-auth
   prune: true
   postBuild:
     substitute:

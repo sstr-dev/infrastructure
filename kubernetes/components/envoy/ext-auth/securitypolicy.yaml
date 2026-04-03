@@ -1,0 +1,32 @@
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: ${APP}
+spec:
+  extAuth:
+    failOpen: false
+    # recomputeRoute: true
+    headersToExtAuth:
+      #- X-Forwarded-For # this is here so we can get the real IP
+      #- X-Forwarded-Proto
+      #- authorization
+      #- proxy-authorization
+      #- accept
+      - cookie
+    http:
+      backendRefs:
+        - name: ${EXT_AUTH_BACKEND_NAME:-ak-outpost-proxy}
+          namespace: ${EXT_AUTH_BACKEND_NAMESPACE:-security}
+          port: ${EXT_AUTH_BACKEND_PORT:-9000}
+      path: ${EXT_AUTH_PATH:-/outpost.goauthentik.io/auth/envoy}
+      headersToBackend:
+        - authorization
+        - location
+        - set-cookie
+        - x-authentik-*
+        - content-type
+  targetRefs:
+    - group: ${EXT_AUTH_GROUP:-gateway.networking.k8s.io}
+      kind: ${EXT_AUTH_KIND:-HTTPRoute}
+      name: ${EXT_AUTH_TARGET:-${APP}}

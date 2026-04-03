@@ -10,7 +10,7 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/base/storage/longhorn
   components:
-    - ../../../../components/ext-auth
+    - ../../../../components/envoy/ext-auth
     #- ../../../../components/envoy/oidc/authentik/internal
   prune: true
   postBuild:

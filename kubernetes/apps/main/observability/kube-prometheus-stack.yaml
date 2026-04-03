@@ -9,8 +9,8 @@ spec:
   path: ./kubernetes/apps/base/observability/kube-prometheus-stack
   components:
     #- ../../../../components/envoy/oidc/authentik/internal
-    - ../../../../components/ext-auth
-    #- ../../../../components/ext-auth/two
+    - ../../../../components/envoy/ext-auth
+    #- ../../../../components/envoy/ext-auth/two
   postBuild:
     substitute:
       # for ext auth
@@ -49,7 +49,7 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/base/virtual/common
   components:
-    - ../../../../components/ext-auth
+    - ../../../../components/envoy/ext-auth
     #- ../../../../components/envoy/oidc/authentik/internal
   dependsOn:
     - name: kube-prometheus-stack
