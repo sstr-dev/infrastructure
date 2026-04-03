@@ -7,8 +7,8 @@ metadata:
 spec:
   interval: 1h
   path: ./kubernetes/apps/base/maker/spoolman
-  components:
-    - ../../../../components/envoy/basic
+  #components:
+  #  - ../../../../components/envoy/basic
   postBuild:
     substitute:
       APP: *app
