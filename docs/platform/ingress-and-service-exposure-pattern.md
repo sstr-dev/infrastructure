@@ -73,11 +73,11 @@ flowchart TB
 
 ## Typical Repository Pattern
 
-- Gateway definitions live in [`kubernetes/apps/main/network/envoy-gateway/envoy.yaml`](../kubernetes/apps/main/network/envoy-gateway/envoy.yaml).
-- Cilium LB pools and L2 announcement policy live in [`kubernetes/apps/main/kube-system/cilium/networking.yaml`](../kubernetes/apps/main/kube-system/cilium/networking.yaml).
-- Network platform components are grouped under [`kubernetes/apps/base/network`](../kubernetes/apps/base/network).
-- Cluster certificate wiring is grouped under [`kubernetes/apps/main/network/certificates.yaml`](../kubernetes/apps/main/network/certificates.yaml).
-- Network IP usage is documented in [`docs/network-ip-usage.md`](./network-ip-usage.md).
+- Gateway definitions live in [`kubernetes/apps/main/network/envoy-gateway/envoy.yaml`](../../kubernetes/apps/main/network/envoy-gateway/envoy.yaml).
+- Cilium LB pools and L2 announcement policy live in [`kubernetes/apps/main/kube-system/cilium/networking.yaml`](../../kubernetes/apps/main/kube-system/cilium/networking.yaml).
+- Network platform components are grouped under [`kubernetes/apps/base/network`](../../kubernetes/apps/base/network).
+- Cluster certificate wiring is grouped under [`kubernetes/apps/main/network/certificates.yaml`](../../kubernetes/apps/main/network/certificates.yaml).
+- Network IP usage is documented in [`network-ip-usage.md`](../reference/network-ip-usage.md).
 
 ## Design Intent
 

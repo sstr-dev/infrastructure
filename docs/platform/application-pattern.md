@@ -70,11 +70,11 @@ flowchart TB
 
 ## Typical Repository Pattern
 
-- A cluster-specific app wrapper looks like [`kubernetes/apps/main/llm/open-webui.yaml`](../kubernetes/apps/main/llm/open-webui.yaml).
-- A typical base app directory looks like [`kubernetes/apps/base/llm/open-webui`](../kubernetes/apps/base/llm/open-webui).
-- The reusable app secret pattern is implemented in [`kubernetes/components/external-secret/external-secret.yaml`](../kubernetes/components/external-secret/external-secret.yaml).
-- A reusable PVC pattern exists in [`kubernetes/components/vol/pvc.yaml`](../kubernetes/components/vol/pvc.yaml).
-- Representative app examples include [`kubernetes/apps/base/llm/open-webui/helmrelease.yaml`](../kubernetes/apps/base/llm/open-webui/helmrelease.yaml), [`kubernetes/apps/base/self-hosted/mealie/helmrelease.yaml`](../kubernetes/apps/base/self-hosted/mealie/helmrelease.yaml), and [`kubernetes/apps/base/maker/spoolman/helmrelease.yaml`](../kubernetes/apps/base/maker/spoolman/helmrelease.yaml).
+- A cluster-specific app wrapper looks like [`kubernetes/apps/main/llm/open-webui.yaml`](../../kubernetes/apps/main/llm/open-webui.yaml).
+- A typical base app directory looks like [`kubernetes/apps/base/llm/open-webui`](../../kubernetes/apps/base/llm/open-webui).
+- The reusable app secret pattern is implemented in [`kubernetes/components/external-secret/external-secret.yaml`](../../kubernetes/components/external-secret/external-secret.yaml).
+- A reusable PVC pattern exists in [`kubernetes/components/vol/pvc.yaml`](../../kubernetes/components/vol/pvc.yaml).
+- Representative app examples include [`kubernetes/apps/base/llm/open-webui/helmrelease.yaml`](../../kubernetes/apps/base/llm/open-webui/helmrelease.yaml), [`kubernetes/apps/base/self-hosted/mealie/helmrelease.yaml`](../../kubernetes/apps/base/self-hosted/mealie/helmrelease.yaml), and [`kubernetes/apps/base/maker/spoolman/helmrelease.yaml`](../../kubernetes/apps/base/maker/spoolman/helmrelease.yaml).
 
 ## Design Intent
 

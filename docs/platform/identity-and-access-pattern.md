@@ -61,11 +61,11 @@ flowchart TB
 
 ## Typical Repository Pattern
 
-- Authentik is wired through [`kubernetes/apps/main/security/authentik.yaml`](../kubernetes/apps/main/security/authentik.yaml).
-- LLDAP is wired through [`kubernetes/apps/main/security/lldap.yaml`](../kubernetes/apps/main/security/lldap.yaml).
-- Reusable Envoy OIDC wrappers are documented in [`kubernetes/components/envoy/oidc/authentik/README.md`](../kubernetes/components/envoy/oidc/authentik/README.md).
-- Gateway ext-auth policy lives under [`kubernetes/components/envoy/ext-auth`](../kubernetes/components/envoy/ext-auth).
-- Example app-level OIDC adoption appears in app configs such as [`kubernetes/apps/base/llm/open-webui/helmrelease.yaml`](../kubernetes/apps/base/llm/open-webui/helmrelease.yaml).
+- Authentik is wired through [`kubernetes/apps/main/security/authentik.yaml`](../../kubernetes/apps/main/security/authentik.yaml).
+- LLDAP is wired through [`kubernetes/apps/main/security/lldap.yaml`](../../kubernetes/apps/main/security/lldap.yaml).
+- Reusable Envoy OIDC wrappers are documented in [`kubernetes/components/envoy/oidc/authentik/README.md`](../../kubernetes/components/envoy/oidc/authentik/README.md).
+- Gateway ext-auth policy lives under [`kubernetes/components/envoy/ext-auth`](../../kubernetes/components/envoy/ext-auth).
+- Example app-level OIDC adoption appears in app configs such as [`kubernetes/apps/base/llm/open-webui/helmrelease.yaml`](../../kubernetes/apps/base/llm/open-webui/helmrelease.yaml).
 
 ## Design Intent
 

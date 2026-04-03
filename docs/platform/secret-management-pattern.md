@@ -45,7 +45,7 @@ flowchart TB
 ## Core Building Blocks
 
 - `SOPS` protects repository-stored bootstrap secrets.
-- `age` keys are used for decryption according to [`.sops.yaml`](../.sops.yaml).
+- `age` keys are used for decryption according to [`.sops.yaml`](../../.sops.yaml).
 - `Vault` acts as the runtime source of truth for many application and platform secrets.
 - `External Secrets Operator` syncs data from Vault into Kubernetes Secrets.
 - `ClusterSecretStore` defines the shared Vault backend used by `ExternalSecret` resources.
@@ -58,7 +58,7 @@ flowchart TB
 - Sensitive bootstrap files are committed as `*.sops.yaml`.
 - During bootstrap, scripts decrypt and apply them directly to the target cluster.
 - This is used for early cluster access and foundational credentials before full GitOps reconciliation is available.
-- Examples in the repo include bootstrap secrets such as `vault-cluster-creds.sops.yaml`, `age-key.sops.yaml`, and Git-related bootstrap secrets under [`bootstrap/main`](../bootstrap/main).
+- Examples in the repo include bootstrap secrets such as `vault-cluster-creds.sops.yaml`, `age-key.sops.yaml`, and Git-related bootstrap secrets under [`bootstrap/main`](../../bootstrap/main).
 
 ### 2. Runtime Secret Sync Flow
 
@@ -76,11 +76,11 @@ flowchart TB
 
 ## Typical Repository Pattern
 
-- Encryption rules live in [`.sops.yaml`](../.sops.yaml).
-- Bootstrap applies initial secrets with scripts such as [`scripts/bootstrap-talos-apps.sh`](../scripts/bootstrap-talos-apps.sh).
-- Vault-backed runtime sync is configured through [`kubernetes/apps/base/external-secrets/clustersecretstore.yaml`](../kubernetes/apps/base/external-secrets/clustersecretstore.yaml).
-- A reusable application-level `ExternalSecret` pattern exists in [`kubernetes/components/external-secret/external-secret.yaml`](../kubernetes/components/external-secret/external-secret.yaml).
-- Template-time Vault resolution is implemented in [`scripts/vault-inject.py`](../scripts/vault-inject.py).
+- Encryption rules live in [`.sops.yaml`](../../.sops.yaml).
+- Bootstrap applies initial secrets with scripts such as [`scripts/bootstrap-talos-apps.sh`](../../scripts/bootstrap-talos-apps.sh).
+- Vault-backed runtime sync is configured through [`kubernetes/apps/base/external-secrets/clustersecretstore.yaml`](../../kubernetes/apps/base/external-secrets/clustersecretstore.yaml).
+- A reusable application-level `ExternalSecret` pattern exists in [`kubernetes/components/external-secret/external-secret.yaml`](../../kubernetes/components/external-secret/external-secret.yaml).
+- Template-time Vault resolution is implemented in [`scripts/vault-inject.py`](../../scripts/vault-inject.py).
 
 ## Design Intent
 

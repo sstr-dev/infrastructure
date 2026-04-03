@@ -68,11 +68,11 @@ flowchart TB
 
 ## Typical Repository Pattern
 
-- Talos bootstrap logic lives in [`scripts/bootstrap-talos.sh`](../scripts/bootstrap-talos.sh).
-- Initial app bootstrap logic lives in [`scripts/bootstrap-talos-apps.sh`](../scripts/bootstrap-talos-apps.sh).
-- Talos operational tasks are documented in [`.taskfiles/Talos/README.md`](../.taskfiles/Talos/README.md).
-- Cluster machine templates live below [`talos/main`](../talos/main).
-- Initial bootstrap Helm releases live in [`bootstrap/helmfile.yaml`](../bootstrap/helmfile.yaml) and [`bootstrap/main/helmfile.d`](../bootstrap/main/helmfile.d).
+- Talos bootstrap logic lives in [`scripts/bootstrap-talos.sh`](../../scripts/bootstrap-talos.sh).
+- Initial app bootstrap logic lives in [`scripts/bootstrap-talos-apps.sh`](../../scripts/bootstrap-talos-apps.sh).
+- Talos operational tasks are documented in [`.taskfiles/Talos/README.md`](../../.taskfiles/Talos/README.md).
+- Cluster machine templates live below [`talos/main`](../../talos/main).
+- Initial bootstrap Helm releases live in [`bootstrap/helmfile.yaml`](../../bootstrap/helmfile.yaml) and [`bootstrap/main/helmfile.d`](../../bootstrap/main/helmfile.d).
 
 ## Design Intent
 

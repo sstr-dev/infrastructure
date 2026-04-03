@@ -69,9 +69,9 @@ This document provides a compact operational index for common day-two workflows 
 
 ## Operational References
 
-- Talos task details live in [`.taskfiles/Talos/README.md`](../.taskfiles/Talos/README.md).
-- Database task details live in [`.taskfiles/Database/README.md`](../.taskfiles/Database/README.md).
-- GitOps task details live in [`.taskfiles/Flux/Taskfile.yaml`](../.taskfiles/Flux/Taskfile.yaml).
+- Talos task details live in [`.taskfiles/Talos/README.md`](../../.taskfiles/Talos/README.md).
+- Database task details live in [`.taskfiles/Database/README.md`](../../.taskfiles/Database/README.md).
+- GitOps task details live in [`.taskfiles/Flux/Taskfile.yaml`](../../.taskfiles/Flux/Taskfile.yaml).
 
 ## Notes
 

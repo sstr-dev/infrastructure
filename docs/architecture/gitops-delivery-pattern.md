@@ -66,11 +66,11 @@ flowchart TB
 
 ## Typical Repository Pattern
 
-- Bootstrap orchestration is defined in [`bootstrap/helmfile.yaml`](../bootstrap/helmfile.yaml).
-- Flux operational tasks live in [`.taskfiles/Flux/Taskfile.yaml`](../.taskfiles/Flux/Taskfile.yaml).
-- The cluster app entrypoint is [`kubernetes/clusters/main/apps.yaml`](../kubernetes/clusters/main/apps.yaml).
-- The Flux instance configuration lives in [`kubernetes/clusters/main/flux-instance/helmrelease.yaml`](../kubernetes/clusters/main/flux-instance/helmrelease.yaml).
-- Cluster workloads are organized below [`kubernetes/apps/main`](../kubernetes/apps/main).
+- Bootstrap orchestration is defined in [`bootstrap/helmfile.yaml`](../../bootstrap/helmfile.yaml).
+- Flux operational tasks live in [`.taskfiles/Flux/Taskfile.yaml`](../../.taskfiles/Flux/Taskfile.yaml).
+- The cluster app entrypoint is [`kubernetes/clusters/main/apps.yaml`](../../kubernetes/clusters/main/apps.yaml).
+- The Flux instance configuration lives in [`kubernetes/clusters/main/flux-instance/helmrelease.yaml`](../../kubernetes/clusters/main/flux-instance/helmrelease.yaml).
+- Cluster workloads are organized below [`kubernetes/apps/main`](../../kubernetes/apps/main).
 
 ## Design Intent
 

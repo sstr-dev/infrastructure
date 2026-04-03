@@ -68,18 +68,18 @@ flowchart LR
 
 ## Typical Repository Pattern
 
-- Network ranges, node IPs, and VIPs are documented in [`docs/network-ip-usage.md`](./network-ip-usage.md).
-- Talos cluster node templates live below [`talos/main`](../talos/main).
-- PVE observability is wired through [`kubernetes/apps/main/observability/exporters/pve-exporter.yaml`](../kubernetes/apps/main/observability/exporters/pve-exporter.yaml).
-- UPS and power observability is wired through [`kubernetes/apps/main/observability/exporters/nut-exporter.yaml`](../kubernetes/apps/main/observability/exporters/nut-exporter.yaml).
-- NAS-related backup jobs are wired through [`kubernetes/apps/main/jobs/nas-backup.yaml`](../kubernetes/apps/main/jobs/nas-backup.yaml).
+- Network ranges, node IPs, and VIPs are documented in [`network-ip-usage.md`](../reference/network-ip-usage.md).
+- Talos cluster node templates live below [`talos/main`](../../talos/main).
+- PVE observability is wired through [`kubernetes/apps/main/observability/exporters/pve-exporter.yaml`](../../kubernetes/apps/main/observability/exporters/pve-exporter.yaml).
+- UPS and power observability is wired through [`kubernetes/apps/main/observability/exporters/nut-exporter.yaml`](../../kubernetes/apps/main/observability/exporters/nut-exporter.yaml).
+- NAS-related backup jobs are wired through [`kubernetes/apps/main/jobs/nas-backup.yaml`](../../kubernetes/apps/main/jobs/nas-backup.yaml).
 
 ## Relationship To Other Patterns
 
 - [`network-high-level-pattern.md`](./network-high-level-pattern.md) explains the logical cluster networking on top of this hardware platform.
 - [`cluster-bootstrap-pattern.md`](./cluster-bootstrap-pattern.md) explains how the Talos and Kubernetes layer is brought up on the compute substrate.
-- [`storage-and-backup-pattern.md`](./storage-and-backup-pattern.md) explains how storage and backup workflows use the available endpoints.
-- [`ingress-and-service-exposure-pattern.md`](./ingress-and-service-exposure-pattern.md) explains how services are exposed through the network edge.
+- [`storage-and-backup-pattern.md`](../platform/storage-and-backup-pattern.md) explains how storage and backup workflows use the available endpoints.
+- [`ingress-and-service-exposure-pattern.md`](../platform/ingress-and-service-exposure-pattern.md) explains how services are exposed through the network edge.
 
 ## Design Intent
 

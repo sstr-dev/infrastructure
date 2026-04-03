@@ -71,11 +71,11 @@ flowchart TB
 
 ## Typical Repository Pattern
 
-- CloudNativePG orchestration lives in [`kubernetes/apps/main/database/cloudnative-pg.yaml`](../kubernetes/apps/main/database/cloudnative-pg.yaml).
-- MariaDB orchestration lives in [`kubernetes/apps/main/database/mariadb.yaml`](../kubernetes/apps/main/database/mariadb.yaml).
-- Dragonfly orchestration lives in [`kubernetes/apps/main/database/dragonfly.yaml`](../kubernetes/apps/main/database/dragonfly.yaml).
-- Database operations are documented in [`.taskfiles/Database/README.md`](../.taskfiles/Database/README.md).
-- Redis allocation reference lives in [`docs/redis-db-usage.md`](./redis-db-usage.md).
+- CloudNativePG orchestration lives in [`kubernetes/apps/main/database/cloudnative-pg.yaml`](../../kubernetes/apps/main/database/cloudnative-pg.yaml).
+- MariaDB orchestration lives in [`kubernetes/apps/main/database/mariadb.yaml`](../../kubernetes/apps/main/database/mariadb.yaml).
+- Dragonfly orchestration lives in [`kubernetes/apps/main/database/dragonfly.yaml`](../../kubernetes/apps/main/database/dragonfly.yaml).
+- Database operations are documented in [`.taskfiles/Database/README.md`](../../.taskfiles/Database/README.md).
+- Redis allocation reference lives in [`redis-db-usage.md`](../reference/redis-db-usage.md).
 
 ## Design Intent
 

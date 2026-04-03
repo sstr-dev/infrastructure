@@ -73,12 +73,12 @@ flowchart TB
 
 ## Typical Repository Pattern
 
-- The storage stack entrypoint is [`kubernetes/apps/main/storage/kustomization.yaml`](../kubernetes/apps/main/storage/kustomization.yaml).
-- Longhorn is wired through [`kubernetes/apps/main/storage/longhorn.yaml`](../kubernetes/apps/main/storage/longhorn.yaml).
-- VolSync is wired through [`kubernetes/apps/main/storage/volsync.yaml`](../kubernetes/apps/main/storage/volsync.yaml).
-- Kopia is wired through [`kubernetes/apps/main/storage/kopia.yaml`](../kubernetes/apps/main/storage/kopia.yaml).
-- Garage is wired through [`kubernetes/apps/main/storage/garage.yaml`](../kubernetes/apps/main/storage/garage.yaml).
-- The reusable VolSync component is documented in [`kubernetes/components/volsync/README.md`](../kubernetes/components/volsync/README.md).
+- The storage stack entrypoint is [`kubernetes/apps/main/storage/kustomization.yaml`](../../kubernetes/apps/main/storage/kustomization.yaml).
+- Longhorn is wired through [`kubernetes/apps/main/storage/longhorn.yaml`](../../kubernetes/apps/main/storage/longhorn.yaml).
+- VolSync is wired through [`kubernetes/apps/main/storage/volsync.yaml`](../../kubernetes/apps/main/storage/volsync.yaml).
+- Kopia is wired through [`kubernetes/apps/main/storage/kopia.yaml`](../../kubernetes/apps/main/storage/kopia.yaml).
+- Garage is wired through [`kubernetes/apps/main/storage/garage.yaml`](../../kubernetes/apps/main/storage/garage.yaml).
+- The reusable VolSync component is documented in [`kubernetes/components/volsync/README.md`](../../kubernetes/components/volsync/README.md).
 
 ## Design Intent
 
