@@ -50,6 +50,31 @@ tasks:
     - sh: test -f {{.SCRIPTS_DIR}}/bootstrap-talos-apps.sh
       msg: "❌ Bootstrap file missing: {{.SCRIPTS_DIR}}/bootstrap-talos-apps.sh"
 
+
+  only-crds:
+    desc: Bootstrap Cluster crds
+    cmds:
+      - bash {{.SCRIPTS_DIR}}/only-talos-crds.sh
+    env:
+      cluster: '{{.cluster}}'
+      cluster_apps: '{{.cluster_apps}}'
+      cluster_dir: '{{.cluster_dir}}'
+      shared_apps: '{{.shared_apps}}'
+      components_dir: '{{.components_dir}}'
+    requires:
+      vars: [cluster]
+    preconditions:
+    - sh: kubectl config get-contexts {{.cluster}}
+      msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+    - sh: test -f {{.AGE_FILE}}
+      msg: "❌ SOPS Age key file missing: {{.AGE_FILE}}"
+    #- sh: test -f {{.cluster_dir}}/bootstrap/github-ssh-secret.sops.yaml
+    #  msg: "❌ Missing SSH secret file for cluster '{{.cluster}}'"
+    #- sh: sops --decrypt {{.cluster_dir}}/bootstrap/github-ssh-secret.sops.yaml > /dev/null
+    #  msg: "❌ Failed to decrypt SSH secret – is the age key correct?"
+    - sh: test -f {{.SCRIPTS_DIR}}/only-talos-crds.sh
+      msg: "❌ Bootstrap file missing: {{.SCRIPTS_DIR}}/only-talos-crds.sh"
+
   apply-node:
     desc: Apply config to a node [cluster=required] [node=required] [MODE=auto]
     cmd: |
