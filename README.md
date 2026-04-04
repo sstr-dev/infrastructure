@@ -1,194 +1,231 @@
-# 🛠️ Infrastructure
+# Infrastructure
 
-This repository contains the **Infrastructure-as-Code (IaC)** setup for my self-hosted environment. It follows the **GitOps** principle to declaratively manage Kubernetes clusters, VMs, cloud services, and automation tooling.
-
----
-
-## ⚙️ Stack Overview
-
-| Tool           | Purpose                                                 |
-|----------------|---------------------------------------------------------|
-| **FluxCD**     | GitOps-driven deployment of K8s resources               |
-| **Terraform**  | Cloud & networking provisioning (e.g., DNS, servers)    |
-| **Ansible**    | Configuration management & system automation            |
-| **Kubernetes** | Workload orchestration                                  |
-| **Containers** | App delivery via OCI-compatible images                  |
-| **Taskfile**   | Automating repetitive shell commands                    |
-| **SOPS**       | Encryption of sensitive configuration data              |
-| **direnv**     | Automatic environment variable management               |
+This repository contains the Infrastructure-as-Code setup for a self-hosted platform built around Talos, Kubernetes, and GitOps. It combines cluster bootstrap, platform apps, secrets handling, and day-two operations in one repo.
 
 ---
 
-## 📁 Project Structure
+## What Lives Here
 
-```txt
-infrastructure/
-├── .archive/          # Archived configs or legacy components
-├── ansible/           # Playbooks and roles for automation
-├── bootstrap/         # Initial cluster & GitOps setup (e.g., flux install)
-├── kubernetes/        # K8s resources, organized by environment/namespace
-│   ├── apps/          # Application manifests (base, core apps, homelab stack)
-│   │   ├── base/
-│   │   ├── core/
-│   │   └── casa/
-│   ├── clusters/      # Cluster-specific definitions (e.g., casa-rke2)
-│   ├── components/    # Shared building blocks (e.g., Volumes, ext-auth)
-│   ├── config/        # Cluster-level overlays and Kustomize configuration
-│   └── vars/          # Cluster-specific variable definitions
-├── scripts/           # Helper scripts and automation tools
-├── terraform/         # Infrastructure provisioning
-├── Taskfile.yaml      # Automation tasks
-└── README.md          # You're here!
-```
+- `talos/`
+  Talos machine configuration, node definitions, schematics, and generated cluster access material.
+
+- `bootstrap/`
+  Bootstrap-specific values and manifests used during initial cluster bring-up.
+
+- `kubernetes/`
+  GitOps-managed cluster state:
+  - `apps/base/` for reusable base apps and patterns
+  - `apps/main/`, `apps/test/`, `apps/registry/` for cluster-specific app entrypoints
+  - `clusters/` for Flux entrypoints per cluster
+  - `components/` for shared Kustomize components
+  - `vars/` for cluster settings and encrypted cluster secrets
+
+- `.taskfiles/`
+  Operational command surface grouped by concern such as `talos`, `flux`, `database`, `sops`, `vault`, and `workstation`.
+
+- `ansible/`
+  Supporting automation for systems outside the narrower GitOps flow.
+
+- `terraform/`
+  Infrastructure provisioning for resources that live outside Kubernetes.
+
+- `.github/workflows/`
+  Repository automation for maintenance tasks like Renovate, label sync, labeler, and bulk PR merges.
+
+- `docs/`
+  Architecture patterns, platform references, and operational guides.
 
 ---
 
-## 🚀 Usage
+## How To Start
 
-This infrastructure is managed via GitOps (Flux) and operationalized using `task`, `helmfile`, and supporting tools.
+The normal path is: prepare your workstation, ensure secrets can be decrypted, bootstrap Talos if needed, then hand over workload delivery to GitOps.
 
----
+### 1. Prepare Your Workstation
 
-### 🧰 1. Prepare Your Workstation
+Install the required tools first. The repo expects tools like `task`, `direnv`, `sops`, `age`, `kubectl`, `helm`, `helmfile`, `flux`, `talosctl`, `jq`, `yq`, `python3.11`, and optionally `ansible` and `terraform`.
 
-Install all necessary tools and configure your local environment:
+Common setup commands:
 
 ```bash
-# Setup direnv (.envrc support)
 task workstation:direnv
-
-# Setup Python virtualenv + dependencies
 task workstation:venv
-
-# Install helm-diff plugin (required by helmfile)
-helm plugin install https://github.com/databus23/helm-diff
-
-# Setup Ansible
 task ansible:deps
 ```
 
-Make sure the following tools are available in your `$PATH`:
-
-- `flux`
-- `helm` + `helm-diff`
-- `helmfile`
-- `task`
-- `age` (or `gopass`, if used)
-- `terraform`
-- `ansible`
-- `sops`
-
----
-
-### 🧪 2. Verify Your Secrets (optional)
-
-Make sure SOPS can decrypt your cluster (e.g.: core) secrets:
+If you use Homebrew on macOS, there is also:
 
 ```bash
-sops -d kubernetes/vars/core/cluster-secrets.sops.yaml
+task workstation:brew
+task workstation:krew
 ```
 
-If you’re using `direnv`, private keys can be loaded automatically from `.envrc`.
-
----
-
-### 🚀 3. Bootstrap or Reconcile a Cluster
-
-Deploy base components (via Flux + Helmfile):
+To see the available command surface at any time:
 
 ```bash
-task flux:bootstrap cluster=core-rke2
-task flux:helmfile cluster=core-rke2
-```
-
-You can also target a different cluster:
-
-```bash
-task flux:helmfile cluster=casa-rke2
-```
-
----
-
-### 📦 4. Apply Infrastructure (Terraform & Ansible)
-
-Provision resources like DNS, S3, servers:
-<!--
-```bash
-cd terraform/environments/homelab
-terraform init
-terraform apply
-```
-
-Then configure machines or remote services with Ansible:
-
-```bash
-ansible-playbook -i ansible/inventory/homelab.yml site.yml
-```
--->
----
-
-### 🔁 5. GitOps Loop
-
-Once bootstrapped, Flux will take over:
-
-- Watches for changes in `kubernetes/clusters/<name>/`
-- Applies HelmReleases, Kustomizations, secrets, etc.
-- Enables you to manage infrastructure via Git alone
-
----
-
-## 🔒 Secrets Management
-
-* Sensitive data is encrypted using **[SOPS](https://github.com/mozilla/sops)**.
-* Configuration is managed via `.sops.yaml`.
-* You need [age](https://github.com/FiloSottile/age) keys to decrypt.
-* CI/Flux decrypts secrets via external vaults.
-
----
-
-## 🧪 Useful Tasks
-
-```bash
-# List available tasks
 task --list
+```
 
-# Monitor deployment for cluster casa-rke2
-task flux:monitor cluster=casa-rke2
+### 2. Prepare Secrets
+
+The repo uses SOPS with Age keys.
+
+Generate a local Age key if you do not already have one:
+
+```bash
+task sops:age-keygen
+```
+
+Validate that decryption works before doing cluster operations:
+
+```bash
+sops -d kubernetes/vars/main/cluster-secrets.sops.yaml >/dev/null
+```
+
+By default the Taskfiles expect the key at `./age.key` via `SOPS_AGE_KEY_FILE`.
+
+### 3. Bootstrap A Cluster
+
+For a fresh Talos cluster:
+
+```bash
+task talos:bootstrap cluster=main
+task talos:kubeconfig cluster=main
+task talos:apps cluster=main
+```
+
+Important clusters currently represented in this repo:
+
+- `main`
+- `test`
+- `registry`
+
+The `talos:*` tasks cover initial machine bootstrap and cluster access generation. After that, app/platform delivery is handled from `kubernetes/` through Flux and Kustomize.
+
+### 4. Bootstrap Or Reconcile GitOps
+
+If the cluster already exists and you want to push the app/platform layer:
+
+```bash
+task flux:helmfile cluster=main
+task flux:reconcile cluster=main
+task flux:monitor cluster=main
+```
+
+Useful day-two sync helpers:
+
+```bash
+task flux:ks-sync cluster=main
+task flux:gr-sync cluster=main
+task flux:hr-sync cluster=main
+```
+
+### 5. Operate The Platform
+
+Examples:
+
+```bash
+task talos:apply-cluster cluster=main
+task talos:reboot-node cluster=main node=wk01.k8s.main.internal
+task db:overview cluster=main
+task db:cnpg:clusters cluster=main
+```
+
+The most useful operational references live in [`docs/operations/operations-guide.md`](./docs/operations/operations-guide.md) and [`docs/operations/taskfiles-pattern.md`](./docs/operations/taskfiles-pattern.md).
+
+---
+
+## Repository Structure
+
+```txt
+infrastructure/
+|- .github/             # GitHub metadata and repository workflows
+|- .taskfiles/          # Task namespaces for ops workflows
+|- ansible/             # Supporting automation
+|- bootstrap/           # Bootstrap-time config per cluster
+|- docs/                # Architecture, operations, and reference docs
+|- kubernetes/          # GitOps-managed Kubernetes resources
+|  |- apps/             # Base and cluster-specific app definitions
+|  |- clusters/         # Flux entrypoints per cluster
+|  |- components/       # Shared Kustomize components
+|  `- vars/             # Cluster settings and encrypted secrets
+|- scripts/             # Helper scripts used by tasks/bootstrap flows
+|- talos/               # Talos cluster and node configuration
+|- terraform/           # Non-Kubernetes infrastructure provisioning
+|- Taskfile.yaml        # Root operational entrypoint
+`- README.md            # This file
 ```
 
 ---
 
-## 📦 Requirements
+## GitHub Workflows
 
-- [Flux CLI](https://fluxcd.io/)
-- [Terraform](https://terraform.io/)
-- [Ansible](https://www.ansible.com/)
-- [SOPS](https://github.com/mozilla/sops)
-- [Age](https://github.com/FiloSottile/age)
-- [Task](https://taskfile.dev/)
-- [Helm + helm-diff plugin](https://github.com/databus23/helm-diff)
+This repository currently uses GitHub Actions mainly for repository maintenance, not for primary cluster delivery.
+
+- `renovate.yaml`
+  Runs Renovate on schedule or manually.
+
+- `label-sync.yaml`
+  Syncs labels from `.github/labels.yaml`.
+
+- `labeler.yaml`
+  Applies PR labels based on changed files.
+
+- `bulk-merge-prs.yaml`
+  Manual workflow for merging selected PR batches.
+
+Cluster delivery itself is driven from inside the platform through Flux watching this repository.
 
 ---
 
-## 📖 Docs & References
+## Working Model
 
-- [FluxCD Docs](https://fluxcd.io/docs/)
-- [Terraform Docs](https://developer.hashicorp.com/terraform)
-- [Ansible Docs](https://docs.ansible.com/)
-- [SOPS Docs](https://github.com/mozilla/sops#documentation)
+- Talos bootstraps the cluster nodes and Kubernetes control plane.
+- Flux reconciles manifests from `kubernetes/clusters/<cluster>/`.
+- Cluster app entrypoints in `kubernetes/apps/<cluster>/` compose shared base definitions from `kubernetes/apps/base/` and `kubernetes/components/`.
+- Secrets are kept encrypted with SOPS or injected at runtime through external secret backends.
+- Day-two changes should generally flow through Git and Flux, with `task` commands used for bootstrap, diagnostics, and controlled imperative operations.
 
 ---
 
-## 🧾 License
+## Recommended Reading
+
+- [`docs/README.md`](./docs/README.md)
+- [`docs/architecture/cluster-bootstrap-pattern.md`](./docs/architecture/cluster-bootstrap-pattern.md)
+- [`docs/architecture/gitops-delivery-pattern.md`](./docs/architecture/gitops-delivery-pattern.md)
+- [`docs/operations/operations-guide.md`](./docs/operations/operations-guide.md)
+
+---
+
+## Docs & References
+
+- [Flux documentation](https://fluxcd.io/flux/)
+- [Talos Linux documentation](https://www.talos.dev/)
+- [Kubernetes documentation](https://kubernetes.io/docs/)
+- [SOPS documentation](https://github.com/getsops/sops)
+- [Age documentation](https://github.com/FiloSottile/age)
+- [Task documentation](https://taskfile.dev/)
+- [Helm documentation](https://helm.sh/docs/)
+- [Helmfile documentation](https://helmfile.readthedocs.io/)
+- [Ansible documentation](https://docs.ansible.com/)
+- [Terraform documentation](https://developer.hashicorp.com/terraform)
+
+---
+
+## Notes
+
+- Some historical or disabled material is kept in `.archive/` or `.trash/`.
+- Validate encrypted files before committing with:
+
+```bash
+task repository:validate
+```
+
+---
+
+## License
 
 [MIT License](./LICENSE)
-
----
-
-## 📎 Notes
-
-* Disabled components are moved to the `.archive/` directory.
-* Replace all secrets and domains with your own for production use.
 
 ---
 
