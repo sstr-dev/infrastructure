@@ -19,6 +19,9 @@ This document tracks the configured usage of the `10.0.60.0/24` and `10.0.69.0/2
 | `10.0.60.58` | `main`     | `servers` | service IP | `postgres-vector-lb`    | vector database load balancer service IP    |
 | `10.0.60.59` | `main`     | `servers` | service IP | `forgejo`               | forgejo git load balancer service IP        |
 | `10.0.60.60` | `main`     | `servers` | service IP | `mariadb`               | mariadb load balancer service IP            |
+| `10.0.60.97` | `test`     | `service` | gateway IP | `envoy-external`        | external Envoy Gateway service IP           |
+| `10.0.60.98` | `test`     | `service` | gateway IP | `-`                     | -                                           |
+| `10.0.60.99` | `test`     | `service` | gateway IP | `-`                     | -                                           |
 | `10.0.69.50` | `-`        | `service` | gateway IP | `-`                     | -                                           |
 | `10.0.69.51` | `-`        | `service` | gateway IP | `-`                     | -                                           |
 | `10.0.69.52` | `-`        | `service` | gateway IP | `-`                     | -                                           |
@@ -47,8 +50,14 @@ This document tracks the configured usage of the `10.0.60.0/24` and `10.0.69.0/2
 
 ## Registry Nodes
 
-| IP          | Type    | Name           | Purpose         |
-|-------------|---------|----------------|-----------------|
-| `10.0.60.1` | gateway | `main-gateway` | default gateway |
-| `TBA`       | node IP | `reg01`        | node            |
+| IP            | Type    | Name           | Purpose         |
+|---------------|---------|----------------|-----------------|
+| `10.0.60.1`   | gateway | `main-gateway` | default gateway |
+| `10.0.60.220` | node IP | `cp01`         | node            |
 
+## Test Nodes
+
+| IP            | Type    | Name           | Purpose         |
+|---------------|---------|----------------|-----------------|
+| `10.0.60.1`   | gateway | `main-gateway` | default gateway |
+| `10.0.60.225` | node IP | `cp01`         | node            |

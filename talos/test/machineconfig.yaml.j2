@@ -3,27 +3,14 @@
 version: v1alpha1
 machine:
   ca:
-    crt: vault://Kubernetes/talos-main#MACHINE_CA_CRT
+    crt: vault://Kubernetes/talos-test#MACHINE_CA_CRT
     {% if machinetype == 'controlplane' %}
-    key: vault://Kubernetes/talos-main#MACHINE_CA_KEY
+    key: vault://Kubernetes/talos-test#MACHINE_CA_KEY
     {% endif %}
   certSANs:
     - 127.0.0.1
-    # Controller
-    - 10.0.60.201
-    - 10.0.60.202
-    - 10.0.60.203
-    # Load balancers / VIPs
-    - 10.0.60.100
-    - 10.0.60.200
-    - k8s.main.internal
-    # lb-haproxys
-    - 10.0.60.13
-    - 10.0.60.14
-  #  - "*.k8s.main.internal"
-  #  # Pod/Service Networks
-  #  - 10.69.0.0/16
-  #  - 10.96.0.0/16
+    - 10.0.60.225
+    - k8s.test.internal
   network:
     nameservers:
       - 10.0.60.1
@@ -147,21 +134,20 @@ machine:
     #net.ipv6.conf.default.autoconf: "0"        # disable IPv6 autoconfig
     user.max_user_namespaces: "11255"          # User Namespaces
     vm.nr_hugepages: {{ '0' if machinetype == 'controlplane' else '1024' }}  # PostgreSQL
-  token: vault://Kubernetes/talos-main#MACHINE_TOKEN
+  token: vault://Kubernetes/talos-test#MACHINE_TOKEN
   type: {{ machinetype }}
   time:
     disabled: false
     servers: ["0.de.pool.ntp.org", "1.de.pool.ntp.org", "2.de.pool.ntp.org", "3.de.pool.ntp.org"]
 cluster:
   ca:
-    crt: vault://Kubernetes/talos-main#CLUSTER_CA_CRT
+    crt: vault://Kubernetes/talos-test#CLUSTER_CA_CRT
     {% if machinetype == 'controlplane' %}
-    key: vault://Kubernetes/talos-main#CLUSTER_CA_KEY
+    key: vault://Kubernetes/talos-test#CLUSTER_CA_KEY
     {% endif %}
-  clusterName: main
+  clusterName: test
   controlPlane:
-    endpoint: https://k8s.main.internal:6443
-    #endpoint: https://10.0.60.201:6443
+    endpoint: https://k8s.test.internal:6443
   discovery:
     enabled: true
     registries:
@@ -169,39 +155,26 @@ cluster:
         disabled: true
       service:
         disabled: false
-  id: vault://Kubernetes/talos-main#CLUSTER_ID
+  id: vault://Kubernetes/talos-test#CLUSTER_ID
   network:
     cni:
       name: none
     dnsDomain: cluster.local
     podSubnets: ["10.42.0.0/16"]
     serviceSubnets: ["10.43.0.0/16"]
-  secret: vault://Kubernetes/talos-main#CLUSTER_SECRET
-  token: vault://Kubernetes/talos-main#CLUSTER_TOKEN
+  secret: vault://Kubernetes/talos-test#CLUSTER_SECRET
+  token: vault://Kubernetes/talos-test#CLUSTER_TOKEN
   {% if machinetype == 'controlplane' %}
   aggregatorCA:
-    crt: vault://Kubernetes/talos-main#CLUSTER_AGGREGATORCA_CRT
-    key: vault://Kubernetes/talos-main#CLUSTER_AGGREGATORCA_KEY
+    crt: vault://Kubernetes/talos-test#CLUSTER_AGGREGATORCA_CRT
+    key: vault://Kubernetes/talos-test#CLUSTER_AGGREGATORCA_KEY
   # # Allows running workload on control-plane nodes.
   allowSchedulingOnControlPlanes: true
   apiServer:
     certSANs:
       - 127.0.0.1
-      # Controller
-      - 10.0.60.201
-      - 10.0.60.202
-      - 10.0.60.203
-      # Load balancers / VIPs
-      - 10.0.60.100
-      - 10.0.60.200
-      - k8s.main.internal
-      # lb-haproxys
-      - 10.0.60.13
-      - 10.0.60.14
-      #- "*.k8s.main.internal"
-      ## Pod/Service Networks
-      #- 10.69.0.0/16
-      #- 10.96.0.0/16
+      - 10.0.60.225
+      - k8s.test.internal
     extraArgs:
       enable-aggregator-routing: true
       feature-gates: MutatingAdmissionPolicy=true
@@ -218,14 +191,14 @@ cluster:
   etcd:
     advertisedSubnets: ["10.0.60.0/24"]
     ca:
-      crt: vault://Kubernetes/talos-main#CLUSTER_ETCD_CA_CRT
-      key: vault://Kubernetes/talos-main#CLUSTER_ETCD_CA_KEY
+      crt: vault://Kubernetes/talos-test#CLUSTER_ETCD_CA_CRT
+      key: vault://Kubernetes/talos-test#CLUSTER_ETCD_CA_KEY
     extraArgs:
       listen-metrics-urls: http://0.0.0.0:2381
   proxy:
     disabled: true
     image: registry.k8s.io/kube-proxy:v1.35.1
-  secretboxEncryptionSecret: vault://Kubernetes/talos-main#CLUSTER_SECRETBOXENCRYPTIONSECRET
+  secretboxEncryptionSecret: vault://Kubernetes/talos-test#CLUSTER_SECRETBOXENCRYPTIONSECRET
   scheduler:
     config:
       apiVersion: kubescheduler.config.k8s.io/v1
@@ -248,7 +221,7 @@ cluster:
     extraArgs:
       bind-address: 0.0.0.0
   serviceAccount:
-    key: vault://Kubernetes/talos-main#CLUSTER_SERVICEACCOUNT_KEY
+    key: vault://Kubernetes/talos-test#CLUSTER_SERVICEACCOUNT_KEY
   {% endif %}
 ---
 apiVersion: v1alpha1
