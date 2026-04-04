@@ -55,18 +55,10 @@ kind: Gateway
 metadata:
   name: envoy-external
   annotations:
-    external-dns.alpha.kubernetes.io/target: &hostname ${EXTERNAL_DOMAIN}.${CERT_DOMAIN}
-    gatus.home-operations.com/endpoint: |
-      group: ${CLUSTER}-external
-    #gatus.home-operations.com/endpoint: |
-    #  client:
-    #    dns-resolver: tcp://1.1.1.1:53
-    #  group: ${CLUSTER}-external
+    external-dns.alpha.kubernetes.io/target: &hostname ${EXTERNAL_DOMAIN}.${SECRET_DOMAIN}
 spec:
   gatewayClassName: envoy
   infrastructure:
-    labels:
-      network.l2.cilium/segment: services
     annotations:
       external-dns.alpha.kubernetes.io/hostname: *hostname
       lbipam.cilium.io/ips: ${SVC_GATEWAY_EXTERNAL}
@@ -86,85 +78,7 @@ spec:
       tls:
         certificateRefs:
           - kind: Secret
-            name: multi-domain-tls
----
-# yaml-language-server: $schema=https://kube-schemas.pages.dev/gateway.networking.k8s.io/gateway_v1.json
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
-  name: envoy-public
-  annotations:
-    external-dns.alpha.kubernetes.io/target: &hostname ${PUBLIC_DOMAIN}.${CERT_DOMAIN}
-    gatus.home-operations.com/endpoint: |
-      group: ${CLUSTER}-public
-    #gatus.home-operations.com/endpoint: |
-    #  client:
-    #    dns-resolver: tcp://1.1.1.1:53
-    #  group: public
-spec:
-  gatewayClassName: envoy
-  infrastructure:
-    labels:
-      network.l2.cilium/segment: services
-    annotations:
-      external-dns.alpha.kubernetes.io/hostname: *hostname
-      lbipam.cilium.io/ips: ${SVC_GATEWAY_PUBLIC}
-  listeners:
-    - name: http
-      protocol: HTTP
-      port: 80
-      allowedRoutes:
-        namespaces:
-          from: Same
-    - name: https
-      protocol: HTTPS
-      port: 443
-      allowedRoutes:
-        namespaces:
-          from: All
-      tls:
-        certificateRefs:
-          - kind: Secret
-            name: multi-domain-tls
----
-# yaml-language-server: $schema=https://kube-schemas.pages.dev/gateway.networking.k8s.io/gateway_v1.json
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
-metadata:
-  name: envoy-internal
-  annotations:
-    external-dns.alpha.kubernetes.io/target: &hostname ${INTERNAL_DOMAIN}.${CERT_DOMAIN}
-    gatus.home-operations.com/endpoint: |
-      group: ${CLUSTER}-internal
-      guarded: true
-      ui:
-        hide-hostname: true
-        hide-url: true
-spec:
-  gatewayClassName: envoy
-  infrastructure:
-    labels:
-      network.l2.cilium/segment: servers
-    annotations:
-      external-dns.alpha.kubernetes.io/hostname: *hostname
-      lbipam.cilium.io/ips: ${SVC_GATEWAY_INTERNAL}
-  listeners:
-    - name: http
-      protocol: HTTP
-      port: 80
-      allowedRoutes:
-        namespaces:
-          from: Same
-    - name: https
-      protocol: HTTPS
-      port: 443
-      allowedRoutes:
-        namespaces:
-          from: All
-      tls:
-        certificateRefs:
-          - kind: Secret
-            name: cluster-internal-production-tls
+            name: wildcard-tls
 ---
 # yaml-language-server: $schema=https://kube-schemas.pages.dev/gateway.envoyproxy.io/backendtrafficpolicy_v1alpha1.json
 apiVersion: gateway.envoyproxy.io/v1alpha1
@@ -194,13 +108,26 @@ spec:
     xForwardedFor:
       trustedCIDRs:
         - 10.42.0.0/16
+  connection:
+    bufferLimit: 8Mi
+    maxAcceptPerSocketEvent: 0
+  headers:
+    earlyRequestHeaders:
+      set:
+        - name: X-Real-Ip
+          value: "%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%"
   http2:
+    initialStreamWindowSize: 2Mi
+    initialConnectionWindowSize: 32Mi
     onInvalidMessage: TerminateStream
   http3: {}
   targetSelectors:
     - group: gateway.networking.k8s.io
       kind: Gateway
   tcpKeepalive: {}
+  timeout:
+    http:
+      requestReceivedTimeout: 0s
   tls:
     minVersion: "1.2"
     alpnProtocols:
@@ -219,203 +146,9 @@ spec:
     - name: envoy-external
       namespace: network
       sectionName: http
-    - name: envoy-internal
-      namespace: network
-      sectionName: http
-    - name: envoy-public
-      namespace: network
-      sectionName: http
   rules:
     - filters:
         - type: RequestRedirect
           requestRedirect:
             scheme: https
             statusCode: 301
-
-
-
-#---
-## yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.networking.k8s.io/gateway_v1.json
-#apiVersion: gateway.networking.k8s.io/v1
-#kind: Gateway
-#metadata:
-#  name: internal
-#  labels:
-#    type: internal
-#spec:
-#  gatewayClassName: envoy
-#  infrastructure:
-#    annotations:
-#      kube-vip.io/loadbalancerIPs: ${LB_V4_GATEWAY_INTERNAL}
-#  listeners:
-#    # sharing certs between root and wildcard domains,
-#    # and sharing gateway's between root and wildcard domains
-#    # causes improper http/2.0 connection coalescing, which causes random 404's
-#    # so we need to explicitly use both a different cert and gateway to prevent it
-#    - name: http
-#      protocol: HTTP
-#      port: 80
-#      hostname: '*.${DOMAIN}'
-#      allowedRoutes:
-#        namespaces:
-#          from: All
-#    - name: https
-#      protocol: HTTPS
-#      port: 443
-#      hostname: '*.${DOMAIN}'
-#      allowedRoutes:
-#        namespaces:
-#          from: All
-#      tls:
-#        certificateRefs:
-#          - kind: Secret
-#            name: cluster-internal-production-tls
-#---
-## yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.networking.k8s.io/gateway_v1.json
-#apiVersion: gateway.networking.k8s.io/v1
-#kind: Gateway
-#metadata:
-#  name: main
-#  labels:
-#    type: main
-#  #annotations:
-#  #  external-dns.alpha.kubernetes.io/target: &hostname main.${SECRET_MAIN_DOMAIN_NAME}
-#spec:
-#  gatewayClassName: envoy
-#  infrastructure:
-#    annotations:
-#      #external-dns.alpha.kubernetes.io/hostname: *hostname
-#      kube-vip.io/pool: ${LB_SERVICE_POOL}
-#      kube-vip.io/serviceInterface: ${LB_SERVICE_INTERFACE}
-#      kube-vip.io/loadbalancerIPs: ${LB_V4_GATEWAY_MAIN}
-#  listeners:
-#    - name: http
-#      protocol: HTTP
-#      port: 80
-#      hostname: '*.${SECRET_MAIN_DOMAIN_NAME}'
-#      allowedRoutes:
-#        namespaces:
-#          from: All
-#    - name: https
-#      protocol: HTTPS
-#      port: 443
-#      hostname: '*.${SECRET_MAIN_DOMAIN_NAME}'
-#      allowedRoutes:
-#        namespaces:
-#          from: All
-#      tls:
-#        certificateRefs:
-#          - kind: Secret
-#            name: main-tls
-#---
-## yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.networking.k8s.io/gateway_v1.json
-#apiVersion: gateway.networking.k8s.io/v1
-#kind: Gateway
-#metadata:
-#  name: base
-#  labels:
-#    type: base
-#  #annotations:
-#  #  external-dns.alpha.kubernetes.io/target: &hostname base.${SECRET_DOMAIN}
-#spec:
-#  gatewayClassName: envoy
-#  infrastructure:
-#    annotations:
-#      #external-dns.alpha.kubernetes.io/hostname: *hostname
-#      kube-vip.io/pool: ${LB_SERVICE_POOL}
-#      kube-vip.io/serviceInterface: ${LB_SERVICE_INTERFACE}
-#      kube-vip.io/loadbalancerIPs: ${LB_V4_GATEWAY_BASE}
-#  listeners:
-#    - name: http
-#      protocol: HTTP
-#      port: 80
-#      hostname: '*.${SECRET_DOMAIN}'
-#      allowedRoutes:
-#        namespaces:
-#          from: Same
-#    - name: https
-#      protocol: HTTPS
-#      port: 443
-#      hostname: '*.${SECRET_DOMAIN}'
-#      allowedRoutes:
-#        namespaces:
-#          from: All
-#      tls:
-#        certificateRefs:
-#          - kind: Secret
-#            name: base-tls
-#---
-## yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.networking.k8s.io/gateway_v1.json
-#apiVersion: gateway.networking.k8s.io/v1
-#kind: Gateway
-#metadata:
-#  name: dev
-#  labels:
-#    type: dev
-#  #annotations:
-#  #  external-dns.alpha.kubernetes.io/target: &hostname dev.${SECRET_DEV_DOMAIN}
-#spec:
-#  gatewayClassName: envoy
-#  infrastructure:
-#    annotations:
-#      #external-dns.alpha.kubernetes.io/hostname: *hostname
-#      kube-vip.io/pool: ${LB_SERVICE_POOL}
-#      kube-vip.io/serviceInterface: ${LB_SERVICE_INTERFACE}
-#      kube-vip.io/loadbalancerIPs: ${LB_V4_GATEWAY_DEV}
-#  listeners:
-#    - name: http
-#      protocol: HTTP
-#      port: 80
-#      hostname: '*.${SECRET_DEV_DOMAIN}'
-#      allowedRoutes:
-#        namespaces:
-#          from: Same
-#    - name: https
-#      protocol: HTTPS
-#      port: 443
-#      hostname: '*.${SECRET_DEV_DOMAIN}'
-#      allowedRoutes:
-#        namespaces:
-#          from: All
-#      tls:
-#        certificateRefs:
-#          - kind: Secret
-#            name: dev-tls
-#---
-## yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.networking.k8s.io/gateway_v1.json
-#apiVersion: gateway.networking.k8s.io/v1
-#kind: Gateway
-#metadata:
-#  name: envoy-external-l4
-#  annotations:
-#    external-dns.alpha.kubernetes.io/target: ipv4.${DOMAIN}
-#  labels:
-#    type: envoy-external-l4
-#spec:
-#  gatewayClassName: envoy
-#  addresses:
-#    - type: IPAddress
-#      value: ${LB_V4_GATEWAY_L4}
-#  infrastructure:
-#    annotations:
-#      external-dns.alpha.kubernetes.io/hostname: external-l4.${DOMAIN}
-#      kube-vip.io/pool: ${LB_SERVICE_POOL}
-#      kube-vip.io/serviceInterface: ${LB_SERVICE_INTERFACE}
-#      kube-vip.io/loadbalancerIPs: ${LB_V4_GATEWAY_L4}
-#  listeners:
-#    - name: tcp
-#      protocol: TCP
-#      port: 10000
-#      allowedRoutes:
-#        namespaces:
-#          from: All
-#        kinds:
-#          - kind: TCPRoute
-#    - name: udp
-#      protocol: UDP
-#      port: 10001
-#      allowedRoutes:
-#        namespaces:
-#          from: All
-#        kinds:
-#          - kind: UDPRoute
