@@ -1,0 +1,52 @@
+---
+# DOMAIN: SECRET_DOMAIN
+# Vault key: wildcard-tls-registry
+# Secret Key: wildcard-tls
+
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: certificates-import
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/${CLUSTER}/network/certificates/import
+  prune: true
+  postBuild:
+    substitute:
+      CLUSTER: ${CLUSTER}
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secret
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: true
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: certificates-export
+spec:
+  dependsOn:
+    - name: certificates-import
+  interval: 1h
+  path: ./kubernetes/apps/${CLUSTER}/network/certificates/export
+  prune: true
+  postBuild:
+    substitute:
+      CLUSTER: ${CLUSTER}
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secret
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false
