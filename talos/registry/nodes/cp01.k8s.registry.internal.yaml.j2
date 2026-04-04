@@ -1,0 +1,37 @@
+---
+machine:
+  install:
+    disk: /dev/sda
+    wipe: false # Indicates if the installation disk should be wiped at installation time.
+  type: controlplane
+  #nodeTaints:
+  #  node-role.kubernetes.io/control-plane: NoSchedule
+  network:
+    hostname: cp01.k8s.registry.internal
+    interfaces:
+      - addresses:
+          - 10.0.60.220/24
+        interface: ens18
+        dhcp: false
+        mtu: 1500
+        routes:
+          - gateway: 10.0.60.1
+            network: 0.0.0.0/0
+---
+apiVersion: v1alpha1
+kind: VolumeConfig
+name: EPHEMERAL
+provisioning:
+  maxSize: 32Gi
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: extra
+provisioning:
+  diskSelector:
+    match: system_disk
+  grow: true
+  minSize: 64Gi
+  maxSize: 256Gi
+filesystem:
+  type: xfs
