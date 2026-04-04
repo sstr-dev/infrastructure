@@ -19,7 +19,7 @@ spec:
       - kind: ConfigMap
         name: cluster-settings
       - kind: Secret
-        name: cluster-secret
+        name: cluster-secrets
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -44,7 +44,7 @@ spec:
       - kind: ConfigMap
         name: cluster-settings
       - kind: Secret
-        name: cluster-secret
+        name: cluster-secrets
   sourceRef:
     kind: GitRepository
     name: flux-system
