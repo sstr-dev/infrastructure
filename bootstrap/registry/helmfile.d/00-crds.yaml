@@ -34,10 +34,10 @@ releases:
     chart: oci://mirror.gcr.io/envoyproxy/gateway-helm
     version: 1.6.3
 
-  #- name: grafana-operator
-  #  namespace: observability
-  #  chart: oci://ghcr.io/grafana/helm-charts/grafana-operator
-  #  version: 5.22.2
+  - name: grafana-operator
+    namespace: observability
+    chart: oci://ghcr.io/grafana/helm-charts/grafana-operator
+    version: 5.22.2
 
   - name: keda
     namespace: observability
