@@ -5,7 +5,7 @@ kind: Kustomization
 namespace: observability
 components:
   - ../../../components/common
-  - ../../../vars/registry/cluster
+  - ../../../vars/test/cluster
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources: []

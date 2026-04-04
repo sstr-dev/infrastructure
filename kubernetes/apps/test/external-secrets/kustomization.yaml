@@ -5,7 +5,7 @@ kind: Kustomization
 namespace: external-secrets
 components:
   - ../../../components/common
-  - ../../../vars/registry/namespaces/external-secrets
+  - ../../../vars/test/namespaces/external-secrets
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
