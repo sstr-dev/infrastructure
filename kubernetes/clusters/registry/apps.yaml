@@ -13,7 +13,7 @@ spec:
   path: ./kubernetes/apps/registry
   postBuild:
     substitute:
-      CLUSTER: main
+      CLUSTER: registry
   prune: true
   sourceRef:
     kind: GitRepository
