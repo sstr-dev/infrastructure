@@ -9,7 +9,7 @@ spec:
   path: ./kubernetes/apps/base/kube-system/metrics-server
   postBuild:
     substitute:
-      REPLICAS: "2"
+      REPLICAS: "1"
   prune: true
   sourceRef:
     kind: GitRepository

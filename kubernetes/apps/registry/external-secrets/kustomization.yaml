@@ -11,5 +11,4 @@ replacements:
 resources:
   #- ../../../vars/main/ns/external-secrets-secrets.sops.yaml
   - ./external-secrets.yaml
-  - ./external-secrets-pdb.yaml
 
