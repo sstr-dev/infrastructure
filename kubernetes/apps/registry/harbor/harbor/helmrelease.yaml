@@ -1,0 +1,71 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/source.toolkit.fluxcd.io/helmrepository_v1beta2.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: harbor
+spec:
+  interval: 2h
+  url: https://helm.goharbor.io
+  timeout: 3m
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: harbor
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: harbor
+      version: 1.18.3
+      sourceRef:
+        kind: HelmRepository
+        name: harbor
+  values:
+    expose:
+      type: loadBalancer
+      tls:
+        certSource: secret
+        secret:
+          secretName: tls.harbor
+      loadBalancer:
+        name: harbor
+        annotations:
+          external-dns.alpha.kubernetes.io/hostname: "harbor.${SECRET_DOMAIN}"
+          lbipam.cilium.io/ips: "${HARBOR_INT_IPV4}"
+    externalURL: "https://registry.${SECRET_DOMAIN}"
+    ipFamily:
+      ipv6:
+        enabled: false
+    persistence:
+      enabled: true
+      persistentVolumeClaim:
+        registry:
+          existingClaim: harbor-registry-v1
+          storageClass: local-hostpath
+          subPath: registry
+        jobservice:
+          jobLog:
+            storageClass: local-hostpath
+        database:
+          storageClass: local-hostpath
+        redis:
+          storageClass: local-hostpath
+        trivy:
+          storageClass: local-hostpath
+    database:
+      type: internal
+    existingSecretAdminPassword: harbor-secret
+    # debug, info, warning, error or fatal
+    logLevel: warning
+    # If using existingSecretSecretKey, the key must be secretKey
+    existingSecretSecretKey: harbor-secret
+
+    notary:
+      enabled: false
+
+    nginx:
+      podAnnotations:
+        secret.reloader.stakater.com/reload: tls.harbor
