@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app ${APP}
+  name: ${APP}
 spec:
   interval: 30m
   driftDetection:
@@ -14,110 +14,40 @@ spec:
   values:
     runnerScaleSetName: arc-runner-set-${gHorg}
     githubConfigUrl: https://github.com/${gHorg}
+    githubConfigSecret: ${APP}-secret
     minRunners: ${minRunners:=1}
     maxRunners: ${maxRunners:=2} #Double total nodes
     containerMode:
-      type: dind
-    listenerMetrics:
-      counters:
-        gha_started_jobs_total:
-          labels:
-            [
-              "repository",
-              "organization",
-              "enterprise",
-              "job_name",
-              "event_name",
-            ]
-        gha_completed_jobs_total:
-          labels:
-            [
-              "repository",
-              "organization",
-              "enterprise",
-              "job_name",
-              "event_name",
-              "job_result",
-            ]
-      gauges:
-        gha_assigned_jobs:
-          labels:
-            ["name", "namespace", "repository", "organization", "enterprise"]
-        gha_running_jobs:
-          labels:
-            ["name", "namespace", "repository", "organization", "enterprise"]
-        gha_registered_runners:
-          labels:
-            ["name", "namespace", "repository", "organization", "enterprise"]
-        gha_busy_runners:
-          labels:
-            ["name", "namespace", "repository", "organization", "enterprise"]
-        gha_min_runners:
-          labels:
-            ["name", "namespace", "repository", "organization", "enterprise"]
-        gha_max_runners:
-          labels:
-            ["name", "namespace", "repository", "organization", "enterprise"]
-        gha_desired_runners:
-          labels:
-            ["name", "namespace", "repository", "organization", "enterprise"]
-        gha_idle_runners:
-          labels:
-            ["name", "namespace", "repository", "organization", "enterprise"]
-      histograms:
-        gha_job_startup_duration_seconds:
-          labels:
-            [
-              "repository",
-              "organization",
-              "enterprise",
-              "job_name",
-              "event_name",
-            ]
-        gha_job_execution_duration_seconds:
-          labels:
-            [
-              "repository",
-              "organization",
-              "enterprise",
-              "job_name",
-              "event_name",
-              "job_result",
-            ]
+      type: kubernetes
+      kubernetesModeWorkVolumeClaim:
+        accessModes: ["${VOL_ACCESSMODES:-ReadWriteOnce}"]
+        storageClassName: "${VOL_STORAGECLASS:=local-hostpath}"
+        resources:
+          requests:
+            storage: "${VOL_CAPACITY:=5Gi}"
+
     template:
       spec:
         containers:
           - name: runner
             image: ghcr.io/home-operations/actions-runner:2.333.1@sha256:1a7726bcaeba4e46fe07fe98e1805b4df78618a71e67758f932862b929f852d4
             command: ["/home/runner/run.sh"]
+            env:
+              - name: ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER
+                value: "false"
+              - name: NODE
+                valueFrom:
+                  fieldRef:
+                    fieldPath: status.hostIP
+            volumeMounts:
+              - mountPath: /var/run/secrets/talos.dev
+                name: talos
+                readOnly: true
+        serviceAccountName: ${APP}
+        volumes:
+          - name: talos
+            secret:
+              secretName: ${APP}
     controllerServiceAccount:
       name: actions-runner-controller
       namespace: actions-runner-system
-  valuesFrom:
-    - kind: Secret
-      name: ${APP}-auth
-      valuesKey: github_app_id
-      targetPath: githubConfigSecret.github_app_id
-    - kind: Secret
-      name: ${APP}-auth
-      valuesKey: github_app_installation_id
-      targetPath: githubConfigSecret.github_app_installation_id
-    - kind: Secret
-      name: ${APP}-auth
-      valuesKey: github_app_private_key
-      targetPath: githubConfigSecret.github_app_private_key
-
----
-apiVersion: monitoring.coreos.com/v1
-kind: PodMonitor
-metadata:
-  name: &app ${APP}
-spec:
-  selector:
-    matchLabels:
-      helm.toolkit.fluxcd.io/name: *app
-  podMetricsEndpoints:
-    - port: metrics
-      path: /metrics
-      interval: 15s
-      scrapeTimeout: 5s
