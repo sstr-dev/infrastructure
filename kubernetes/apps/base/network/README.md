@@ -1,25 +1,18 @@
-# 🗂️ Namespace: `network`
+# Namespace: `network`
 
-This namespace provides routing, ingress, tunneling, and DNS management services. It is responsible for exposing internal workloads securely and managing domain resolution for external access.
+This namespace contains ingress, gateway, DNS, tunnel, and network-edge related services.
 
----
+## Components
 
-## 📦 Included Components
+| Application | Description | Links |
+|-------------|-------------|-------|
+| [certificates](./certificates/) | Certificate and network-adjacent routing resources | [Website](https://cert-manager.io) |
+| [cloudflare-tunnel](./cloudflare-tunnel/) | Outbound tunnel integration with Cloudflare Edge | [Docs](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) |
+| [echo](./echo/) | Simple echo service for connectivity and routing tests | [GitHub](https://github.com/ealen/echo-server) |
+| [envoy-gateway](./envoy-gateway/) | Gateway API implementation built on Envoy | [Website](https://gateway.envoyproxy.io) [GitHub](https://github.com/envoyproxy/gateway) |
+| [external-dns](./external-dns/) | DNS record automation from Kubernetes resources | [GitHub](https://github.com/kubernetes-sigs/external-dns) |
+| [external-services](./external-services/) | Representations for services that live outside the cluster | - |
+| [nginx](./nginx/) | NGINX-based ingress or reverse proxy resources | [Website](https://nginx.org) |
+| [smtp-relay](./smtp-relay/) | SMTP relay service resources | - |
+| [unifi-dns](./unifi-dns/) | UniFi DNS integration resources | [GitHub](https://github.com/kashalls/external-dns-unifi-webhook) |
 
-| Application              | Description                                         | Links                                                                                   |
-|--------------------------|-----------------------------------------------------|-----------------------------------------------------------------------------------------|
-| [**cloudflare-tunnel**](./cloudflare-tunnel/) | Secure outbound tunnel to Cloudflare Edge | [Docs](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/)      |
-| [**echo**](./echo/)                         | Simple HTTP echo service (for testing)     | [GitHub](https://github.com/Ealenn/Echo-Server)                                         |
-| [**envoy-gateway**](./envoy-gateway/)       | Cloud-native API gateway with Envoy core   | [Website](https://gateway.envoyproxy.io) [GitHub](https://github.com/envoyproxy/gateway) |
-| [**external-dns**](./external-dns/)         | External DNS controller for Kubernetes     | [GitHub](https://github.com/kubernetes-sigs/external-dns)                              |
-| [**external-services**](./external-services/) | Placeholder for externally referenced services | —                                                                                   |
-| [**k8s-gateway**](./k8s-gateway/)           | DNS-based Kubernetes Gateway for ingress   | [GitHub](https://github.com/kubernetes-sigs/gateway-api)                                |
-| [**nginx**](./nginx/)                       | NGINX Ingress controller or reverse proxy  | [Website](https://nginx.org) [GitHub](https://github.com/nginxinc/kubernetes-ingress)   |
-
----
-
-## 📎 Notes
-
-- Consider combining `external-dns`, `cloudflare-tunnel`, and `envoy-gateway` for a full edge-routing stack.
-- `echo` can be used to verify connectivity, headers, and ingress logic.
-- Zone delegation and certificate issuance may tie into `cert-manager`.

@@ -1,11 +1,9 @@
-# 🗂️ Namespace: `cert-manager`
+# Namespace: `cert-manager`
 
-This namespace contains certificate management for Kubernetes.
+This namespace contains certificate issuance and certificate-related observability resources.
 
----
-
-## 📦 Included Components
+## Components
 
 | Application | Description | Links |
 |-------------|-------------|-------|
-| [**cert-manager**](./cert-manager/) | X.509 certificate management for Kubernetes | [Website](https://cert-manager.io) [GitHub](https://github.com/cert-manager/cert-manager) |
+| [cert-manager](./cert-manager/) | X.509 certificate management for Kubernetes | [Website](https://cert-manager.io) [GitHub](https://github.com/cert-manager/cert-manager) |

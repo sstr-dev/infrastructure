@@ -1,12 +1,12 @@
-# 🗂️ Namespace: `3d-print`
+# Namespace: `maker`
 
-This namespace contains Kubernetes applications for `3d-printing`.
+This namespace contains maker-oriented services, primarily around 3D printing workflows.
 
----
+## Components
 
-## 📦 Included Components
+| Application | Description | Links |
+|-------------|-------------|-------|
+| [manyfold](./manyfold/) | Self-hosted 3D model library and organization tool | [Website](https://manyfold.app/) [GitHub](https://github.com/manyfold3d/manyfold) |
+| [obico](./obico/) | Remote monitoring and management platform for 3D printers | [Website](https://www.obico.io/) [GitHub](https://github.com/TheSpaghettiDetective/obico-server) |
+| [spoolman](./spoolman/) | Filament spool and inventory management for 3D printing | [GitHub](https://github.com/Donkie/Spoolman) |
 
-| Application                 | Description                                                                      | Links                                                                                            |
-|-----------------------------|----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| [**spoolman**](./spoolman/) | Filament management system for 3D printing                                       | [GitHub](https://github.com/Donkie/Spoolman)                                                     |
-| [**obico**](./obico/)       | 3D printing platform used by makers, enthusiasts, and tinkerers around the world | [Website](https://www.obico.io/) [GitHub](https://github.com/TheSpaghettiDetective/obico-server) |

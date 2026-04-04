@@ -1,22 +1,19 @@
-# 🗂️ Namespace: `observability`
+# Namespace: `observability`
 
-This namespace contains applications and components responsible for monitoring, alerting, and telemetry collection across the Kubernetes cluster.
+This namespace contains monitoring, logging, alerting, dashboards, and telemetry components.
 
----
+## Components
 
-## 📦 Included Components
-
-| Application                                           | Description                                                | Links                                                                       |
-|-------------------------------------------------------|------------------------------------------------------------|-----------------------------------------------------------------------------|
-| [**exporters**](./exporters/)                         | Exporters for metrics (node, blackbox, etc.)               | [Prometheus Exporters](https://prometheus.io/docs/instrumenting/exporters/) |
-| [**gatus**](./gatus/)                                 | Uptime monitoring & status page tool                       | [Website](https://gatus.io) [GitHub](https://github.com/TwiN/gatus)         |
-| [**grafana**](./grafana/)                             | Dashboards & visualization platform for observability      | [Website](https://grafana.com) [GitHub](https://github.com/grafana/grafana) |
-| [**kube-prometheus-stack**](./kube-prometheus-stack/) | Complete monitoring stack (Prometheus, Alertmanager, etc.) | [Docs](https://github.com/prometheus-operator/kube-prometheus)              |
-
----
-
-## 📎 Notes
-
-- This stack powers metrics, alerting, service monitoring, and dashboards.
-- Exporters collect data for hardware, endpoints, and protocols.
-- Grafana is pre-integrated with Prometheus as a datasource.
+| Application | Description | Links |
+|-------------|-------------|-------|
+| [dozzle](./dozzle/) | Lightweight log viewer for containers and workloads | [Website](https://dozzle.dev/) [GitHub](https://github.com/amir20/dozzle) |
+| [exporters](./exporters/) | Metrics exporters for endpoints, infrastructure, and services | [Docs](https://prometheus.io/docs/instrumenting/exporters/) |
+| [fluent-bit](./fluent-bit/) | Log collection and forwarding agent | [Website](https://fluentbit.io/) [GitHub](https://github.com/fluent/fluent-bit) |
+| [gatus](./gatus/) | Uptime monitoring and health-check service | [Website](https://gatus.io) [GitHub](https://github.com/TwiN/gatus) |
+| [grafana](./grafana/) | Dashboards and visualization platform | [Website](https://grafana.com) [GitHub](https://github.com/grafana/grafana) |
+| [karma](./karma/) | Alertmanager UI and alert triage dashboard | [Website](https://karma-dashboard.io/) [GitHub](https://github.com/prymitive/karma) |
+| [keda](./keda/) | Event-driven autoscaling for Kubernetes workloads | [Website](https://keda.sh/) [GitHub](https://github.com/kedacore/keda) |
+| [kromgo](./kromgo/) | Status and metrics presentation for Prometheus-style data | [GitHub](https://github.com/kashalls/kromgo) |
+| [kube-prometheus-stack](./kube-prometheus-stack/) | Prometheus, Alertmanager, exporters, and monitoring stack | [GitHub](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) |
+| [silence-operator](./silence-operator/) | Operator for managing Alertmanager silences declaratively | [GitHub](https://github.com/giantswarm/silence-operator) |
+| [victoria-logs](./victoria-logs/) | Log storage and query backend | [Website](https://victoriametrics.com/products/victorialogs/) |
