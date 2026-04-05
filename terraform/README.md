@@ -15,3 +15,4 @@ Responsibilities should stay split like this:
 - `kubernetes/`: in-cluster apps and platform services
 - `ansible/`: host setup and imperative tasks where needed
 
+Architectural notes live in [ARCHITECTURE.md](ARCHITECTURE.md).
