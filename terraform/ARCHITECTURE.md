@@ -82,6 +82,8 @@ Garage-specific endpoint, path-style, and credential details should be supplied 
 
 ## Secrets and Vault
 
+[hashicorp/vault](https://search.opentofu.org/provider/hashicorp/vault/latest)
+
 Vault can be the secret source for OpenTofu, including backend credentials.
 
 Recommended baseline:
