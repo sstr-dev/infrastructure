@@ -24,13 +24,13 @@ When applying configuration, the base template is rendered with Vault values fir
 
 ## New cluster
 
-For a new cluster, create a new directory at `talos/<cluster>/`. At minimum, it should contain:
+For a new cluster, create a new directory at `talos/<cluster>/`. At a minimum, it should contain:
 
 - `schematic.yaml`
 - `machineconfig.yaml.j2`
 - `nodes/<node>.yaml.j2`
 
-Workflow:
+Recommended workflow:
 
 1. Create the cluster directory, for example `talos/test/`.
 2. Create `schematic.yaml` for the required extensions.
@@ -40,9 +40,23 @@ Workflow:
 6. Store the secrets in Vault.
 7. Install the nodes with the rendered MachineConfigs and then bootstrap Kubernetes.
 
+```mermaid
+flowchart TD
+    A[Prepare talos/<cluster>] --> B[Generate talos-secrets.yaml and talosconfig]
+    B --> C[Store secrets in Vault]
+    C --> D[Create schematic.yaml, machineconfig.yaml.j2 and nodes/*.yaml.j2]
+    D --> E{Bootstrap}
+    E -->|Scripted| F[task talos:bootstrap cluster=<cluster>]
+    F --> J[task talos:apps cluster=<cluster>]
+    E -->|Manual| K[task talos:apply-node or task talos:apply-cluster]
+    K --> L[talosctl bootstrap]
+    L --> M[task talos:kubeconfig cluster=<cluster>]
+    M --> J
+```
+
 ## Example: cluster `test`
 
-### 1. Generate Talos secrets and config
+### 1. Generate Talos secrets and configuration
 
 ```bash
 talosctl gen secrets -o talos/test/talos-secrets.yaml
@@ -53,11 +67,11 @@ This creates, among other things:
 
 - `talos/test/talos-secrets.yaml`
 - `talos/test/talosconfig`
-- temporary generated `controlplane.yaml` and `worker.yaml`
+- temporarily generated `controlplane.yaml` and `worker.yaml`
 
 ### 2. Convert secrets to JSON for Vault
 
-`jq` comnmand outputs the JSON payload for store as a secret in Vault.
+This command outputs the JSON payload that can be stored as a secret in Vault.
 
 ```bash
 yq -o=json '{
@@ -78,7 +92,7 @@ yq -o=json '{
 }' talos/test/talos-secrets.yaml | jq .
 ```
 
-For the `test` cluster, these values must be written to `vault://Kubernetes/talos-test`, [`machineconfig.yaml.j2`](test/machineconfig.yaml.j2) points to that path.
+For the `test` cluster, these values must be written to `vault://Kubernetes/talos-test`, because [`machineconfig.yaml.j2`](test/machineconfig.yaml.j2) points to that path.
 
 ### 3. Set endpoint and node in `talosconfig`
 
@@ -87,7 +101,7 @@ talosctl --talosconfig talos/test/talosconfig config endpoint cp01.k8s.test.inte
 talosctl --talosconfig talos/test/talosconfig config node cp01.k8s.test.internal
 ```
 
-If the cluster has multiple nodes, you can set multiple values here. The first endpoint is later used for bootstrap.
+If the cluster has multiple nodes, you can set multiple values here. The first endpoint is later used for bootstrapping.
 
 ### 4. Maintain cluster-specific files
 
@@ -96,9 +110,9 @@ Before bootstrapping, these files should exist in the cluster directory:
 - `talos/test/schematic.yaml`
 - `talos/test/machineconfig.yaml.j2`
 - `talos/test/nodes/cp01.k8s.test.internal.yaml.j2`
-- additional `nodes/*.yaml.j2` files for more control planes or workers
+- additional `nodes/*.yaml.j2` files for other control planes or workers
 
-The generated default files `controlplane.yaml` and `worker.yaml` are not used in this repository.
+The generated default files `controlplane.yaml` and `worker.yaml` are not used further in this repository.
 
 The relevant files are:
 
@@ -114,23 +128,9 @@ Once Vault is populated and `talosconfig` is configured correctly, `controlplane
 
 ## Bootstrapping a new cluster
 
-Once the nodes have been installed with the correct Talos image and are reachable on the network, the bootstrap flow is:
+Once the nodes are installed with the correct Talos image and reachable on the network, you can bootstrap the cluster in one of these ways:
 
-```mermaid
-flowchart TD
-    A[Prepare talos/<cluster>] --> B[Generate talos-secrets.yaml and talosconfig]
-    B --> C[Store secrets in Vault]
-    C --> D[Create schematic.yaml, machineconfig.yaml.j2 and nodes/*.yaml.j2]
-    D --> E{Bootstrap}
-    E -->|Scripted| F[task talos:bootstrap cluster=<cluster>]
-    F --> J[task talos:apps cluster=<cluster>]
-    E -->|Manual| K[task talos:apply-node or task talos:apply-cluster]
-    K --> L[talosctl bootstrap]
-    L --> M[task talos:kubeconfig cluster=<cluster>]
-    M --> J
-```
-
-### 1. Apply MachineConfig to all nodes
+### 1. Bootstrap with the script
 
 ```bash
 task talos:bootstrap cluster=test
@@ -142,9 +142,9 @@ This task:
 - tries `apply-config` securely first,
 - automatically falls back to `--insecure` for nodes still in maintenance mode,
 - bootstraps Kubernetes on the first control plane endpoint,
-- writes the `kubeconfig` to `kubernetes/clusters/<cluster>/`
+- fetches `kubeconfig` into `kubernetes/clusters/<cluster>/`
 
-### 2. Alternatively apply individual nodes
+### 2. Alternatively, apply individual nodes
 
 ```bash
 task talos:apply-node cluster=test node=cp01.k8s.test.internal
@@ -153,7 +153,7 @@ task talos:apply-cluster cluster=test
 
 ### 3. Bootstrap Kubernetes manually
 
-If bootstrap should be run manually:
+If you want to bootstrap without the script:
 
 ```bash
 talosctl --talosconfig talos/test/talosconfig --nodes cp01.k8s.test.internal bootstrap
@@ -167,7 +167,7 @@ If you bootstrap manually without the script, fetch kubeconfig afterwards:
 task talos:kubeconfig cluster=test
 ```
 
-With the bootstrap script, this step is already handled automatically by:
+With the bootstrap script, this step is handled automatically by:
 
 ```bash
 task talos:bootstrap cluster=test
