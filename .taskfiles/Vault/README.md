@@ -145,5 +145,3 @@ Some tasks also require:
 ## Notes
 
 - This Taskfile is still intentionally minimal.
-- `vault:read` and `vault:read-latest` are now generic and require `mount=` plus `path=` or `name=`.
-- A natural next step would be to add optional support for reading a single `field=` from the secret output.

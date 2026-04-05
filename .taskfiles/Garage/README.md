@@ -2,7 +2,7 @@
 
 This Taskfile provides a small set of operational commands for managing Garage S3 buckets through the S3 API.
 
-Current scope:
+Scope:
 
 - show Garage cluster status
 - list, inspect, create, and delete buckets
@@ -112,12 +112,6 @@ Note:
 Bucket, key, and grant management tasks use the Garage admin CLI.
 
 They always run through `kubectl exec` against the configured Garage deployment.
-
-This means:
-
-- a local `garage` binary is ignored
-- the management tasks require `kubectl`
-- `cluster` should usually be provided so the correct context is used
 
 Example:
 
@@ -298,9 +292,8 @@ task garage:bucket:cors:set \
 - `garage:key:credentials` attempts to print credentials for an existing key from `garage key info`.
 - `garage:bucket:grant` and `garage:bucket:revoke` support `permissions=read,write,owner`.
 - `garage:bucket:setup` is the quickest path for a new application bucket.
-- local `garage` CLI usage is intentionally ignored for admin tasks.
 - The CORS commands use the S3 API via `aws s3api`.
 - `bucket:cors:update` is an explicit alias for `bucket:cors:set`, which replaces the current CORS configuration on the bucket.
 - You can pass either `origin=<single-origin>` or `origins=<origin1,origin2,...>`.
 - The default AWS region is `us-east-1`.
-- The tasks are intentionally focused on bucket CORS for now and can be extended later with bucket creation, policy management, or key management workflows.
+
