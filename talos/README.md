@@ -121,12 +121,9 @@ flowchart TD
     A[Prepare talos/<cluster>] --> B[Generate talos-secrets.yaml and talosconfig]
     B --> C[Store secrets in Vault]
     C --> D[Create schematic.yaml, machineconfig.yaml.j2 and nodes/*.yaml.j2]
-    D --> E{Bootstrap path}
+    D --> E{Bootstrap}
     E -->|Scripted| F[task talos:bootstrap cluster=<cluster>]
-    F --> G[Apply MachineConfig to all nodes]
-    G --> H[Bootstrap Kubernetes]
-    H --> I[Fetch kubeconfig automatically]
-    I --> J[task talos:apps cluster=<cluster>]
+    F --> J[task talos:apps cluster=<cluster>]
     E -->|Manual| K[task talos:apply-node or task talos:apply-cluster]
     K --> L[talosctl bootstrap]
     L --> M[task talos:kubeconfig cluster=<cluster>]
