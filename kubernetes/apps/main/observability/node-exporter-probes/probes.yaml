@@ -8,6 +8,8 @@ spec:
   staticConfigs:
     - targets:
         - casa-pve01.lokis-casa.internal:9100
+        - cp01.k8s.registry.internal:9100
+        #- registry-w01.internal:9100
   metricsPath: /metrics
   relabelings:
     - action: replace
