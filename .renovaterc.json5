@@ -1,13 +1,17 @@
 {
-  $schema: "https://docs.renovatebot.com/renovate-schema.json",
-  extends: [
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
     "config:recommended",
     "docker:enableMajor",
     "helpers:pinGitHubActionDigests",
     "github>sstr-dev/infrastructure//.renovate/autoMerge.json5",
+    "github>sstr-dev/infrastructure//.renovate/changelogs.json5",
+    "github>sstr-dev/infrastructure//.renovate/clusters.json5",
     "github>sstr-dev/infrastructure//.renovate/customManagers.json5",
     "github>sstr-dev/infrastructure//.renovate/grafanaDashboards.json5",
     "github>sstr-dev/infrastructure//.renovate/groups.json5",
+    "github>sstr-dev/infrastructure//.renovate/overrides.json5",
+    "github>sstr-dev/infrastructure//.renovate/packageRules.json5",
     "github>sstr-dev/infrastructure//.renovate/labels.json5",
     "github>sstr-dev/infrastructure//.renovate/semanticCommits.json5",
     ":automergeBranch",
@@ -15,25 +19,25 @@
     ":dependencyDashboard",
     ":semanticCommits",
   ],
-  suppressNotifications: [
+  "suppressNotifications": [
     "prEditedNotification",
     "prIgnoreNotification",
   ],
-  dependencyDashboardTitle: "Renovate Dashboard 🤖",
-  ignorePaths: [
+  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
+  "ignorePaths": [
     "**/*.sops.*",
     "**/.archive/**",
     "**/archive/**",
     "archive/**",
     "**/resources/**",
   ],
-  flux: {
-    managerFilePatterns: ["/(^|/)kubernetes/.+\\.ya?ml$/"],
+  "flux": {
+    "managerFilePatterns": ["/(^|/)kubernetes/.+\\.ya?ml$/"],
   },
   "helm-values": {
-    managerFilePatterns: ["/(^|/)kubernetes/.+\\.ya?ml$/"],
+    "managerFilePatterns": ["/(^|/)kubernetes/.+\\.ya?ml$/"],
   },
-  kubernetes: {
-    managerFilePatterns: ["/(^|/)kubernetes/.+\\.ya?ml$/"],
+  "kubernetes": {
+    "managerFilePatterns": ["/(^|/)kubernetes/.+\\.ya?ml$/"],
   },
 }

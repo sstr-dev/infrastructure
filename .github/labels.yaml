@@ -19,9 +19,11 @@
 - name: area/ansible
   color: "0e8a16"
 # Clusters
-- name: cluster/casa
+- name: cluster/main
   color: "ffc300"
-- name: cluster/core
+- name: cluster/registry
+  color: "ffc300"
+- name: cluster/test
   color: "ffc300"
 # Renovate Types
 - name: renovate/container
@@ -50,3 +52,7 @@
   color: "ee0701"
 - name: lint/lychee
   color: "201e39"
+- name: community
+  color: "370fb2"
+- name: hold
+  color: "ee0701"

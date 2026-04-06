@@ -5,6 +5,7 @@ area/bootstrap:
 area/docs:
   - changed-files:
       - any-glob-to-any-file:
+          - "docs/**/*"
           - "README.md"
 area/github:
   - changed-files:
@@ -34,10 +35,19 @@ area/terraform:
 area/ansible:
   - changed-files:
       - any-glob-to-any-file: ansible/**/*
-# Cluster
-cluster/core:
+# Clusters
+cluster/main:
   - changed-files:
-      - any-glob-to-any-file: kubernetes/**/core/**/*
-cluster/casa:
+      - any-glob-to-any-file: bootstrap/main/**/*
+      - any-glob-to-any-file: kubernetes/main/**/*
+      - any-glob-to-any-file: talos/main/**/*
+cluster/test:
   - changed-files:
-      - any-glob-to-any-file: kubernetes/**/casa/**/*
+      - any-glob-to-any-file: bootstrap/test/**/*
+      - any-glob-to-any-file: kubernetes/test/**/*
+      - any-glob-to-any-file: talos/test/**/*
+cluster/registry:
+  - changed-files:
+      - any-glob-to-any-file: bootstrap/registry/**/*
+      - any-glob-to-any-file: kubernetes/registry/**/*
+      - any-glob-to-any-file: talos/registry/**/*

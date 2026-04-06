@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "packageRules": [
+    {
+      "description": "Separate PRs for main cluster",
+      "matchFileNames": [
+        "**/kubernetes/main/**",
+        "**/talos/main/**"
+      ],
+      "additionalBranchPrefix": "main-",
+      "commitMessageSuffix": " [main]"
+    },
+    {
+      "description": "Separate PRs for test cluster",
+      "matchFileNames": [
+        "**/kubernetes/test/**",
+        "**/talos/test/**"
+      ],
+      "additionalBranchPrefix": "test-",
+      "commitMessageSuffix": " [test]"
+    },
+    {
+      "description": "Separate PRs for registry cluster",
+      "matchFileNames": [
+        "**/kubernetes/registry/**",
+        "**/talos/registry/**"
+      ],
+      "additionalBranchPrefix": "registry-",
+      "commitMessageSuffix": " [registry]"
+    },
+    {
+      "description": "Separate PRs for Base",
+      "matchFileNames": [
+        "**/kubernetes/base/**",
+      ],
+      "additionalBranchPrefix": "base-",
+      "commitMessageSuffix": " [base]"
+    },
+  ]
+}
