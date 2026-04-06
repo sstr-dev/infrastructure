@@ -8,5 +8,5 @@ components:
   - ../../../vars/registry/cluster
 replacements:
   - path: ../../../components/replacements/ks.yaml
-resources: []
-  #- ./node-exporter.yaml
+resources:
+  - ./node-exporter.yaml
