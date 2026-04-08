@@ -14,7 +14,7 @@ tasks:
         cluster: Kubernetes context to run against (required)
         ns: Namespace of the authentik remote-cluster release (default: security)
         release_name: Helm release / ServiceAccount name (default: authentik-remote-cluster)
-    #silent: true
+    silent: true
     requires:
       vars: [cluster]
     preconditions:
