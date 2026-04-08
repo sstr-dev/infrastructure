@@ -59,6 +59,7 @@ includes:
   garage:
     aliases: ["s3"]
     taskfile: .taskfiles/Garage/Taskfile.yaml
+  authentik: .taskfiles/Authentik/Taskfile.yaml
 
 tasks:
 

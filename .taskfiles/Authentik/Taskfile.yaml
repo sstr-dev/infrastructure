@@ -1,0 +1,47 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  TEMPLATE_DIR: "{{.ROOT_DIR}}/.taskfiles/Authentik/templates"
+  RELEASE_NAME: '{{.release_name | default "authentik-remote-cluster"}}'
+
+tasks:
+  remote-cluster:kubeconfig:
+    desc: Render the authentik remote-cluster kubeconfig and print it to stdout
+    summary: |
+      Args:
+        cluster: Kubernetes context to run against (required)
+        ns: Namespace of the authentik remote-cluster release (default: security)
+        release_name: Helm release / ServiceAccount name (default: authentik-remote-cluster)
+    #silent: true
+    requires:
+      vars: [cluster]
+    preconditions:
+      - sh: kubectl config get-contexts {{.cluster}}
+        msg: "❌ Kubeconfig context '{{.cluster}}' not found!"
+      - sh: command -v kubectl >/dev/null 2>&1
+        msg: kubectl is required
+      - sh: command -v envsubst >/dev/null 2>&1
+        msg: envsubst is required
+      - sh: test -f {{.TEMPLATE_DIR}}/remote-cluster-kubeconfig.tmpl.yaml
+        msg: "❌ Template file '{{.TEMPLATE_DIR}}/remote-cluster-kubeconfig.tmpl.yaml' not found!"
+    env:
+      cluster: "{{.cluster}}"
+      KUBE_API:
+        sh: kubectl --context {{.cluster}} config view --minify --output jsonpath="{.clusters[*].cluster.server}"
+    vars:
+      now: '{{now | date "150405"}}'
+      ns: '{{.ns | default "security"}}'
+
+
+    cmds:
+      - |
+        SECRET_NAME=$(kubectl --context {{.cluster}} get serviceaccount {{.RELEASE_NAME}} -n {{.ns}} -o jsonpath='{.secrets[0].name}' 2>/dev/null || echo -n "{{.RELEASE_NAME}}")
+        KUBE_CA=$(kubectl --context {{.cluster}} -n {{.ns}} get secret/${SECRET_NAME} -o jsonpath='{.data.ca\.crt}')
+        KUBE_TOKEN=$(kubectl --context {{.cluster}} -n {{.ns}} get secret/${SECRET_NAME} -o jsonpath='{.data.token}' | base64 --decode)
+
+        export NAMESPACE={{.ns}}
+        export KUBE_CA
+        export KUBE_TOKEN
+        envsubst < {{.TEMPLATE_DIR}}/remote-cluster-kubeconfig.tmpl.yaml
