@@ -4,7 +4,7 @@ version: "3"
 
 vars:
   TEMPLATE_DIR: "{{.ROOT_DIR}}/.taskfiles/Authentik/templates"
-  RELEASE_NAME: '{{.release_name | default "authentik-remote-cluster"}}'
+
 
 tasks:
   remote-cluster:kubeconfig:
@@ -33,15 +33,15 @@ tasks:
     vars:
       now: '{{now | date "150405"}}'
       ns: '{{.ns | default "security"}}'
-
-
+      RELEASE_NAME: '{{.release_name | default "authentik-remote-cluster"}}'
     cmds:
       - |
-        SECRET_NAME=$(kubectl --context {{.cluster}} get serviceaccount {{.RELEASE_NAME}} -n {{.ns}} -o jsonpath='{.secrets[0].name}' 2>/dev/null || echo -n "{{.RELEASE_NAME}}")
+        SECRET_NAME=$(kubectl --context {{.cluster}} get serviceaccount {{.RELEASE_NAME}} -n {{.ns}} -o jsonpath='{.metadata.name}' 2>/dev/null || echo -n "{{.RELEASE_NAME}}")
         KUBE_CA=$(kubectl --context {{.cluster}} -n {{.ns}} get secret/${SECRET_NAME} -o jsonpath='{.data.ca\.crt}')
         KUBE_TOKEN=$(kubectl --context {{.cluster}} -n {{.ns}} get secret/${SECRET_NAME} -o jsonpath='{.data.token}' | base64 --decode)
 
         export NAMESPACE={{.ns}}
         export KUBE_CA
         export KUBE_TOKEN
+
         envsubst < {{.TEMPLATE_DIR}}/remote-cluster-kubeconfig.tmpl.yaml

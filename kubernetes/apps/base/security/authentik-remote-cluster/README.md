@@ -71,7 +71,7 @@ Copy the generated kubeconfig output and then add the remote cluster in authenti
 Suggested authentik flow:
 
 1. Open authentik as an administrator.
-2. Go to the section for Kubernetes or remote cluster integrations.
+2. Go to the section for Kubernetes or remote cluster integrations. (System -> Outpost integrations)
 3. Create a new remote cluster entry.
 4. Paste the generated kubeconfig.
 5. Save the configuration and verify the connection.
