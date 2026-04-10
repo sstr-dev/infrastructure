@@ -30,7 +30,7 @@
 #    substitute:
 #      APP: *app
 #      CLUSTER: ${CLUSTER}
-#      GATEWAY: public-envoy
+#      GATEWAY: envoy-public
 #    substituteFrom:
 #      - kind: ConfigMap
 #        name: cluster-settings
@@ -58,7 +58,7 @@ spec:
     substitute:
       APP: *app
       CLUSTER: ${CLUSTER}
-      GATEWAY: public-envoy
+      GATEWAY: envoy-public
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
