@@ -1,15 +1,14 @@
-# nextcloud
-# nfs storage, collabora, talk?
+# nextcloud, collabora, talk?
+# nfs storage (user files), volsync
 # postgres
 # authentik
-# envoy-public
 # Helm values: https://github.com/nextcloud/helm/blob/main/charts/nextcloud/README.md
 
-# 2-3 kustomizations: nextcloud, nextcloud-collaboar, talk
+# 2-3 kustomizations: nextcloud, nextcloud-collabora, talk
 
-#    SECRET_CLOUD_DOMAIN
-#    SECRET_CLOUD_TALK_DOMAIN
-#    SECRET_CLOUD_COLLABORA_DOMAIN
+# SECRET_CLOUD_DOMAIN: nextcloud entry point
+# SECRET_CLOUD_TALK_DOMAIN
+# SECRET_CLOUD_COLLABORA_DOMAIN
 
 # components: cnpg (main), dragonfly (seperate?), nfs-scaler, volsync?
 
