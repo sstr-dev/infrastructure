@@ -63,14 +63,14 @@ spec:
               mountPath: "/usr/local/etc/php/conf.d"
 
       # Security context
-      securityContext:
-        runAsUser: ${PUID:-1000}
-        runAsGroup: ${PGID:-100}
-        fsGroup: ${PGID:-100}
-        fsGroupChangePolicy: "OnRootMismatch"
-        runAsNonRoot: true
-        #runAsNonRoot: true
-        #readOnlyRootFilesystem: false
+      #securityContext:
+      #  runAsUser: ${PUID:-1000}
+      #  runAsGroup: ${PGID:-100}
+      #  fsGroup: ${PGID:-100}
+      #  fsGroupChangePolicy: "OnRootMismatch"
+      #  runAsNonRoot: true
+      #  #runAsNonRoot: true
+      #  #readOnlyRootFilesystem: false
 
       # Admin credentials and SMTP from ExternalSecret
       existingSecret:
