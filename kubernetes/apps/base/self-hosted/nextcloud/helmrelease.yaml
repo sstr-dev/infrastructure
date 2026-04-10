@@ -43,24 +43,24 @@ spec:
       datadir: /var/www/data
 
 
-      extraVolumes:
-        - name: php-confd
-          emptyDir: {}
-        - name: tmpfs
-          emptyDir: {}
-      extraVolumeMounts:
-        - name: php-confd
-          mountPath: "/usr/local/etc/php/conf.d/redis-session.ini"
-          subPath: redis-session.ini
-        - name: tmpfs
-          mountPath: "/tmp"
-      extraInitContainers:
-        - name: init-redis-session-ini
-          image: mirror.gcr.io/alpine:latest
-          command: ['touch', '/usr/local/etc/php/conf.d/redis-session.ini']
-          volumeMounts:
-            - name: php-confd
-              mountPath: "/usr/local/etc/php/conf.d"
+      #extraVolumes:
+      #  - name: php-confd
+      #    emptyDir: {}
+      #  - name: tmpfs
+      #    emptyDir: {}
+      #extraVolumeMounts:
+      #  - name: php-confd
+      #    mountPath: "/usr/local/etc/php/conf.d/redis-session.ini"
+      #    subPath: redis-session.ini
+      #  - name: tmpfs
+      #    mountPath: "/tmp"
+      #extraInitContainers:
+      #  - name: init-redis-session-ini
+      #    image: mirror.gcr.io/alpine:latest
+      #    command: ['touch', '/usr/local/etc/php/conf.d/redis-session.ini']
+      #    volumeMounts:
+      #      - name: php-confd
+      #        mountPath: "/usr/local/etc/php/conf.d"
 
       # Security context
       #securityContext:
