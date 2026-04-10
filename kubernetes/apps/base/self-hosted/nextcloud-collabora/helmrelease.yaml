@@ -1,0 +1,97 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nextcloud-collabora
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  values:
+    controllers:
+      collabora:
+        containers:
+          app:
+            image:
+              repository: collabora/code
+              tag: 25.04.9.4.1@sha256:fe49c08c27e102c1877ad4ef2ac1a7bd8ccd2dfaa6641d4533389c204a92bb88
+            resources:
+              requests:
+                cpu: 150m
+                memory: 768Mi
+              limits:
+                memory: 3Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop:
+                  - ALL
+            env:
+              extra_params: --o:ssl.termination=true --o:ssl.enable=false --o:security.capabilities=false --o:logging.level=error
+              aliasgroup1: https://${SECRET_CLOUD_DOMAIN}:443
+              domain: ${SECRET_CLOUD_DOMAIN_GROUP}
+    defaultPodOptions:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: nextcloud-collabora
+    rawResources:
+      autoscaling:
+        enabled: true
+        apiVersion: autoscaling/v2
+        kind: HorizontalPodAutoscaler
+        spec:
+          spec:
+            scaleTargetRef:
+              apiVersion: apps/v1
+              kind: Deployment
+              name: nextcloud-collabora
+            minReplicas: 1
+            maxReplicas: 4
+            metrics:
+              - type: Resource
+                resource:
+                  name: cpu
+                  target:
+                    type: Utilization
+                    averageUtilization: 60
+              - type: Resource
+                resource:
+                  name: memory
+                  target:
+                    type: Utilization
+                    averageUtilization: 80
+            behavior:
+              scaleDown:
+                stabilizationWindowSeconds: 300
+                policies:
+                  - type: Pods
+                    value: 1
+                    periodSeconds: 60
+              scaleUp:
+                stabilizationWindowSeconds: 0
+                policies:
+                  - type: Pods
+                    value: 1
+                    periodSeconds: 30
+    service:
+      app:
+        ports:
+          http:
+            port: 9980
+    route:
+      app:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            group: self-hosted
+        hostnames:
+          - ${SECRET_CLOUD_COLLABORA_DOMAIN}
+        parentRefs:
+          - name: ${GATEWAY:=envoy-external}
+            namespace: network
