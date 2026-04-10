@@ -108,8 +108,9 @@ spec:
         - name: create-redis-session-ini
           image: busybox:1.37-uclibc
           command:
-            - touch
-            - /usr/local/etc/php/conf.d/redis-session.ini
+            - sh
+            - -c
+            - touch /usr/local/etc/php/conf.d/redis-session.ini
           volumeMounts:
             - name: php-confd
               mountPath: /usr/local/etc/php/conf.d/
