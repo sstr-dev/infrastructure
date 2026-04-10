@@ -154,6 +154,7 @@ spec:
             'overwrite.cli.url' => 'https://${SECRET_CLOUD_DOMAIN}',
             'overwriteprotocol' => 'https',
             'quota_include_external_storage' => 'false',
+            'check_data_directory_permissions' => false,
             'skeletondirectory' => '',
             'knowledgebaseenabled' => 'false',
             'maintenance_window_start' => '1',
