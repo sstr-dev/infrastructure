@@ -54,8 +54,8 @@ kind: Kustomization
 metadata:
   name: &app nextcloud-collabora
 spec:
-  #dependsOn:
-  #  - name: nextcloud
+  dependsOn:
+    - name: nextcloud
   interval: 1h
   path: ./kubernetes/apps/base/self-hosted/nextcloud-collabora
   postBuild:
