@@ -79,12 +79,12 @@ spec:
 
       # Security context
       securityContext:
-        #runAsUser: ${PUID:-1000}
-        #runAsGroup: ${PGID:-100}
-        #fsGroup: ${PGID:-100}
-        runAsUser: 33
-        runAsGroup: 33
-        fsGroup: 33
+        runAsUser: ${PUID:-1000}
+        runAsGroup: ${PGID:-100}
+        fsGroup: ${PGID:-100}
+        #runAsUser: 33
+        #runAsGroup: 33
+        #fsGroup: 33
         fsGroupChangePolicy: "OnRootMismatch"
         runAsNonRoot: true
         #runAsNonRoot: true
