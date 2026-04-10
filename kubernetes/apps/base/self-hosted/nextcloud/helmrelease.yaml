@@ -193,13 +193,13 @@ spec:
           );
 
         # Notify Push - high performance notifications
-        notify_push.config.php: |-
-          <?php
-          $CONFIG = array (
-            'notify_push' => array(
-              'base_endpoint' => 'https://${SECRET_CLOUD_DOMAIN}/push',
-            ),
-          );
+        #notify_push.config.php: |-
+        #  <?php
+        #  $CONFIG = array (
+        #    'notify_push' => array(
+        #      'base_endpoint' => 'https://${SECRET_CLOUD_DOMAIN}/push',
+        #    ),
+        #  );
 
         # TODO Nextcloud Talk - signaling server and TURN
         # talk.config.php: |-
@@ -219,37 +219,37 @@ spec:
           memory_limit = 512M
 
       # Sidecar: Notify Push (high-performance notifications)
-      extraSidecarContainers:
-        - name: notify-push
-          image: nextcloud:33.0.1-fpm-alpine
-          command:
-            - /var/www/html/custom_apps/notify_push/bin/x86_64/notify_push
-            - /var/www/html/config/config.php
-          args:
-            - --port
-            - "7867"
-          env:
-            - name: NEXTCLOUD_URL
-              value: http://localhost:8080
-            - name: PORT
-              value: "7867"
-          ports:
-            - name: push
-              containerPort: 7867
-              protocol: TCP
-          resources:
-            requests:
-              cpu: 10m
-              memory: 96Mi
-            limits:
-              memory: 192Mi
-          volumeMounts:
-            - name: nextcloud-main
-              mountPath: /var/www/html
-              readOnly: true
-            - name: nextcloud-data
-              mountPath: /var/www/data
-              readOnly: true
+      #extraSidecarContainers:
+      #  - name: notify-push
+      #    image: nextcloud:33.0.1-fpm-alpine
+      #    command:
+      #      - /var/www/html/custom_apps/notify_push/bin/x86_64/notify_push
+      #      - /var/www/html/config/config.php
+      #    args:
+      #      - --port
+      #      - "7867"
+      #    env:
+      #      - name: NEXTCLOUD_URL
+      #        value: http://localhost:8080
+      #      - name: PORT
+      #        value: "7867"
+      #    ports:
+      #      - name: push
+      #        containerPort: 7867
+      #        protocol: TCP
+      #    resources:
+      #      requests:
+      #        cpu: 10m
+      #        memory: 96Mi
+      #      limits:
+      #        memory: 192Mi
+      #    volumeMounts:
+      #      - name: nextcloud-main
+      #        mountPath: /var/www/html
+      #        readOnly: true
+      #      - name: nextcloud-data
+      #        mountPath: /var/www/data
+      #        readOnly: true
 
     # Database - CloudNative-PG (auto-generated secret)
     internalDatabase:
