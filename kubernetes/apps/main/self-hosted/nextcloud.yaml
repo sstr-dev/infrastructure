@@ -1,17 +1,3 @@
-# nextcloud, collabora, talk?
-# nfs storage (user files), volsync
-# postgres
-# authentik
-# Helm values: https://github.com/nextcloud/helm/blob/main/charts/nextcloud/README.md
-
-# 2-3 kustomizations: nextcloud, nextcloud-collabora, talk
-
-# SECRET_CLOUD_DOMAIN: nextcloud entry point
-# SECRET_CLOUD_TALK_DOMAIN
-# SECRET_CLOUD_COLLABORA_DOMAIN
-
-# components: cnpg (main), dragonfly (seperate?), nfs-scaler, volsync?
-
 #---
 # yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 #apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -22,13 +8,21 @@
 #  interval: 1h
 #  path: ./kubernetes/apps/base/self-hosted/nextcloud
 #  components:
-#    - ../../../../components/dragonfly  # Redis cache (nextcloud-dragonfly)
+#    - ../../../../components/dragonfly  # Redis cache (dragonfly-nextcloud)
 #    - ../../../../components/nfs-scaler  # Scale down on NFS mount issues
 #    - ../../../../components/vol/nfs
 #    - ../../../../components/vol/nfs/two
+#  healthCheckExprs:
+#    - apiVersion: dragonflydb.io/v1alpha1
+#      kind: Dragonfly
+#      failed: status.phase != 'ready'
+#      current: status.phase == 'ready'
 #  postBuild:
 #    substitute:
 #      APP: *app
+#      PUID: 99
+#      PGID: 100
+#      DRAGONFLY_REQUESTS_MEMORY: 256Mi
 #      CLUSTER: ${CLUSTER}
 #      GATEWAY: envoy-public
 #      CLAIM: nextcloud-config
@@ -36,7 +30,7 @@
 #      NFS_SUBFOLDER: nextcloud/config
 #      CLAIM_2: nextcloud-data
 #      VOL_CAPACITY_2: 1T
-#      NFS_SUBFOLDER_2: nextcloud/data
+#      NFS_SUBFOLDER_2: nextcloud/user-data
 #    substituteFrom:
 #      - kind: ConfigMap
 #        name: cluster-settings
@@ -77,3 +71,5 @@ spec:
     namespace: flux-system
   targetNamespace: self-hosted
   wait: false
+
+# talk?

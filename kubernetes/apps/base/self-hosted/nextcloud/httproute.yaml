@@ -1,0 +1,89 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/gateway.networking.k8s.io/httproute_v1.json
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: nextcloud
+  annotations:
+    gatus.home-operations.com/endpoint: |-
+      group: self-hosted
+spec:
+  hostnames:
+    - ${SECRET_CLOUD_DOMAIN}
+  parentRefs:
+    - name: ${GATEWAY:-envoy-external}
+      namespace: network
+  rules:
+    # CalDAV/CardDAV redirects (required for mobile apps)
+    - matches:
+        - path:
+            type: Exact
+            value: /.well-known/carddav
+        - path:
+            type: Exact
+            value: /.well-known/caldav
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            path:
+              type: ReplaceFullPath
+              replaceFullPath: /remote.php/dav/
+            statusCode: 301
+
+    # .well-known/webfinger (federation)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /.well-known/webfinger
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /index.php/.well-known/webfinger
+      backendRefs: &backendRef
+        - name: nextcloud
+          namespace: self-hosted
+          port: 8080
+
+    # .well-known/nodeinfo (federation)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /.well-known/nodeinfo
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /index.php/.well-known/nodeinfo
+      backendRefs: *backendRef
+
+    # Default route with HSTS
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            add:
+              - name: Strict-Transport-Security
+                value: max-age=31536000; includeSubDomains
+      backendRefs: *backendRef
+
+    # Notify Push (high-performance notifications)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /push/
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            add:
+              - name: Strict-Transport-Security
+                value: max-age=31536000; includeSubDomains
+      backendRefs:
+        - name: nextcloud-push
+          namespace: self-hosted
+          port: 7867

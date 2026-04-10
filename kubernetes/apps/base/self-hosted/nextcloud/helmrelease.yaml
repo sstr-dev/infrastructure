@@ -1,0 +1,196 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: nextcloud
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: 9.0.3
+  url: oci://ghcr.io/nextcloud/helm/nextcloud
+---
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nextcloud
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: nextcloud
+  values:
+    podAnnotations:
+      reloader.stakater.com/search: "true"
+
+    image:
+      flavor: fpm-alpine
+
+    nginx:
+      enabled: true
+      resources:
+        requests:
+          cpu: 10m
+          memory: 96Mi
+        limits:
+          memory: 192Mi
+    nextcloud:
+      host: ${SECRET_CLOUD_DOMAIN}
+      datadir: /var/www/data
+
+      # Security context
+      securityContext:
+        runAsUser: ${PUID:-1000}
+        runAsGroup: ${PGID:-100}
+        runAsNonRoot: true
+
+      # Admin credentials and SMTP from ExternalSecret
+      existingSecret:
+        enabled: true
+        secretName: &secret nextcloud-secret
+        smtpHostKey: SMTP_HOST
+        smtpUsernameKey: SMTP_USERNAME
+        smtpPasswordKey: SMTP_PASSWORD
+      # SMTP configuration
+      mail:
+        enabled: true
+        fromAddress: nextcloud
+        domain: ${SECRET_CLOUD_DOMAIN}
+        smtp:
+          port: 25
+          secure: NONE
+          authtype: NONE
+
+      # Environment variables
+      extraEnv:
+        # Redis connection (Dragonfly)
+        - name: REDIS_HOST
+          valueFrom:
+            secretKeyRef:
+              name: *secret
+              key: REDIS_HOST
+        - name: REDIS_HOST_PORT
+          valueFrom:
+            secretKeyRef:
+              name: *secret
+              key: REDIS_HOST_PORT
+        # OIDC credentials (for PHP config below)
+        - name: OIDC_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: *secret
+              key: OIDC_CLIENT_ID
+        - name: OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: *secret
+              key: OIDC_CLIENT_SECRET
+        - name: OIDC_ISSUER
+          valueFrom:
+            secretKeyRef:
+              name: *secret
+              key: OIDC_ISSUER
+        # Database password from CNPG secret (for sync hook)
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: *secret
+              key: POSTGRES_PASSWORD
+
+      # Volumes for hooks
+      extraVolumes:
+        - name: hooks
+          configMap:
+            name: nextcloud-hooks
+            defaultMode: 0755
+      extraVolumeMounts:
+        - name: hooks
+          mountPath: /docker-entrypoint-hooks.d/before-starting
+
+
+
+      # PHP settings
+      phpConfigs:
+        uploadLimit.ini: |
+          upload_max_filesize = 16G
+          post_max_size = 16G
+          max_input_time = 3600
+          max_execution_time = 3600
+          memory_limit = 512M
+
+      # Sidecar: Notify Push (high-performance notifications)
+      extraSidecarContainers:
+        - name: notify-push
+          image: nextcloud:33.0.1-fpm-alpine
+          command:
+            - /var/www/html/custom_apps/notify_push/bin/x86_64/notify_push
+            - /var/www/html/config/config.php
+          args:
+            - --port
+            - "7867"
+          env:
+            - name: NEXTCLOUD_URL
+              value: http://localhost:8080
+            - name: PORT
+              value: "7867"
+          ports:
+            - name: push
+              containerPort: 7867
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 96Mi
+            limits:
+              memory: 192Mi
+          volumeMounts:
+            - name: nextcloud-main
+              mountPath: /var/www/html
+              readOnly: true
+            - name: nextcloud-data
+              mountPath: /var/www/data
+              readOnly: true
+
+    # Database - CloudNative-PG (auto-generated secret)
+    internalDatabase:
+      enabled: false
+
+    externalDatabase:
+      enabled: true
+      type: postgresql
+      existingSecret:
+        enabled: true
+        secretName: *secret
+        hostKey: POSTGRES_HOST
+        databaseKey: POSTGRES_DB
+        usernameKey: POSTGRES_USER
+        passwordKey: POSTGRES_PASSWORD
+
+
+    # Storage
+    persistence:
+      enabled: true
+      existingClaim: nextcloud-config
+      nextcloudData:
+        enabled: true
+        existingClaim: nextcloud-data  # NFS (user files)
+        accessMode: ReadWriteMany
+
+# TODO chart and values
+# nfs storage (user files), nextcloud-config and nextcloud-data
+# postgres
+# authentik
+# Helm values: https://github.com/nextcloud/helm/blob/main/charts/nextcloud/README.md
+
+# 2-3 kustomizations: nextcloud, nextcloud-collabora, talk
+
+# SECRET_CLOUD_DOMAIN: nextcloud entry point
+# SECRET_CLOUD_TALK_DOMAIN
+# SECRET_CLOUD_COLLABORA_DOMAIN   ${SECRET_CLOUD_DOMAIN}
+
+# components: cnpg (main), dragonfly (seperate?), nfs-scaler, volsync?
