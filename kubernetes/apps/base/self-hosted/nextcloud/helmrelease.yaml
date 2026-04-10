@@ -280,29 +280,13 @@ spec:
     ingress:
       enabled: false
 
-    # Probes - Nextcloud initialization takes long time
+    # this seems to be required for nextcloud initialization which takes a long time
     startupProbe:
       enabled: true
       initialDelaySeconds: 10
       periodSeconds: 20
       timeoutSeconds: 5
-      failureThreshold: 60
-      successThreshold: 1
-
-    livenessProbe:
-      enabled: true
-      initialDelaySeconds: 10
-      periodSeconds: 10
-      timeoutSeconds: 5
-      failureThreshold: 3
-      successThreshold: 1
-
-    readinessProbe:
-      enabled: true
-      initialDelaySeconds: 10
-      periodSeconds: 10
-      timeoutSeconds: 5
-      failureThreshold: 3
+      failureThreshold: 30
       successThreshold: 1
 
     # Resources
