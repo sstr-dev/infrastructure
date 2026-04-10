@@ -47,7 +47,7 @@ spec:
         runAsUser: ${PUID:-1000}
         runAsGroup: ${PGID:-100}
         runAsNonRoot: true
-        readOnlyRootFilesystem: false
+        #readOnlyRootFilesystem: false
 
       # Admin credentials and SMTP from ExternalSecret
       existingSecret:
@@ -105,17 +105,19 @@ spec:
         #      key: POSTGRES_PASSWORD
 
       extraInitContainers:
-        - name: init-redis
-          image: busybox:latest
+        - name: create-redis-session-ini
+          image: busybox:1.37-uclibc
           command:
             - touch
             - /usr/local/etc/php/conf.d/redis-session.ini
           volumeMounts:
-            - name: nextcloud-redis
+            - name: php-confd
               mountPath: /usr/local/etc/php/conf.d/
       # Volumes for hooks
       extraVolumes:
-        - name: nextcloud-redis
+        - name: php-confd
+          emptyDir: {}
+        - name: tmpfs
           emptyDir: {}
       #  - name: hooks
       #    configMap:
@@ -123,9 +125,11 @@ spec:
       #      defaultMode: 0755
 
       extraVolumeMounts:
-        - name: nextcloud-redis
+        - name: php-confd
           mountPath: /usr/local/etc/php/conf.d/redis-session.ini
           subPath: redis-session.ini
+        - name: tmpfs
+          mountPath: "/tmp"
       #  - name: hooks
       #    mountPath: /docker-entrypoint-hooks.d/before-starting
 
