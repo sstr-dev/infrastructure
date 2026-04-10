@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "${CLAIM_2:-${APP}-2}"
+spec:
+  accessModes: ["${VOL_ACCESSMODES_2:-${VOL_ACCESSMODES:-ReadWriteMany}}"]
+  resources:
+    requests:
+      storage: "${VOL_CAPACITY_2:-${VOL_CAPACITY:-5Gi}}"
+  storageClassName: ${CLAIM_2:-${APP}-2}-storageclass
+

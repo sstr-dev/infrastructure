@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ${CLAIM_2:-${APP}-2}
+spec:
+  storageClassName: ${CLAIM_2:-${APP}-2}-storageclass
+  accessModes:
+    - ${VOL_ACCESSMODES_2:-${VOL_ACCESSMODES:-ReadWriteMany}}
+  #mountOptions:
+  #  - local_lock=posix
+  #  - nfsvers=4.1
+  nfs:
+    server: "${NFS_SERVER_2:-${NFS_SERVER:-nas.main.internal}}"
+    path: "${NFS_PATH_2:-${NFS_PATH:-/mnt/user/applications}}/${NFS_SUBFOLDER_2:-${NFS_SUBFOLDER:-${APP}}}"
+
+
+
+

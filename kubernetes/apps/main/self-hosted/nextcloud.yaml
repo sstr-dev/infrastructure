@@ -24,12 +24,19 @@
 #  components:
 #    - ../../../../components/dragonfly  # Redis cache (nextcloud-dragonfly)
 #    - ../../../../components/nfs-scaler  # Scale down on NFS mount issues
-#    - ../../../../components/volsync  # Backup config/apps volume
+#    - ../../../../components/vol/nfs
+#    - ../../../../components/vol/nfs/two
 #  postBuild:
 #    substitute:
 #      APP: *app
 #      CLUSTER: ${CLUSTER}
 #      GATEWAY: envoy-public
+#      CLAIM: nextcloud-config
+#      VOL_CAPACITY: 2Gi
+#      NFS_SUBFOLDER: nextcloud/config
+#      CLAIM_2: nextcloud-data
+#      VOL_CAPACITY_2: 1T
+#      NFS_SUBFOLDER_2: nextcloud/data
 #    substituteFrom:
 #      - kind: ConfigMap
 #        name: cluster-settings
