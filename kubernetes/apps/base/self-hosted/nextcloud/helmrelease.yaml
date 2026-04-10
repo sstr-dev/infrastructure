@@ -102,14 +102,14 @@ spec:
         #      key: POSTGRES_PASSWORD
 
       # Volumes for hooks
-      extraVolumes:
-        - name: hooks
-          configMap:
-            name: nextcloud-hooks
-            defaultMode: 0755
-      extraVolumeMounts:
-        - name: hooks
-          mountPath: /docker-entrypoint-hooks.d/before-starting
+      #extraVolumes:
+      #  - name: hooks
+      #    configMap:
+      #      name: nextcloud-hooks
+      #      defaultMode: 0755
+      #extraVolumeMounts:
+      #  - name: hooks
+      #    mountPath: /docker-entrypoint-hooks.d/before-starting
 
 
       # PHP configuration files
