@@ -43,11 +43,12 @@ spec:
       datadir: /var/www/data
 
       # Security context
-      securityContext:
-        runAsUser: ${PUID:-1000}
-        runAsGroup: ${PGID:-100}
-        runAsNonRoot: true
-        readOnlyRootFilesystem: false
+      #securityContext:
+      #  runAsUser: ${PUID:-1000}
+      #  runAsGroup: ${PGID:-100}
+      #  runAsNonRoot: true
+      #  # readOnlyRootFilesystem: false
+
       # Admin credentials and SMTP from ExternalSecret
       existingSecret:
         enabled: true
