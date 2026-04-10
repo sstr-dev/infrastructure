@@ -42,6 +42,26 @@ spec:
       host: ${SECRET_CLOUD_DOMAIN}
       datadir: /var/www/data
 
+
+      extraVolumes:
+        - name: php-confd
+          emptyDir: {}
+        - name: tmpfs
+          emptyDir: {}
+      extraVolumeMounts:
+        - name: php-confd
+          mountPath: "/usr/local/etc/php/conf.d/redis-session.ini"
+          subPath: redis-session.ini
+        - name: tmpfs
+          mountPath: "/tmp"
+      extraInitContainers:
+        - name: init-redis-session-ini
+          image: mirror.gcr.io/alpine:latest
+          command: ['touch', '/usr/local/etc/php/conf.d/redis-session.ini']
+          volumeMounts:
+            - name: php-confd
+              mountPath: "/usr/local/etc/php/conf.d"
+
       # Security context
       securityContext:
         runAsUser: ${PUID:-1000}
@@ -104,35 +124,7 @@ spec:
         #      name: *secret
         #      key: POSTGRES_PASSWORD
 
-      #extraInitContainers:
-      #  - name: create-redis-session-ini
-      #    image: busybox:1.37-uclibc
-      #    command:
-      #      - sh
-      #      - -c
-      #      - touch /usr/local/etc/php/conf.d/redis-session.ini
-      #    volumeMounts:
-      #      - name: php-confd
-      #        mountPath: /usr/local/etc/php/conf.d/
-      ## Volumes for hooks
-      #extraVolumes:
-      #  - name: php-confd
-      #    emptyDir: {}
-      #  - name: tmpfs
-      #    emptyDir: {}
-      ##  - name: hooks
-      ##    configMap:
-      ##      name: nextcloud-hooks
-      ##      defaultMode: 0755
 
-      #extraVolumeMounts:
-      #  - name: php-confd
-      #    mountPath: /usr/local/etc/php/conf.d/redis-session.ini
-      #    subPath: redis-session.ini
-      #  - name: tmpfs
-      #    mountPath: "/tmp"
-      ##  - name: hooks
-      ##    mountPath: /docker-entrypoint-hooks.d/before-starting
 
       #defaultConfigs:
       #  redis.config.php: false
