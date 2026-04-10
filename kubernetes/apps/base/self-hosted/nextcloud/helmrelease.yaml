@@ -129,12 +129,12 @@ spec:
 
 
 
-      #defaultConfigs:
-      #  redis.config.php: false
+      defaultConfigs:
+        redis.config.php: false
       # PHP configuration files
       configs:
-        # Proxy and trusted domains
-        proxy.config.php: |-
+        # General settings, Proxy and trusted domains
+        local.config.php: |-
           <?php
           $CONFIG = array (
             'trusted_domains' =>
@@ -150,36 +150,33 @@ spec:
               2 => '10.43.0.0/16',
             ),
             'forwarded_for_headers' => array('HTTP_X_FORWARDED_FOR'),
-          );
-        #redis.config.php: |-
-        #  <?php
-        #  $CONFIG = array(
-        #    'memcache.distributed' => '\OC\Memcache\Redis',
-        #    'memcache.locking' => '\OC\Memcache\Redis',
-        #    'redis' => array(
-        #      'host' => getenv('REDIS_HOST'),
-        #      'port' => getenv('REDIS_HOST_PORT') ?: 6379,
-        #      'dbindex' => getenv('REDIS_DATABASE') ?: 0,
-        #      'password' => getenv('REDIS_PASSWORD'),
-        #    ),
-        #  );
-        # General settings
-        misc.config.php: |-
-          <?php
-          $CONFIG = array (
             'default_phone_region' => 'DE',
-            'maintenance_window_start' => 2,
-            'allow_local_remote_servers' => true,
-            'overwriteprotocol' => 'https',
             'overwrite.cli.url' => 'https://${SECRET_CLOUD_DOMAIN}',
-            'filelocking.enabled' => 'true',
-            'loglevel' => '2',
-            'enable_previews' => true,
-            'bulkupload.enabled' => true,
+            'overwriteprotocol' => 'https',
+            'quota_include_external_storage' => 'false',
+            'skeletondirectory' => '',
+            'knowledgebaseenabled' => 'false',
+            'maintenance_window_start' => '1',
+            'enable_previews' => false,
+            'trashbin_retention_obligation' => 'auto, 30',
+            'auth.bruteforce.protection.enabled' => true,
+          );
+
+        redis.config.php: |-
+          <?php
+          $CONFIG = array(
+            'memcache.distributed' => '\OC\Memcache\Redis',
+            'memcache.locking' => '\OC\Memcache\Redis',
+            'redis' => array(
+              'host' => getenv('REDIS_HOST'),
+              'port' => getenv('REDIS_HOST_PORT') ?: 6379,
+              'dbindex' => getenv('REDIS_DATABASE') ?: 0,
+              'password' => getenv('REDIS_PASSWORD'),
+            ),
           );
 
         # OIDC - Authentik integration
-        oidc.config.php: |-
+        sso.config.php: |-
           <?php
           $CONFIG = array (
             'allow_user_to_change_display_name' => false,
@@ -247,6 +244,18 @@ spec:
           max_input_time = 3600
           max_execution_time = 3600
           memory_limit = 512M
+        www.conf: |
+          [www]
+          user = www-data
+          group = www-data
+          listen = 127.0.0.1:9000
+          pm = dynamic
+          pm.max_children = 57
+          pm.start_servers = 14
+          pm.min_spare_servers = 14
+          pm.max_spare_servers = 42
+          pm.max_requests = 500
+          pm.process_idle_timeout = 10s
 
       # Sidecar: Notify Push (high-performance notifications)
       #extraSidecarContainers:
