@@ -11,7 +11,7 @@ spec:
     - ../../../../components/dragonfly  # Redis cache (dragonfly-nextcloud)
     - ../../../../components/nfs-scaler  # Scale down on NFS mount issues
     - ../../../../components/volsync
-    - ../../../../components/vol/nfss
+    - ../../../../components/vol/nfs
   #healthCheckExprs:
   #  - apiVersion: dragonflydb.io/v1alpha1
   #    kind: Dragonfly
