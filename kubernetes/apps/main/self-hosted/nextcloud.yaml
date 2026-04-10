@@ -10,8 +10,8 @@ spec:
   components:
     - ../../../../components/dragonfly  # Redis cache (dragonfly-nextcloud)
     - ../../../../components/nfs-scaler  # Scale down on NFS mount issues
-    - ../../../../components/vol/nfs
-    - ../../../../components/vol/nfs/two
+    - ../../../../components/volsync
+    - ../../../../components/vol/nfss
   #healthCheckExprs:
   #  - apiVersion: dragonflydb.io/v1alpha1
   #    kind: Dragonfly
@@ -25,12 +25,10 @@ spec:
       DRAGONFLY_REQUESTS_MEMORY: 256Mi
       CLUSTER: ${CLUSTER}
       GATEWAY: envoy-public
-      CLAIM: nextcloud-config
-      VOL_CAPACITY: 2Gi
-      NFS_SUBFOLDER: nextcloud/config
-      CLAIM_2: nextcloud-data
-      VOL_CAPACITY_2: 1T
-      NFS_SUBFOLDER_2: nextcloud/user-data
+      VOLSYNC_CAPACITY: 2Gi
+      CLAIM: nextcloud-data
+      VOL_CAPACITY: 1T
+      NFS_SUBFOLDER: nextcloud/user-data
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
@@ -42,7 +40,6 @@ spec:
     name: flux-system
     namespace: flux-system
   wait: false
-
 ---
 # yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1

@@ -104,35 +104,35 @@ spec:
         #      name: *secret
         #      key: POSTGRES_PASSWORD
 
-      extraInitContainers:
-        - name: create-redis-session-ini
-          image: busybox:1.37-uclibc
-          command:
-            - sh
-            - -c
-            - touch /usr/local/etc/php/conf.d/redis-session.ini
-          volumeMounts:
-            - name: php-confd
-              mountPath: /usr/local/etc/php/conf.d/
-      # Volumes for hooks
-      extraVolumes:
-        - name: php-confd
-          emptyDir: {}
-        - name: tmpfs
-          emptyDir: {}
-      #  - name: hooks
-      #    configMap:
-      #      name: nextcloud-hooks
-      #      defaultMode: 0755
+      #extraInitContainers:
+      #  - name: create-redis-session-ini
+      #    image: busybox:1.37-uclibc
+      #    command:
+      #      - sh
+      #      - -c
+      #      - touch /usr/local/etc/php/conf.d/redis-session.ini
+      #    volumeMounts:
+      #      - name: php-confd
+      #        mountPath: /usr/local/etc/php/conf.d/
+      ## Volumes for hooks
+      #extraVolumes:
+      #  - name: php-confd
+      #    emptyDir: {}
+      #  - name: tmpfs
+      #    emptyDir: {}
+      ##  - name: hooks
+      ##    configMap:
+      ##      name: nextcloud-hooks
+      ##      defaultMode: 0755
 
-      extraVolumeMounts:
-        - name: php-confd
-          mountPath: /usr/local/etc/php/conf.d/redis-session.ini
-          subPath: redis-session.ini
-        - name: tmpfs
-          mountPath: "/tmp"
-      #  - name: hooks
-      #    mountPath: /docker-entrypoint-hooks.d/before-starting
+      #extraVolumeMounts:
+      #  - name: php-confd
+      #    mountPath: /usr/local/etc/php/conf.d/redis-session.ini
+      #    subPath: redis-session.ini
+      #  - name: tmpfs
+      #    mountPath: "/tmp"
+      ##  - name: hooks
+      ##    mountPath: /docker-entrypoint-hooks.d/before-starting
 
       defaultConfigs:
         redis.config.php: false
@@ -305,7 +305,7 @@ spec:
     # Storage
     persistence:
       enabled: true
-      existingClaim: nextcloud-config
+      existingClaim: nextcloud
       nextcloudData:
         enabled: true
         existingClaim: nextcloud-data  # NFS (user files)
