@@ -7,6 +7,8 @@ spec:
   storageClassName: ${CLAIM:-${APP}}-storageclass
   accessModes:
     - ${VOL_ACCESSMODES:-ReadWriteMany}
+  capacity:
+    storage: ${VOL_CAPACITY:-18T}
   #mountOptions:
   #  - local_lock=posix
   #  - nfsvers=4.1
