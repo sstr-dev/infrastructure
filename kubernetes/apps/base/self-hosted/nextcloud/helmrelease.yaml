@@ -42,6 +42,21 @@ spec:
       host: ${SECRET_CLOUD_DOMAIN}
       datadir: /var/www/data
 
+      extraInitContainers:
+        # create empty redis file for nextcloud entrypoint to override it
+        - name: init-redis-session-ini
+          image: busybox
+          command: ['touch', '/usr/local/etc/php/conf.d/redis-session.ini']
+          volumeMounts:
+            - name: nextcloud-redis-session-ini
+              mountPath: "/usr/local/etc/php/conf.d"
+      extraVolumes:
+      - name: nextcloud-redis-session-ini
+        emptyDir: {}
+      extraVolumeMounts:
+      - name: nextcloud-redis-session-ini
+        mountPath: "/usr/local/etc/php/conf.d/redis-session.ini" # fix permission denied error
+        subPath: redis-session.ini
 
       #extraVolumes:
       #  - name: php-confd
