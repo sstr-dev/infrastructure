@@ -104,13 +104,28 @@ spec:
         #      name: *secret
         #      key: POSTGRES_PASSWORD
 
+      extraInitContainers:
+        - name: init-redis
+          image: busybox:latest
+          command:
+            - touch
+            - /usr/local/etc/php/conf.d/redis-session.ini
+          volumeMounts:
+            - name: nextcloud-redis
+              mountPath: /usr/local/etc/php/conf.d/
       # Volumes for hooks
-      #extraVolumes:
+      extraVolumes:
+        - name: nextcloud-redis
+          emptyDir: {}
       #  - name: hooks
       #    configMap:
       #      name: nextcloud-hooks
       #      defaultMode: 0755
-      #extraVolumeMounts:
+
+      extraVolumeMounts:
+        - name: nextcloud-redis
+          mountPath: /usr/local/etc/php/conf.d/redis-session.ini
+          subPath: redis-session.ini
       #  - name: hooks
       #    mountPath: /docker-entrypoint-hooks.d/before-starting
 
@@ -321,6 +336,7 @@ spec:
           memory: 96Mi
         limits:
           memory: 192Mi
+
 
     # Extra manifests
     extraManifests:
