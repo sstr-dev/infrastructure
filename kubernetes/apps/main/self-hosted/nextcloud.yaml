@@ -12,11 +12,11 @@ spec:
     - ../../../../components/nfs-scaler  # Scale down on NFS mount issues
     - ../../../../components/vol/nfs
     - ../../../../components/vol/nfs/two
-  healthCheckExprs:
-    - apiVersion: dragonflydb.io/v1alpha1
-      kind: Dragonfly
-      failed: status.phase != 'ready'
-      current: status.phase == 'ready'
+  #healthCheckExprs:
+  #  - apiVersion: dragonflydb.io/v1alpha1
+  #    kind: Dragonfly
+  #    failed: status.phase != 'ready'
+  #    current: status.phase == 'ready'
   postBuild:
     substitute:
       APP: *app
