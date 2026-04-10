@@ -125,7 +125,7 @@ spec:
       tls:
         certificateRefs:
           - kind: Secret
-            name: multi-domain-tls
+            name: public-domain-tls
 ---
 # yaml-language-server: $schema=https://kube-schemas.pages.dev/gateway.networking.k8s.io/gateway_v1.json
 apiVersion: gateway.networking.k8s.io/v1
