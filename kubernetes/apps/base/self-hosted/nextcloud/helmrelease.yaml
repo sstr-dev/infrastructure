@@ -312,7 +312,7 @@ spec:
             - "7867"
           env:
             - name: NEXTCLOUD_URL
-              value: http://nextcloud:8080
+              value: http://nextcloud.self-hosted.svc:8080
             - name: PORT
               value: "7867"
           ports:
