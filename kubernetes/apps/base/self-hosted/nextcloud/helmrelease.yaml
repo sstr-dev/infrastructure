@@ -301,34 +301,34 @@ spec:
       # How to Enable
       # 1. Install "client push" app within nextcloud
       # 2. sudo -u www-data php -d memory_limit=-1 /var/www/html/occ notify_push:setup https://nextcloud.mydomain.com/push
-      #extraSidecarContainers:
-      #  - name: notify-push
-      #    image: nextcloud:33.0.1-fpm-alpine
-      #    command:
-      #      - /var/www/html/custom_apps/notify_push/bin/x86_64/notify_push
-      #      - /var/www/html/config/config.php
-      #    args:
-      #      - --port
-      #      - "7867"
-      #    env:
-      #      - name: NEXTCLOUD_URL
-      #        value: http://localhost:8080
-      #      - name: PORT
-      #        value: "7867"
-      #    ports:
-      #      - name: push
-      #        containerPort: 7867
-      #        protocol: TCP
-      #    resources:
-      #      requests:
-      #        cpu: 10m
-      #        memory: 96Mi
-      #      limits:
-      #        memory: 192Mi
-      #    volumeMounts:
-      #      - name: nextcloud-main
-      #        mountPath: /var/www/html
-      #        readOnly: true
+      extraSidecarContainers:
+        - name: notify-push
+          image: nextcloud:33.0.2-fpm-alpine
+          command:
+            - /var/www/html/custom_apps/notify_push/bin/x86_64/notify_push
+            - /var/www/html/config/config.php
+          args:
+            - --port
+            - "7867"
+          env:
+            - name: NEXTCLOUD_URL
+              value: http://localhost:8080
+            - name: PORT
+              value: "7867"
+          ports:
+            - name: push
+              containerPort: 7867
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 10m
+              memory: 96Mi
+            limits:
+              memory: 192Mi
+          volumeMounts:
+            - name: nextcloud-main
+              mountPath: /var/www/html
+              readOnly: true
       #      - name: nextcloud-data
       #        mountPath: /var/www/data
       #        readOnly: true
