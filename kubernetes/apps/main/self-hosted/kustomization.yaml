@@ -23,6 +23,6 @@ resources:
   - ./privatebin.yaml
   #- ./ocsinventory.yaml
   - ./ntfy.yaml
-  #- ./nextcloud.yaml
+  - ./nextcloud.yaml
 
 # TODO planned: nextcloud, inmich, spoolman (from 3d-print)

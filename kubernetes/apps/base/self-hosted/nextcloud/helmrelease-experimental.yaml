@@ -42,21 +42,21 @@ spec:
       host: ${SECRET_CLOUD_DOMAIN}
       datadir: /var/www/data
 
-      #extraInitContainers:
-      #  # create empty redis file for nextcloud entrypoint to override it
-      #  - name: init-redis-session-ini
-      #    image: busybox
-      #    command: ['touch', '/usr/local/etc/php/conf.d/redis-session.ini']
-      #    volumeMounts:
-      #      - name: nextcloud-redis-session-ini
-      #        mountPath: "/usr/local/etc/php/conf.d"
-      #extraVolumes:
-      #- name: nextcloud-redis-session-ini
-      #  emptyDir: {}
-      #extraVolumeMounts:
-      #- name: nextcloud-redis-session-ini
-      #  mountPath: "/usr/local/etc/php/conf.d/redis-session.ini" # fix permission denied error
-      #  subPath: redis-session.ini
+      extraInitContainers:
+        # create empty redis file for nextcloud entrypoint to override it
+        - name: init-redis-session-ini
+          image: busybox
+          command: ['touch', '/usr/local/etc/php/conf.d/redis-session.ini']
+          volumeMounts:
+            - name: nextcloud-redis-session-ini
+              mountPath: "/usr/local/etc/php/conf.d"
+      extraVolumes:
+      - name: nextcloud-redis-session-ini
+        emptyDir: {}
+      extraVolumeMounts:
+      - name: nextcloud-redis-session-ini
+        mountPath: "/usr/local/etc/php/conf.d/redis-session.ini" # fix permission denied error
+        subPath: redis-session.ini
 
       #extraVolumes:
       #  - name: php-confd
@@ -78,17 +78,17 @@ spec:
       #        mountPath: "/usr/local/etc/php/conf.d"
 
       # Security context
-      #securityContext:
-      #  runAsUser: ${PUID:-1000}
-      #  runAsGroup: ${PGID:-100}
-      #  fsGroup: ${PGID:-100}
-      #  #runAsUser: 33
-      #  #runAsGroup: 33
-      #  #fsGroup: 33
-      #  fsGroupChangePolicy: "OnRootMismatch"
-      #  runAsNonRoot: true
-      #  #runAsNonRoot: true
-      #  #readOnlyRootFilesystem: false
+      securityContext:
+        runAsUser: ${PUID:-1000}
+        runAsGroup: ${PGID:-100}
+        fsGroup: ${PGID:-100}
+        #runAsUser: 33
+        #runAsGroup: 33
+        #fsGroup: 33
+        fsGroupChangePolicy: "OnRootMismatch"
+        runAsNonRoot: true
+        #runAsNonRoot: true
+        #readOnlyRootFilesystem: false
 
       # Admin credentials and SMTP from ExternalSecret
       existingSecret:
@@ -138,7 +138,6 @@ spec:
             secretKeyRef:
               name: *secret
               key: OIDC_ISSUER
-
         ## Database password from CNPG secret (for sync hook)
         #- name: POSTGRES_PASSWORD
         #  valueFrom:
@@ -196,48 +195,48 @@ spec:
           );
 
         # OIDC - Authentik integration
-        #sso.config.php: |-
-        #  <?php
-        #  $CONFIG = array (
-        #    'allow_user_to_change_display_name' => false,
-        #    'lost_password_link' => 'disabled',
-        #    'oidc_login_provider_url' => getenv('OIDC_ISSUER'),
-        #    'oidc_login_client_id' => getenv('OIDC_CLIENT_ID'),
-        #    'oidc_login_client_secret' => getenv('OIDC_CLIENT_SECRET'),
-        #    'oidc_login_auto_redirect' => false,
-        #    'oidc_login_end_session_redirect' => true,
-        #    'oidc_login_button_text' => 'Log in with Authentik',
-        #    'oidc_login_hide_password_form' => true,
-        #    'oidc_login_use_id_token' => false,
-        #    'oidc_login_attributes' => array(
-        #      'id' => 'preferred_username',
-        #      'name' => 'name',
-        #      'mail' => 'email',
-        #      'groups' => 'groups',
-        #      'is_admin' => 'homelab-admins',
-        #    ),
-        #    'oidc_login_scope' => 'openid profile email groups',
-        #    'oidc_login_default_group' => 'oidc',
-        #    'oidc_login_use_external_storage' => false,
-        #    'oidc_login_proxy_ldap' => false,
-        #    'oidc_login_disable_registration' => false,
-        #    'oidc_login_redir_fallback' => false,
-        #    'oidc_login_tls_verify' => true,
-        #    'oidc_create_groups' => false,
-        #    'oidc_login_webdav_enabled' => true,
-        #    'oidc_login_password_authentication' => false,
-        #    'oidc_login_public_key_caching_time' => 86400,
-        #    'oidc_login_update_avatar' => false,
-        #  );
+        sso.config.php: |-
+          <?php
+          $CONFIG = array (
+            'allow_user_to_change_display_name' => false,
+            'lost_password_link' => 'disabled',
+            'oidc_login_provider_url' => getenv('OIDC_ISSUER'),
+            'oidc_login_client_id' => getenv('OIDC_CLIENT_ID'),
+            'oidc_login_client_secret' => getenv('OIDC_CLIENT_SECRET'),
+            'oidc_login_auto_redirect' => false,
+            'oidc_login_end_session_redirect' => true,
+            'oidc_login_button_text' => 'Log in with Authentik',
+            'oidc_login_hide_password_form' => true,
+            'oidc_login_use_id_token' => false,
+            'oidc_login_attributes' => array(
+              'id' => 'preferred_username',
+              'name' => 'name',
+              'mail' => 'email',
+              'groups' => 'groups',
+              'is_admin' => 'homelab-admins',
+            ),
+            'oidc_login_scope' => 'openid profile email groups',
+            'oidc_login_default_group' => 'oidc',
+            'oidc_login_use_external_storage' => false,
+            'oidc_login_proxy_ldap' => false,
+            'oidc_login_disable_registration' => false,
+            'oidc_login_redir_fallback' => false,
+            'oidc_login_tls_verify' => true,
+            'oidc_create_groups' => false,
+            'oidc_login_webdav_enabled' => true,
+            'oidc_login_password_authentication' => false,
+            'oidc_login_public_key_caching_time' => 86400,
+            'oidc_login_update_avatar' => false,
+          );
 
         # Collabora Online (Richdocuments)
-        #collabora.config.php: |-
-        #  <?php
-        #  $CONFIG = array (
-        #    'richdocuments' => array(
-        #      'wopi_url' => 'https://${SECRET_CLOUD_COLLABORA_DOMAIN}',
-        #    ),
-        #  );
+        collabora.config.php: |-
+          <?php
+          $CONFIG = array (
+            'richdocuments' => array(
+              'wopi_url' => 'https://${SECRET_CLOUD_COLLABORA_DOMAIN}',
+            ),
+          );
 
         # Notify Push - high performance notifications
         #notify_push.config.php: |-
@@ -264,38 +263,18 @@ spec:
           max_input_time = 3600
           max_execution_time = 3600
           memory_limit = 512M
-        #www.conf: |
-        #  [www]
-        #  user = www-data
-        #  group = www-data
-        #  listen = 127.0.0.1:9000
-        #  pm = dynamic
-        #  pm.max_children = 57
-        #  pm.start_servers = 14
-        #  pm.min_spare_servers = 14
-        #  pm.max_spare_servers = 42
-        #  pm.max_requests = 500
-        #  pm.process_idle_timeout = 10s
-
-      hooks:
-        post-installation: |-
-          php occ maintenance:repair --include-expensive
-          php occ db:add-missing-indices
-          php occ db:add-missing-columns
-          php occ db:add-missing-primary-keys
-        before-starting: |-
-          # disable unneceserry apps
-          for appname in activity circles systemtags federation privacy \
-              nextcloud_announcements announcementcenter support survey_client \
-              user_status weather_status dashboard app_api
-            do
-            php occ app:disable "$appname"
-          done
-        post-upgrade: |-
-          php occ maintenance:repair --include-expensive
-          php occ db:add-missing-indices
-          php occ db:add-missing-columns
-          php occ db:add-missing-primary-keys
+        www.conf: |
+          [www]
+          user = www-data
+          group = www-data
+          listen = 127.0.0.1:9000
+          pm = dynamic
+          pm.max_children = 57
+          pm.start_servers = 14
+          pm.min_spare_servers = 14
+          pm.max_spare_servers = 42
+          pm.max_requests = 500
+          pm.process_idle_timeout = 10s
 
       # Sidecar: Notify Push (high-performance notifications)
       #extraSidecarContainers:
@@ -349,9 +328,7 @@ spec:
     # Storage
     persistence:
       enabled: true
-      #existingClaim: nextcloud
-      storageClass: "longhorn"
-      size: 2Gi
+      existingClaim: nextcloud-config
       nextcloudData:
         enabled: true
         existingClaim: nextcloud-data  # NFS (user files)

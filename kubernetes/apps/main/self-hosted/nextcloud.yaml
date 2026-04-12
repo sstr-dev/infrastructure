@@ -12,7 +12,7 @@ spec:
     - ../../../../components/nfs-scaler  # Scale down on NFS mount issues
     #- ../../../../components/volsync
     - ../../../../components/vol/nfs
-    - ../../../../components/vol/nfs/two
+    #- ../../../../components/vol/nfs/two
   #healthCheckExprs:
   #  - apiVersion: dragonflydb.io/v1alpha1
   #    kind: Dragonfly
@@ -21,21 +21,29 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      PUID: "99"
-      PGID: "100"
+      #PUID: "99"
+      #PGID: "100"
       DRAGONFLY_REQUESTS_MEMORY: 256Mi
       CLUSTER: ${CLUSTER}
       GATEWAY: envoy-public
+
       # VOLSYNC_CAPACITY: 2Gi
-      #CLAIM: nextcloud-data
-      CLAIM: nextcloud-config
-      VOL_CAPACITY: 2Gi
-      NFS_SUBFOLDER: nextcloud/config
-      CLAIM_2: nextcloud-data
-      VOL_CAPACITY_2: 1T
-      NFS_SUBFOLDER_2: nextcloud/user-data
-      #VOL_CAPACITY: 1T
-      #NFS_SUBFOLDER: nextcloud/user-data
+
+      #CLAIM: nextcloud-config
+      #VOL_CAPACITY: 2Gi
+      #NFS_SUBFOLDER: nextcloud/config
+      #CLAIM_2: nextcloud-data
+      #VOL_CAPACITY_2: 1T
+      #NFS_SUBFOLDER_2: nextcloud/user-data
+
+      # volsync or local
+
+      # nfs for user data
+      CLAIM: nextcloud-data
+      VOL_CAPACITY: 1T
+      NFS_SUBFOLDER: nextcloud/user-data
+
+
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
@@ -48,32 +56,32 @@ spec:
     namespace: flux-system
   wait: false
 ---
-# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: &app nextcloud-collabora
-spec:
-  dependsOn:
-    - name: nextcloud
-  interval: 1h
-  path: ./kubernetes/apps/base/self-hosted/nextcloud-collabora
-  postBuild:
-    substitute:
-      APP: *app
-      CLUSTER: ${CLUSTER}
-      GATEWAY: envoy-public
-    substituteFrom:
-      - kind: ConfigMap
-        name: cluster-settings
-      - kind: Secret
-        name: cluster-secrets
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  targetNamespace: self-hosted
-  wait: false
+## yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+#apiVersion: kustomize.toolkit.fluxcd.io/v1
+#kind: Kustomization
+#metadata:
+#  name: &app nextcloud-collabora
+#spec:
+#  dependsOn:
+#    - name: nextcloud
+#  interval: 1h
+#  path: ./kubernetes/apps/base/self-hosted/nextcloud-collabora
+#  postBuild:
+#    substitute:
+#      APP: *app
+#      CLUSTER: ${CLUSTER}
+#      GATEWAY: envoy-public
+#    substituteFrom:
+#      - kind: ConfigMap
+#        name: cluster-settings
+#      - kind: Secret
+#        name: cluster-secrets
+#  prune: true
+#  sourceRef:
+#    kind: GitRepository
+#    name: flux-system
+#    namespace: flux-system
+#  targetNamespace: self-hosted
+#  wait: false
 
 # talk?
