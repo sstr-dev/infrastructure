@@ -28,7 +28,8 @@ spec:
       reloader.stakater.com/auto: "true"
     image:
       flavor: fpm-alpine
-
+    imaginary:
+      enabled: true
     nginx:
       enabled: true
       resources:
@@ -151,6 +152,7 @@ spec:
 
       defaultConfigs:
         redis.config.php: false
+        imaginary.config.php: true
       # PHP configuration files
       configs:
         # General settings, Proxy and trusted domains
@@ -180,7 +182,6 @@ spec:
             'skeletondirectory' => '',
             'knowledgebaseenabled' => 'false',
             'maintenance_window_start' => '1',
-            'enable_previews' => true,
             'trashbin_retention_obligation' => 'auto, 30',
             'auth.bruteforce.protection.enabled' => true,
           );
