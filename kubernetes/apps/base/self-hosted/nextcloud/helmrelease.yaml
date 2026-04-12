@@ -160,6 +160,7 @@ spec:
             'trusted_domains' =>
               [
                 'nextcloud',
+                'nextcloud.self-hosted.svc',
                 '${SECRET_CLOUD_DOMAIN}',
                 '${SECRET_CLOUD_TALK_DOMAIN}',
                 '${SECRET_CLOUD_COLLABORA_DOMAIN}'
