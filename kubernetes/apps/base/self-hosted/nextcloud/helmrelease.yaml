@@ -329,9 +329,9 @@ spec:
             - name: nextcloud-main
               mountPath: /var/www/html
               readOnly: true
-      #      - name: nextcloud-data
-      #        mountPath: /var/www/data
-      #        readOnly: true
+            - name: nextcloud-data
+              mountPath: /var/www/data
+              readOnly: true
 
     # Database - CloudNative-PG (auto-generated secret)
     internalDatabase:
