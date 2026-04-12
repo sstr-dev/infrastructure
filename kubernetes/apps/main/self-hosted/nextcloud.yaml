@@ -41,7 +41,7 @@ spec:
       # nfs for user data
       CLAIM: nextcloud-data
       VOL_CAPACITY: 1T
-      NFS_SUBFOLDER: nextcloud/user-data
+      NFS_SUBFOLDER: nextcloud
 
 
     substituteFrom:
