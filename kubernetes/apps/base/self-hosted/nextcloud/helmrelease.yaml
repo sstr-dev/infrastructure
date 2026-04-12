@@ -24,9 +24,6 @@ spec:
     kind: OCIRepository
     name: nextcloud
   values:
-    podAnnotations:
-      reloader.stakater.com/search: "true"
-
     deploymentAnnotations:
       reloader.stakater.com/auto: "true"
     image:
