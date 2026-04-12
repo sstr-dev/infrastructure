@@ -169,6 +169,7 @@ spec:
               0 => '127.0.0.1',
               1 => '10.42.0.0/16',
               2 => '10.43.0.0/16',
+              3 => '169.254.42.1',
             ),
             'forwarded_for_headers' => array('HTTP_X_FORWARDED_FOR'),
             'default_phone_region' => 'DE',
