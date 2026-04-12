@@ -104,9 +104,10 @@ spec:
       # SMTP configuration
       mail:
         enabled: true
-        fromAddress: noreply
+        fromAddress:  nextcloud.${SECRET_DOMAIN}
         domain: ${SECRET_DOMAIN}
         smtp:
+          host: smtp-relay.network.svc
           port: 25
           secure: ""
           authtype: ""
