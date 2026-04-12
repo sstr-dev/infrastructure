@@ -349,9 +349,9 @@ spec:
     # Storage
     persistence:
       enabled: true
-      #existingClaim: nextcloud
-      storageClass: "longhorn"
-      size: 2Gi
+      existingClaim: nextcloud
+      #storageClass: "longhorn"
+      #size: 2Gi
       nextcloudData:
         enabled: true
         existingClaim: nextcloud-data  # NFS (user files)
