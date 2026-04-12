@@ -393,26 +393,26 @@ spec:
 
 
     # Extra manifests
-    #extraManifests:
-    #  # Service for notify_push sidecar
-    #  - |
-    #    apiVersion: v1
-    #    kind: Service
-    #    metadata:
-    #      name: nextcloud-push
-    #      labels:
-    #        app.kubernetes.io/name: {{ include "nextcloud.name" . }}
-    #        app.kubernetes.io/instance: {{ .Release.Name }}
-    #    spec:
-    #      type: ClusterIP
-    #      ports:
-    #        - name: push
-    #          port: 7867
-    #          targetPort: 7867
-    #          protocol: TCP
-    #      selector:
-    #        app.kubernetes.io/name: {{ include "nextcloud.name" . }}
-    #        app.kubernetes.io/instance: {{ .Release.Name }}
+    extraManifests:
+      # Service for notify_push sidecar
+      - |
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: nextcloud-push
+          labels:
+            app.kubernetes.io/name: {{ include "nextcloud.name" . }}
+            app.kubernetes.io/instance: {{ .Release.Name }}
+        spec:
+          type: ClusterIP
+          ports:
+            - name: push
+              port: 7867
+              targetPort: 7867
+              protocol: TCP
+          selector:
+            app.kubernetes.io/name: {{ include "nextcloud.name" . }}
+            app.kubernetes.io/instance: {{ .Release.Name }}
 
     # Disable unused components
     redis:
