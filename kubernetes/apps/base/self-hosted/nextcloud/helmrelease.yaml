@@ -381,7 +381,7 @@ spec:
         cpu: 60m
         memory: 256Mi
       limits:
-        memory: 512Mi
+        memory: 5120Mi
 
     # Cronjob for background tasks
     cronjob:
