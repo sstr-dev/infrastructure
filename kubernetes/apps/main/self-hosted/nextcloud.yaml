@@ -56,32 +56,32 @@ spec:
     namespace: flux-system
   wait: false
 ---
-## yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-#apiVersion: kustomize.toolkit.fluxcd.io/v1
-#kind: Kustomization
-#metadata:
-#  name: &app nextcloud-collabora
-#spec:
-#  dependsOn:
-#    - name: nextcloud
-#  interval: 1h
-#  path: ./kubernetes/apps/base/self-hosted/nextcloud-collabora
-#  postBuild:
-#    substitute:
-#      APP: *app
-#      CLUSTER: ${CLUSTER}
-#      GATEWAY: envoy-public
-#    substituteFrom:
-#      - kind: ConfigMap
-#        name: cluster-settings
-#      - kind: Secret
-#        name: cluster-secrets
-#  prune: true
-#  sourceRef:
-#    kind: GitRepository
-#    name: flux-system
-#    namespace: flux-system
-#  targetNamespace: self-hosted
-#  wait: false
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app nextcloud-collabora
+spec:
+  dependsOn:
+    - name: nextcloud
+  interval: 1h
+  path: ./kubernetes/apps/base/self-hosted/nextcloud-collabora
+  postBuild:
+    substitute:
+      APP: *app
+      CLUSTER: ${CLUSTER}
+      GATEWAY: envoy-public
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: self-hosted
+  wait: false
 
 # talk?

@@ -231,13 +231,13 @@ spec:
         #  );
 
         # Collabora Online (Richdocuments)
-        #collabora.config.php: |-
-        #  <?php
-        #  $CONFIG = array (
-        #    'richdocuments' => array(
-        #      'wopi_url' => 'https://${SECRET_CLOUD_COLLABORA_DOMAIN}',
-        #    ),
-        #  );
+        collabora.config.php: |-
+          <?php
+          $CONFIG = array (
+            'richdocuments' => array(
+              'wopi_url' => 'https://${SECRET_CLOUD_COLLABORA_DOMAIN}',
+            ),
+          );
 
         # Notify Push - high performance notifications
         #notify_push.config.php: |-
