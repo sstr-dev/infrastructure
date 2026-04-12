@@ -106,8 +106,10 @@ spec:
         domain: ${SECRET_CLOUD_DOMAIN}
         smtp:
           port: 25
-          secure: NONE
-          authtype: NONE
+          secure:
+          authtype:
+          name:
+          password:
 
       # Environment variables
       extraEnv:
