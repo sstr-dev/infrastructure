@@ -102,8 +102,8 @@ spec:
       # SMTP configuration
       mail:
         enabled: true
-        fromAddress: nextcloud
-        domain: ${SECRET_CLOUD_DOMAIN}
+        fromAddress: noreply
+        domain: ${SECRET_DOMAIN}
         smtp:
           port: 25
           secure:
