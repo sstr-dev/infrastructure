@@ -43,7 +43,7 @@ spec:
       oidc:
         secret:
           create: false
-        externalSecret:
+        externalSecret: # keep getting auth errors, upon oidc login, instantly get logged out https://github.com/kubernetes-sigs/headlamp/issues/3884 , https://github.com/kubernetes-sigs/headlamp/issues/4539
           enabled: true
           name: headlamp-secret
     serviceAccount:
