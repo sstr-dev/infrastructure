@@ -10,6 +10,7 @@ configMapGenerator:
     files:
       - generate-index.sh=./resources/generate-index.sh
       - index.html=./resources/index.html
+      - push-crds.sh=./resources/push-crds.sh
 generatorOptions:
   disableNameSuffixHash: true
   annotations:
