@@ -15,11 +15,11 @@ spec:
       publish-k8s-schemas:
         type: cronjob
         cronjob:
-          backoffLimit: 4
-          concurrencyPolicy: Forbid
+          backoffLimit: 0
+          concurrencyPolicy: "Replace"
           failedJobsHistory: 1
-          schedule: "0 0 * * *"
-          successfulJobsHistory: 1
+          schedule: "0 */4 * * *" # Every 4 hours
+          successfulJobsHistory: 0
         pod:
           restartPolicy: OnFailure
           dnsConfig:
@@ -35,6 +35,13 @@ spec:
             image:
               repository: ghcr.io/bjw-s-labs/k8s-crd-extractor
               tag: 2026.3.11@sha256:a26844ff81905a8fac4dba61b416bed087a1944e20e38634acba5a7f65eeac93
+            command:
+              - /usr/bin/catatonit
+              - --
+              - sh
+            args:
+              - -c
+              - /app/crd-extractor.sh && exec sh /config/map/generate-index.sh
             resources:
               requests:
                 cpu: 10m
@@ -88,6 +95,14 @@ spec:
                 subPath: config
               - path: /data
                 subPath: data
+      config:
+        type: configMap
+        name: publish-k8s-schemas
+        advancedMounts:
+          publish-k8s-schemas:
+            generate-schemas:
+              - path: /config/map
+                readOnly: true
     serviceAccount:
       publish-k8s-schemas: {}
     rbac:
