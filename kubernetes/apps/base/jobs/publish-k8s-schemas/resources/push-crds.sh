@@ -6,6 +6,8 @@ git clone --depth=1 \
     /tmp/repo
 mkdir -p /tmp/repo/schemas
 cp -r /data/crdSchemas/. /tmp/repo/schemas/
+# remove the index (wraggler)
+rm /tmp/repo/schemas/index.html
 cd /tmp/repo
 git add .
 if git diff --cached --quiet; then
