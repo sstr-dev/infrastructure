@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+# yaml-language-server: $schema=https://schemas.sstr.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
@@ -31,7 +31,7 @@ spec:
 # base   default/base-tls    LB_V4_GATEWAY_BASE    SECRET_DOMAIN
 # iot-dev  default/dev-tls     LB_V4_GATEWAY_DEV    SECRET_DEV_DOMAIN
 
-# yaml-language-server: $schema=https://kube-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+# yaml-language-server: $schema=https://schemas.sstr.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
