@@ -28,7 +28,7 @@ spec:
       install: true
     grafana:
       enabled: true
-      namespace: observability
+      #namespace: observability
       annotations:
         grafana_folder: Infrastructure
     global:
@@ -68,7 +68,7 @@ spec:
     cleanupController:
       serviceMonitor:
         enabled: true
-        namespace: observability
+        #namespace: observability
       resources:
         requests:
           cpu: 50m
@@ -78,7 +78,7 @@ spec:
     reportsController:
       serviceMonitor:
         enabled: true
-        namespace: observability
+        #namespace: observability
       resources:
         requests:
           cpu: 50m
@@ -89,7 +89,7 @@ spec:
       replicas: 3
       serviceMonitor:
         enabled: true
-        namespace: observability
+        #namespace: observability
       rbac:
         clusterRole:
           extraResources:
