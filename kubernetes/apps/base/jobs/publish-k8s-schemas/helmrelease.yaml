@@ -55,7 +55,7 @@ spec:
                 drop:
                   - ALL
         containers:
-          app:
+          wrangler:
             image:
               repository: ghcr.io/bjw-s-labs/wrangler
               tag: 4.78.0@sha256:bb9450fce0992b13b3b399f08a93e41af2d6e933c3597e9460916967763096f5
@@ -80,6 +80,66 @@ spec:
               capabilities:
                 drop:
                   - ALL
+          git:
+            image:
+              repository: alpine/git
+              tag: v2.52.0
+            env:
+              GIT_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: publish-k8s-schemas-secret
+                    key: LAB_ASSISTANT_TOKEN
+              GIT_REPO:
+                valueFrom:
+                  secretKeyRef:
+                    name: publish-k8s-schemas-secret
+                    key: GIT_REPO
+              GIT_AUTHOR_NAME:
+                value: &git_author lab-assistant
+              GIT_AUTHOR_EMAIL:
+                valueFrom:
+                  secretKeyRef:
+                    name: publish-k8s-schemas-secret
+                    key: LAB_ASSISTANT_EMAIL
+              GIT_COMMITTER_NAME:
+                value: *git_author
+              GIT_COMMITTER_EMAIL:
+                valueFrom:
+                  secretKeyRef:
+                    name: publish-k8s-schemas-secret
+                    key: LAB_ASSISTANT_EMAIL
+            command:
+              - /bin/sh
+              - -c
+              - |
+                set -eu
+                export HOME=/tmp
+                git clone --depth=1 \
+                  "https://x-access-token:${GIT_TOKEN}@${GIT_REPO}" \
+                  /tmp/repo
+                mkdir -p /tmp/repo/schemas
+                cp -r /data/crdSchemas/. /tmp/repo/schemas/
+                cd /tmp/repo
+                git add .
+                if git diff --cached --quiet; then
+                  echo "No changes to commit"
+                  exit 0
+                fi
+                git commit -m "chore: update CRD schemas ($(date -u '+%Y-%m-%dT%H:%M:%SZ'))"
+                git push
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+              limits:
+                memory: 128Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
     persistence:
       tmpfs:
         type: emptyDir
@@ -90,7 +150,12 @@ spec:
                 subPath: data
               - path: /tmp
                 subPath: tmp
-            app:
+            git:
+              - path: /data
+                subPath: data
+              - path: /tmp
+                subPath: tmp
+            wrangler:
               - path: /config
                 subPath: config
               - path: /data
