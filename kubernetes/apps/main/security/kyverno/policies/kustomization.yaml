@@ -5,3 +5,4 @@ kind: Kustomization
 resources:
   - ./add-safe-to-evict.yaml
   - ./remove-cpu-limits.yaml
+  - ./label-httproutes.yaml
