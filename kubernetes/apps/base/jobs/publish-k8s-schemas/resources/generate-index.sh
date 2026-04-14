@@ -46,7 +46,22 @@ sed -i "s|<!-- LAST_UPDATED -->|${updated}|g" index.md
 
 tmp_md=$(mktemp)
 printf '%s\n' "${schemas_md}" > "${tmp_md}"
-perl -0pi -e 's/<!-- SCHEMAS_MD_PLACEHOLDER -->/\Q'"$(cat "${tmp_md}")"'\E/s' index.md
+awk '
+  BEGIN {
+    while ((getline line < mdfile) > 0) {
+      replacement = replacement line "\n"
+    }
+    close(mdfile)
+  }
+  {
+    if ($0 == "<!-- SCHEMAS_MD_PLACEHOLDER -->") {
+      printf "%s", replacement
+    } else {
+      print
+    }
+  }
+' mdfile="${tmp_md}" index.md > index.md.tmp
+mv index.md.tmp index.md
 rm -f "${tmp_md}"
 
 echo "index created"
