@@ -43,6 +43,16 @@ sed -i "s|<div class=\"stat-value\" id=\"last-updated\">-</div>|<div class=\"sta
 sed -i "s|<!-- GROUP_COUNT -->|${group_count}|g" index.md
 sed -i "s|<!-- SCHEMA_COUNT -->|${schema_count}|g" index.md
 sed -i "s|<!-- LAST_UPDATED -->|${updated}|g" index.md
-sed -i "s|<!-- SCHEMAS_MD_PLACEHOLDER -->|${schemas_md}|g" index.md
+
+{
+  while IFS= read -r line; do
+    if [ "$line" = "<!-- SCHEMAS_MD_PLACEHOLDER -->" ]; then
+      printf '%s\n' "${schemas_md}"
+    else
+      printf '%s\n' "$line"
+    fi
+  done < index.md
+} > index.md.tmp
+mv index.md.tmp index.md
 
 echo "index created"
