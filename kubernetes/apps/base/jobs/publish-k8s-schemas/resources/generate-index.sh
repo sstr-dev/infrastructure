@@ -42,7 +42,6 @@ sed -i "s|<div class=\"stat-value\" id=\"schema-count\">-</div>|<div class=\"sta
 sed -i "s|<div class=\"stat-value\" id=\"last-updated\">-</div>|<div class=\"stat-value\" id=\"last-updated\">${updated}</div>|g" index.html
 sed -i "s|<!-- GROUP_COUNT -->|${group_count}|g" index.md
 sed -i "s|<!-- SCHEMA_COUNT -->|${schema_count}|g" index.md
-sed -i "s|<!-- LAST_UPDATED -->|${updated}|g" index.md
 
 {
   while IFS= read -r line; do
