@@ -25,7 +25,7 @@ spec:
           app:
             image:
               repository: dbgate/dbgate
-              tag: 7.1.8-alpine
+              tag: 7.1.9-alpine
             #env:
             #  #TZ: ${CLUSTER_TIMEZONE}
             #  LOGIN:
