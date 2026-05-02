@@ -164,6 +164,7 @@ spec:
           UPDATE_AVATAR: true
           OPENID_CONNECT_SCOPES: openid email profile groups
         other:
+          SHOW_FOOTER_VERSION: false
           SHOW_FOOTER_TEMPLATE_LOAD_TIME: false
         packages:
           LIMIT_SIZE_CONTAINER: '2 GiB'
