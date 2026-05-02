@@ -43,6 +43,12 @@ spec:
         - name: envoy-external
           namespace: network
           sectionName: https
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            set:
+              - name: X-Real-Ip
+                value: "%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%"
 
     service:
       ssh:
