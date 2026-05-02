@@ -49,7 +49,9 @@ spec:
             set:
               - name: X-Real-Ip
                 value: "%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%"
-
+      matches:
+        timeouts:
+          request: 300s
     service:
       ssh:
         type: LoadBalancer
