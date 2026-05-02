@@ -17,6 +17,11 @@ spec:
       name: envoy-external
   lua:
     - type: Inline
+      # source for list: https://raw.githubusercontent.com/ai-robots-txt/ai.robots.txt/refs/heads/main/robots.txt
+      # first half:
+      # :%s/\nUser-agent:/,/g
+      # second half:
+      # :%s/, /*, \~*/g
       inline: |
         function envoy_on_request(request_handle)
           local ua = request_handle:headers():get("user-agent") or ""
