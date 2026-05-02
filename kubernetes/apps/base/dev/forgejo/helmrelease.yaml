@@ -111,6 +111,9 @@ spec:
           ENABLE_PASSKEY_AUTHENTICATION: false
           SHOW_REGISTRATION_BUTTON: false
           ENABLE_NOTIFY_MAIL: true
+          DEFAULT_ENABLE_TIMETRACKING: false
+          ENABLE_INTERNAL_SIGNIN: false
+          ENABLE_PASSWORD_SIGNIN_FORM: false
           # DEFAULT_ALLOW_CREATE_ORGANIZATION: false
           MAX_CREATION_LIMIT: 100
         service.explore:
