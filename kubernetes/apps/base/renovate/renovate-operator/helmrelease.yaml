@@ -22,15 +22,15 @@ spec:
   chartRef:
     kind: OCIRepository
     name: renovate-operator
-  interval: 15m
+  interval: 30m
   values:
     fullnameOverride: renovate-operator
     route:
       enabled: true
       hostnames:
-      - renovate.${DOMAIN}
+        - renovate.${DOMAIN}
       parentRefs:
-      - name: envoy-internal
-        namespace: network
+        - name: envoy-internal
+          namespace: network
     webhook:
       enabled: true
