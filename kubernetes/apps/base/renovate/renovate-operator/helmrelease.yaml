@@ -25,8 +25,17 @@ spec:
   interval: 30m
   values:
     fullnameOverride: renovate-operator
+    config:
+      defaultJobBackoffLimit: 5
+      defaultJobActiveDeadlineSeconds: 3600
     route:
       enabled: true
+      annotations:
+        gethomepage.dev/enabled: 'true'
+        gethomepage.dev/group: Infrastructure
+        gethomepage.dev/name: Renovate Operator
+        gethomepage.dev/icon: renovate.svg
+        gethomepage.dev/pod-selector: app=renovate-operator
       hostnames:
         - renovate.${DOMAIN}
       parentRefs:
@@ -34,3 +43,33 @@ spec:
           namespace: network
     webhook:
       enabled: true
+      ## cluster-secret )dev-domain), auth?
+      #route:
+      #  enabled: true
+      #  hostnames:
+      #    - "renovate-webhook.${SECRET_DOMAIN}"
+      #  annotations:
+      #    gatus.home-operations.com/endpoint: |-
+      #      conditions: ["[STATUS] == 401"]
+      #  parentRefs:
+      #    - name: envoy-external
+      #      namespace: network
+    # https://github.com/mogenius/renovate-operator/blob/main/docs/auth.md
+    auth:
+      oidc:
+        enabled: true
+        #issuerUrl:
+        #clientId: 'your-client-id'
+        existingSecret: renovate-operator-secret
+        secretKey: RENOVATE_OPERATOR_CLIENT_SECRET
+        sessionSecretKey: RENOVATE_OPERATOR_SESSION_SECRET
+  valuesFrom:
+    - targetPath: auth.oidc.clientId
+      kind: Secret
+      name: renovate-operator-secret
+      valuesKey: RENOVATE_OPERATOR_CLIENT_ID
+    - targetPath: auth.oidc.issuerUrl
+      kind: Secret
+      name: renovate-operator-secret
+      valuesKey: RENOVATE_OPERATOR_OIDC_ISSUER
+
