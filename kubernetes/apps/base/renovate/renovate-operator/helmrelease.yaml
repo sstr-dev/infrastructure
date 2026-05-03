@@ -43,7 +43,7 @@ spec:
           namespace: network
     webhook:
       enabled: true
-      ## cluster-secret (dev-domain?), webhook auth?
+      ## seperate webhook route (secret for dev domain?), multible webhook token (per job)
       #route:
       #  enabled: true
       #  hostnames:
