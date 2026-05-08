@@ -282,10 +282,8 @@ spec:
 
       hooks:
         post-installation: |-
-          php occ maintenance:repair --include-expensive
+          printf "Add missing DB indices\n"
           php occ db:add-missing-indices
-          php occ db:add-missing-columns
-          php occ db:add-missing-primary-keys
         before-starting: |-
           # disable unneceserry apps
           for appname in activity circles systemtags federation privacy \
