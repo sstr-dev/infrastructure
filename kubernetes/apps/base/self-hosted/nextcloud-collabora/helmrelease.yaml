@@ -33,6 +33,16 @@ spec:
               extra_params: --o:ssl.termination=true --o:ssl.enable=false --o:security.capabilities=false --o:logging.level=error
               aliasgroup1: https://${SECRET_CLOUD_DOMAIN}:443
               domain: ${SECRET_CLOUD_DOMAIN_GROUP}
+              username:
+                valueFrom:
+                  secretKeyRef:
+                    name: nextcloud-collabora-secret
+                    key: COLLABORA_ADMIN_USERNAME
+              password:
+                valueFrom:
+                  secretKeyRef:
+                    name: nextcloud-collabora-secret
+                    key: COLLABORA_ADMIN_PASSWORD
     defaultPodOptions:
       topologySpreadConstraints:
         - maxSkew: 1
@@ -53,7 +63,7 @@ spec:
               kind: Deployment
               name: nextcloud-collabora
             minReplicas: 1
-            maxReplicas: 4
+            maxReplicas: 3
             metrics:
               - type: Resource
                 resource:
