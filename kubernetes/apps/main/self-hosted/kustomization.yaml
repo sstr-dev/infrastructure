@@ -24,5 +24,6 @@ resources:
   #- ./ocsinventory.yaml
   - ./ntfy.yaml
   - ./nextcloud.yaml
+  - ./vaultwarden.yaml
 
 # TODO planned: nextcloud, inmich, spoolman (from 3d-print)

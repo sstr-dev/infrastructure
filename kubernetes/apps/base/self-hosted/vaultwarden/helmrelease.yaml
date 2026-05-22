@@ -1,0 +1,151 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+# add backup job
+# route: restrict, seperate admin (oauth? restrict by network?)
+# env-from vaultwarden-secret
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vaultwarden
+spec:
+  interval: 15m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      vaultwarden:
+        pod:
+          annotations:
+            reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/dani-garcia/vaultwarden
+              tag: 1.36.0
+            resources:
+              requests:
+                cpu: 25m
+                memory: 50Mi
+              limits:
+                memory: 200Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            env:
+              TZ: ${CLUSTER_TIMEZONE}
+              DOMAIN: https://vw.${SECRET_DOMAIN}
+              SIGNUPS_ALLOWED: false
+              SHOW_PASSWORD_HINT: false
+              ROCKET_PORT: &port 80
+              ORG_ATTACHMENT_LIMIT: "1000000" # 1GB
+              USER_ATTACHMENT_LIMIT: "1000000" # 1GB
+              USER_SEND_LIMIT: "1000000" # 1GB
+              # sso
+              SSO_ENABLED: "true"
+              SSO_ONLY: "true"
+              SSO_SIGNUPS_MATCH_EMAIL: "true"
+              SSO_ALLOW_UNKNOWN_EMAIL_VERIFICATION: "false"
+              SSO_SCOPES: "openid profile email groups offline_access"
+              # mail
+              SMTP_FROM: vaultwarden@${SECRET_DOMAIN}
+              SMTP_FROM_NAME: Vaultwarden
+              SMTP_HOST: smtp-relay.network.svc
+              SMTP_SECURITY: "off"
+              SMTP_PORT: 25
+              SMTP_SSL: "true"
+              # features
+              EXPERIMENTAL_CLIENT_FEATURE_FLAGS: ssh-key-vault-item,ssh-agent,ssh-agent-v2,inline-menu-totp
+            envFrom:
+              - secretRef:
+                  name: vaultwarden-secret
+    service:
+      app:
+        controller: vaultwarden
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "vw.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+        rules:
+          - name: web
+            backendRefs:
+              - identifier: app
+          - name: admin
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /admin
+            backendRefs:
+              - identifier: app
+      #admin:
+      #  annotations:
+      #    gatus.home-operations.com/enabled: "false"
+      #    external-dns.alpha.kubernetes.io/exclude: "true" #prevent external-dns from trying to make 2 public DNS records
+      #  hostnames:
+      #    - "bitwarden.${SECRET_DOMAIN}"
+      #  parentRefs:
+      #    - name: envoy-external
+      #      namespace: network
+      #  rules:
+      #    - backendRefs:
+      #        - identifier: app
+      #          port: http
+      #      matches:
+      #        - path:
+      #            type: PathPrefix
+      #            value: /admin
+    #rawResources:
+    #  admin-auth-ext:
+    #    manifest:
+    #      apiVersion: gateway.kgateway.dev/v1alpha1
+    #      kind: GatewayExtension
+    #      spec:
+    #        type: OAuth2
+    #        oauth2:
+    #          backendRef:
+    #            name: authentik-server
+    #            namespace: security
+    #            port: 80
+    #          issuerURI: https://${SECRET_SSO_DOMAIN}/application/o/vaultwarden-admin/
+    #          credentials:
+    #            clientID: ${oidc_client_id}
+    #            clientSecretRef:
+    #              name: oidc
+    #          scopes: [openid, offline_access]
+    #          logoutPath: /admin/oauth2/logout
+    #          redirectURI: "%REQ(x-forwarded-proto)%://%REQ(:authority)%/admin/oauth2/redirect"
+    #  admin-auth:
+    #    manifest:
+    #      apiVersion: gateway.kgateway.dev/v1alpha1
+    #      kind: TrafficPolicy
+    #      spec:
+    #        targetRefs:
+    #          - group: gateway.networking.k8s.io
+    #            kind: HTTPRoute
+    #            name: "{{ .Release.Name }}"
+    #            sectionName: admin
+    #        oauth2:
+    #          extensionRef:
+    #            name: "{{ .Release.Name }}-admin-auth-ext"
+    persistence:
+      data:
+        suffix: data
+        accessMode: ReadWriteOnce
+        storageClass: longhorn
+        size: 8Gi
+        retain: true

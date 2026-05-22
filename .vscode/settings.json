@@ -8,12 +8,17 @@
     "ansible.validation.lint.path": ".venv/bin/ansible-lint",
     "files.associations": {
         "*.json5": "jsonc",
+        "*.sops.yaml": "yaml",
+        "*.sops.yml": "yaml",
+        "*.sops.toml": "plaintext",
         "./ansible/**/*.yaml": "ansible",
         "./ansible/**/*.sops.yaml": "yaml",
         "./ansible/**/inventory/**/*.yaml": "yaml",
+        "./kubernetes/**/*.sops.yaml": "yaml",
+        "./kubernetes/**/*.sops.yml": "yaml",
         "./kubernetes/**/*.sops.toml": "plaintext"
     },
-    "sops.defaults.ageKeyFile": "age.key",
+    "sops.defaults.ageKeyFile": "./age.key",
     "yaml.schemas": {
         "ansible": "./ansible/*.yaml",
         "Kubernetes": "./kubernetes/*.yaml"
