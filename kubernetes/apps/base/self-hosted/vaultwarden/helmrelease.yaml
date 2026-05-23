@@ -55,7 +55,7 @@ spec:
               SSO_ONLY: "true"
               SSO_SIGNUPS_MATCH_EMAIL: "true"
               SSO_ALLOW_UNKNOWN_EMAIL_VERIFICATION: "false"
-              SSO_SCOPES: "openid profile email groups offline_access"
+              SSO_SCOPES: "openid profile email offline_access"
               # mail
               SMTP_FROM: vaultwarden@${SECRET_DOMAIN}
               SMTP_FROM_NAME: Vaultwarden
