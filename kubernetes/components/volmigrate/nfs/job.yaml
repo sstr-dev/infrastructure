@@ -16,7 +16,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: seed
-          image: ${BOOTSTRAP_IMAGE:-busybox:1.37.0}
+          image: ${BOOTSTRAP_IMAGE:-busybox:1.38.0}
           command:
             - /bin/sh
             - -ec
