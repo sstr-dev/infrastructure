@@ -110,7 +110,14 @@ spec:
           port: 25
           secure: ""
           authtype: ""
-
+          
+      lifecycle:
+        postStartCommand:
+          - "/bin/sh"
+          - "-c"
+          - |
+            su -s /bin/sh www-data -c 'php occ db:add-missing-indices' || true
+            su -s /bin/sh www-data -c 'php occ maintenance:repair --include-expensive' || true
 
       # Environment variables
       extraEnv:
@@ -282,9 +289,9 @@ spec:
         #  pm.process_idle_timeout = 10s
 
       hooks:
-        post-installation: |-
-          printf "Add missing DB indices\n"
-          php occ db:add-missing-indices
+      #  post-installation: |-
+      #    printf "Add missing DB indices\n"
+      #    php occ db:add-missing-indices
         before-starting: |-
           # disable unneceserry apps
           for appname in activity circles systemtags federation privacy \
@@ -293,11 +300,11 @@ spec:
             do
             php occ app:disable "$appname"
           done
-        post-upgrade: |-
-          php occ maintenance:repair --include-expensive
-          php occ db:add-missing-indices
-          php occ db:add-missing-columns
-          php occ db:add-missing-primary-keys
+      #  post-upgrade: |-
+      #    php occ maintenance:repair --include-expensive
+      #    php occ db:add-missing-indices
+      #    php occ db:add-missing-columns
+      #    php occ db:add-missing-primary-keys
 
       # Sidecar: Notify Push (high-performance notifications)
       # How to Enable
