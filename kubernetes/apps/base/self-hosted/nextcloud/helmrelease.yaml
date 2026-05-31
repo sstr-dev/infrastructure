@@ -28,6 +28,7 @@ spec:
       reloader.stakater.com/auto: "true"
     image:
       flavor: fpm-alpine
+      tag: 33.0.4-fpm-alpine
     imaginary:
       enabled: true
     nginx:
