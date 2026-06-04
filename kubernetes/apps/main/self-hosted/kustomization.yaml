@@ -13,7 +13,7 @@ resources:
   #- ./openspeedtest/ks.yaml
   #- ./cyberchef.yaml
   #- ./photon/ks.yaml
-  - ./homepage.yaml
+  #- ./homepage.yaml
   - ./snipe-it.yaml
   - ./drawio.yaml
   - ./paperless.yaml
@@ -26,4 +26,4 @@ resources:
   - ./nextcloud.yaml
   - ./vaultwarden.yaml
 
-# TODO planned: inmich
+# TODO planned: inmich, new dashboard
