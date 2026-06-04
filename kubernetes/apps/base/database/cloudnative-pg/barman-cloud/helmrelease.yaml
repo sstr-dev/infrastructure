@@ -58,13 +58,14 @@ spec:
                 cpu: 10m
               limits:
                 memory: 128Mi
-        pod:
-          automountServiceAccountToken: true
+        #pod:
+        #  automountServiceAccountToken: true
         serviceAccount:
           name: *app
     #serviceAccount:
     #  barman-cloud: {}
     defaultPodOptions:
+      automountServiceAccountToken: true
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
