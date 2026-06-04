@@ -15,25 +15,25 @@ spec:
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          init-config:
-            image:
-              repository: ghcr.io/sstr-dev/k8s-sidecar
-              tag: 2.7.3@sha256:749663516b6c72766aca0da90f883fe19541ac89f934d9e897618b7f6896218c
-            env:
-              FOLDER: /config
-              LABEL: webhook.home.arpa/enabled
-              NAMESPACE: ALL
-              RESOURCE: both
-              UNIQUE_FILENAMES: true
-              METHOD: WATCH
-            restartPolicy: Always
-            resources:
-              requests:
-                cpu: 50m
-                memory: 240Mi
-              limits:
-                memory: 320Mi
+        #initContainers:
+        #  init-config:
+        #    image:
+        #      repository: ghcr.io/sstr-dev/k8s-sidecar
+        #      tag: 2.7.3@sha256:749663516b6c72766aca0da90f883fe19541ac89f934d9e897618b7f6896218c
+        #    env:
+        #      FOLDER: /config
+        #      LABEL: webhook.home.arpa/enabled
+        #      NAMESPACE: ALL
+        #      RESOURCE: both
+        #      UNIQUE_FILENAMES: true
+        #      METHOD: WATCH
+        #    restartPolicy: Always
+        #    resources:
+        #      requests:
+        #        cpu: 50m
+        #        memory: 240Mi
+        #      limits:
+        #        memory: 320Mi
         containers:
           app:
             image:
@@ -54,8 +54,8 @@ spec:
                 cpu: 100m
               limits:
                 memory: 512Mi
-        serviceAccount:
-          identifier: webhook
+        #serviceAccount:
+        #  identifier: webhook
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -75,23 +75,23 @@ spec:
           - name: envoy-internal
             namespace: network
             sectionName: https
-    rbac:
-      roles:
-        webhook:
-          type: ClusterRole
-          rules:
-            - apiGroups: [""]
-              resources: ["configmaps", "secrets"]
-              verbs: ["get", "watch", "list"]
-      bindings:
-        webhook:
-          type: ClusterRoleBinding
-          roleRef:
-            identifier: webhook
-          subjects:
-            - identifier: webhook
-    serviceAccount:
-      webhook: {}
+    #rbac:
+    #  roles:
+    #    webhook:
+    #      type: ClusterRole
+    #      rules:
+    #        - apiGroups: [""]
+    #          resources: ["configmaps", "secrets"]
+    #          verbs: ["get", "watch", "list"]
+    #  bindings:
+    #    webhook:
+    #      type: ClusterRoleBinding
+    #      roleRef:
+    #        identifier: webhook
+    #      subjects:
+    #        - identifier: webhook
+    #serviceAccount:
+    #  webhook: {}
     persistence:
       config:
         type: configMap
@@ -99,3 +99,10 @@ spec:
         defaultMode: 0775
         globalMounts:
           - readOnly: true
+      tmpfs:
+        type: emptyDir
+        advancedMounts:
+          webhook:
+            app:
+              - path: /tmp
+                subPath: tmp
