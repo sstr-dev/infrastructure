@@ -60,11 +60,22 @@ spec:
                 memory: 128Mi
         serviceAccount:
           name: *app
+    serviceAccount:
+      barman-cloud: {}
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         runAsGroup: 1000
+    rbac:
+      bindings:
+        barman-cloud:
+          roleRef:
+            kind: ClusterRole
+            name: barman-cloud
+          subjects:
+            - identifier: *app
+          type: ClusterRoleBinding
     service:
       app:
         annotations:
