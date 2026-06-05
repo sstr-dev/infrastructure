@@ -27,7 +27,7 @@ vars:
   AGE_FILE: "{{.ROOT_DIR}}/age.key"
   PIP_REQUIREMENTS_FILE: "{{.ROOT_DIR}}/requirements.txt"
   # Binaries
-  PYTHON_BIN: python3.11
+  PYTHON_BIN: python3
 
 env:
   PYTHONDONTWRITEBYTECODE: "1"
