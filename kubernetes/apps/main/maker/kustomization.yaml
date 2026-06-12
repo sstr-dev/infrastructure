@@ -11,3 +11,4 @@ replacements:
 resources:
   - ./spoolman.yaml
   - ./manyfold.yaml
+  - ./filaman.yaml
