@@ -14,7 +14,7 @@ collections:
     version: 13.0.1
     # https://github.com/ansible-collections/community.sops
   - name: community.sops
-    version: 2.3.0
+    version: 2.4.0
   - name: maxhoesel.pterodactyl
     version: 5.0.0
     # https://github.com/maxhoesel-ansible/ansible-collection-pterodactyl/tree/main
