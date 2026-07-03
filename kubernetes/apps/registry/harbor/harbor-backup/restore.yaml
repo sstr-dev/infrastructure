@@ -16,7 +16,7 @@ spec:
             path: /mnt/user/registry-backup/data/k8s/harbor
       containers:
         - name: postgres
-          image: docker.io/goharbor/harbor-db:v2.15.1
+          image: docker.io/goharbor/harbor-db:v2.15.2
           command: ["/bin/sh"]
           args:
             - "-c"
