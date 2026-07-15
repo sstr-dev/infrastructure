@@ -16,7 +16,7 @@ spec:
           app:
             image:
               repository: ghcr.io/linuxserver/mariadb
-              tag: 11.4.12@sha256:adbb0142f55abd0e913b8fdd017f637d2318d434e74755908c768399e96403ec
+              tag: 11.4.12@sha256:b68d35ff2da41e568f51e0370a7e1c3ce693fecdacbed061b4b0be5b924f14bb
             env:
               TZ: ${CLUSTER_TIMEZONE:=Etc/UTC}
               PUID: "${APP_UID}"
