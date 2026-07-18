@@ -25,7 +25,7 @@ spec:
           app:
             image:
               repository: ghcr.io/crazy-max/samba
-              tag: 4.22.8@sha256:40591f9a30df6b0106948d81d89204c632894387639914ec2808b536e307074b
+              tag: 4.23.8@sha256:b37f7af97c773eddb593537f64da6389e5ee6695bcecf44f3ba1a8a6bcf34125
             env:
               TZ: ${CLUSTER_TIMEZONE}
               SAMBA_HOSTS_ALLOW: "127.0.0.0/8 10.0.0.0/8 172.16.0.0/12 172.22.0.0/15 192.168.0.0/16 192.168.188.0/24"
