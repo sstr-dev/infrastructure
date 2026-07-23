@@ -27,7 +27,7 @@ spec:
           app:
             image:
               repository: ghcr.io/fire-devils/filaman-system
-              tag: v1.2.21
+              tag: v1.2.30
             env:
               TZ: ${CLUSTER_TIMEZONE}
             envFrom:
