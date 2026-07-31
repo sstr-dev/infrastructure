@@ -75,8 +75,7 @@ spec:
               PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg.self-hosted.svc.cluster.local:3000
               PAPERLESS_TIKA_ENDPOINT: http://tika.self-hosted.svc.cluster.local:9998
               # Configure redis integration
-              #PAPERLESS_REDIS: redis://dragonfly-cluster.database.svc.cluster.local:6379/1
-              # PAPERLESS_REDIS: redis://paperless-redis.self-hosted.svc.cluster.local:6379
+              PAPERLESS_REDIS: redis://paperless-dragonfly:6379
               # Configure user permissions
               USERMAP_UID: 99
               USERMAP_GID: 100

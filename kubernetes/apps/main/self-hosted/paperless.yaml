@@ -37,6 +37,8 @@ kind: Kustomization
 metadata:
   name: &app paperless
 spec:
+  components:
+    - ../../../../components/cache/dragonfly
   interval: 1h
   path: ./kubernetes/apps/base/self-hosted/paperless
   postBuild:
