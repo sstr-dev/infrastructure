@@ -52,7 +52,7 @@ spec:
           app:
             image:
               repository: ghcr.io/bjw-s-labs/manyfold
-              tag: 0.144.1@sha256:a6845dcc78b8ef6dba37e7c7e46d2ea3e433f565ae008b77a069cee3fffddb13
+              tag: 0.147.0@sha256:88fb41930cb725c910b7a43a792dfb5fe09e44024860782daeddb6ff66729d53
             env:
               PORT: &port 3214
               PUID: 99
