@@ -7,11 +7,14 @@ metadata:
 spec:
   components:
     - ../../../../components/volsync
+    - ../../../../components/cache/dragonfly
   interval: 1h
   path: ./kubernetes/apps/base/dev/forgejo
   dependsOn:
     - name: volsync
       namespace: storage
+    - name: dragonfly-operator
+      namespace: database
   postBuild:
     substitute:
       APP: *app
@@ -31,7 +34,6 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: false
 ---
 # yaml-language-server: $schema=https://schemas.sstr.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1

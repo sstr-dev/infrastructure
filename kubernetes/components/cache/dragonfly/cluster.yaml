@@ -3,10 +3,10 @@
 apiVersion: dragonflydb.io/v1alpha1
 kind: Dragonfly
 metadata:
-  name: dragonfly-${APP}
+  name: ${APP}-dragonfly
 spec:
   image: ghcr.io/dragonflydb/dragonfly:v1.39.0
-  replicas: ${DRAGONFLY_REPLICAS:-2}
+  replicas: ${DRAGONFLY_REPLICAS:-1}
   env:
     - name: MAX_MEMORY
       valueFrom:
@@ -19,8 +19,8 @@ spec:
     - --cluster_mode=emulated
   resources:
     requests:
-      cpu: ${DRAGONFLY_REQUESTS_CPU:=100m}
-      memory: ${DRAGONFLY_REQUESTS_MEMORY:-${DRAGONFLY_LIMITS_MEMORY:=512Mi}}
+      cpu: ${DRAGONFLY_REQUESTS_CPU:=25m}
+      #memory: ${DRAGONFLY_REQUESTS_MEMORY:-${DRAGONFLY_LIMITS_MEMORY:=512Mi}}
     limits:
       memory: ${DRAGONFLY_LIMITS_MEMORY:=512Mi}
   topologySpreadConstraints:

@@ -144,14 +144,17 @@ spec:
           DB_TYPE: postgres
           HOST: postgres-rw.database.svc.cluster.local:5432
         cache:
+          ENABLED: true
           ADAPTER: redis
           # ADAPTER: memory
+          HOST: redis://forgejo-dragonfly:6379?pool_size=100&idle_timeout=180s
         queue:
           TYPE: redis
-          # TYPE: level
+          CONN_STR: redis://forgejo-dragonfly:6379?pool_size=100&idle_timeout=180s
         session:
           PROVIDER: redis
-          # PROVIDER: db
+          PROVIDER_CONFIG: redis://forgejo-dragonfly:6379?pool_size=100&idle_timeout=180s
+          SESSION_LIFE_TIME: "1209600"
         openid:
           ENABLE_OPENID_SIGNIN: false
           ENABLE_OPENID_SIGNUP: true
@@ -230,18 +233,18 @@ spec:
       kind: Secret
       name: *secret
       valuesKey: POSTGRES_PASSWORD
-    - targetPath: gitea.config.cache.HOST
-      kind: Secret
-      name: *secret
-      valuesKey: REDIS_URL
-    - targetPath: gitea.config.queue.CONN_STR
-      kind: Secret
-      name: *secret
-      valuesKey: REDIS_URL
-    - targetPath: gitea.config.session.PROVIDER_CONFIG
-      kind: Secret
-      name: *secret
-      valuesKey: REDIS_URL
+    #- targetPath: gitea.config.cache.HOST
+    #  kind: Secret
+    #  name: *secret
+    #  valuesKey: REDIS_URL
+    #- targetPath: gitea.config.queue.CONN_STR
+    #  kind: Secret
+    #  name: *secret
+    #  valuesKey: REDIS_URL
+    #- targetPath: gitea.config.session.PROVIDER_CONFIG
+    #  kind: Secret
+    #  name: *secret
+    #  valuesKey: REDIS_URL
     - targetPath: gitea.config.security.SECRET_KEY
       kind: Secret
       name: *secret
