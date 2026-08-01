@@ -60,6 +60,9 @@ spec:
               OAUTH_ROLES_CLAIM: "groups"
               DEFAULT_USER_ROLE: "user"
               ENABLE_LOGIN_FORM: "false"
+              # Websocket / Session Store
+              REDIS_URL: "redis://open-webui-dragonfly:6379/6"
+              WEBSOCKET_REDIS_URL: "redis://open-webui-dragonfly:6379/6"
               # Image Generation
               #ENABLE_IMAGE_GENERATION: True
               #IMAGE_GENERATION_ENGINE: automatic1111

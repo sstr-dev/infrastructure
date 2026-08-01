@@ -10,6 +10,8 @@ spec:
   #components:
     #- ../../../../components/volsync
     #- ../../../../components/volmigrate/nfs
+  components:
+    - ../../../../components/cache/dragonfly
   postBuild:
     substitute:
       APP: *app
