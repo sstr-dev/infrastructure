@@ -27,7 +27,7 @@ spec:
           app:
             image:
               repository: snipe/snipe-it
-              tag: v8.6.3
+              tag: v8.7.2
             env:
               APP_LOCALE: "en-GB"
               APP_TIMEZONE: ${CLUSTER_TIMEZONE}
