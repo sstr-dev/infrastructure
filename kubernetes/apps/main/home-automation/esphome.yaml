@@ -7,6 +7,9 @@ metadata:
 spec:
   interval: 1h
   path: ./kubernetes/apps/base/home-automation/esphome
+  dependsOn:
+    - name: external-secrets
+      namespace: external-secrets
   postBuild:
     substitute:
       APP: *app

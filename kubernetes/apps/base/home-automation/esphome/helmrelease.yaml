@@ -47,9 +47,9 @@ spec:
               TZ: ${CLUSTER_TIMEZONE}
               CCACHE_DIR: /cache/.ccache
               PLATFORMIO_CACHING_DIR: /cache/.platformio-cache
-            #envFrom:
-            #  - secretRef:
-            #      name: esphome-secret
+            envFrom:
+              - secretRef:
+                  name: esphome-secret
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
