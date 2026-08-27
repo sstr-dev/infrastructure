@@ -1,0 +1,126 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app esphome
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      #dnsConfig:
+      #  options:
+      #    - name: ndots
+      #      value: "1"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: Always
+        seccompProfile:
+          type: RuntimeDefault
+    controllers:
+      esphome:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        strategy: RollingUpdate
+        containers:
+          app:
+            image:
+              repository: ghcr.io/esphome/esphome
+              tag: 2026.8.1@sha256:dda49fd0079ed818c2859b52ffeb2c07263349c2d3cc601a0539fd3a8f855d21
+              pullPolicy: IfNotPresent
+            env:
+              TZ: ${CLUSTER_TIMEZONE}
+              CCACHE_DIR: /cache/.ccache
+              PLATFORMIO_CACHING_DIR: /cache/.platformio-cache
+            #envFrom:
+            #  - secretRef:
+            #      name: esphome-secret
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop: [ALL]
+            resources:
+              requests:
+                cpu: 1m
+                memory: 10Mi
+              limits:
+                memory: 4Gi
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 5
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: &port 6052
+          pairing:
+            port: 6055
+      peer-link:
+        type: LoadBalancer
+        externalTrafficPolicy: Cluster
+        labels:
+          network.l2.cilium/segment: ${LB_SERVICE_SEGMENT}
+        annotations:
+          external-dns.alpha.kubernetes.io/hostname: "esphome-build.${SECRET_MAIN_DOMAIN_NAME}"
+          io.cilium/lb-ipam-ips: ${LB_SERVICE_IP}
+        ports:
+          http:
+            port: &port 6052
+          pairing:
+            port: &link 6055
+
+    route:
+      app:
+        hostnames:
+          - "esphome.${SECRET_MAIN_DOMAIN_NAME}"
+        parentRefs:
+          - name: ${GATEWAY:=envoy-external}
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs: [{}]
+        annotations:
+          gatus.home-operations.com/enabled: "false"
+
+    persistence:
+      config:
+        type: nfs
+        server: nas.main.internal
+        path: /mnt/user/applications/esphome
+      cache:
+        suffix: cache
+        storageClass: longhorn
+        accessMode: ReadWriteOnce
+        size: 8Gi
+      tmpfs:
+        type: emptyDir
+        advancedMounts:
+          esphome:
+            app:
+              - path: /tmp
+                subPath: esphome-tmp

@@ -26,7 +26,7 @@ This document tracks the configured usage of the `10.0.60.0/24` and `10.0.69.0/2
 | `10.0.69.51` | `-`        | `service` | gateway IP | `-`                     | -                                           |
 | `10.0.69.52` | `-`        | `service` | gateway IP | `-`                     | -                                           |
 | `10.0.69.53` | `-`        | `service` | gateway IP | `-`                     | -                                           |
-| `10.0.69.54` | `-`        | `service` | service IP | `-`                     | -                                           |
+| `10.0.69.54` | `main`     | `service` | service IP | `esphome-build`         | esphome-builder service IP                  |
 | `10.0.69.55` | `main`     | `service` | gateway IP | `envoy-external`        | external Envoy Gateway service IP           |
 | `10.0.69.56` | `main`     | `service` | gateway IP | `envoy-public`          | public Envoy Gateway service IP             |
 | `10.0.69.60` | `main`     | `service` | service IP | `LB_V4_JELLIFIN`        | Jellyfin service IP                         |
