@@ -45,8 +45,8 @@ spec:
               pullPolicy: IfNotPresent
             env:
               TZ: ${CLUSTER_TIMEZONE}
-              CCACHE_DIR: /cache/.ccache
-              PLATFORMIO_CACHING_DIR: /cache/.platformio-cache
+              #CCACHE_DIR: /cache/.ccache
+              #PLATFORMIO_CACHING_DIR: /cache/.platformio-cache
             envFrom:
               - secretRef:
                   name: esphome-secret
