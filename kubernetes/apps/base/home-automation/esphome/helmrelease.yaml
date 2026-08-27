@@ -104,7 +104,7 @@ spec:
             sectionName: https
         rules:
           - backendRefs:
-            - name: *app
+            - name: esphome-app
               port: *port
         annotations:
           gatus.home-operations.com/enabled: "false"
