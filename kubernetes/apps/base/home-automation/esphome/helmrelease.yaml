@@ -103,7 +103,9 @@ spec:
             namespace: network
             sectionName: https
         rules:
-          - backendRefs: [{}]
+          - backendRefs:
+            - name: *app
+              port: *port
         annotations:
           gatus.home-operations.com/enabled: "false"
 
