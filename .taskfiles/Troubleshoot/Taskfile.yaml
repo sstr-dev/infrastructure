@@ -1,0 +1,61 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+tasks:
+  flux:
+    desc: List unhealthy Flux Kustomizations and HelmReleases
+    cmds:
+      - 'kubectl --context {{.cluster}} get kustomizations,helmreleases --all-namespaces'
+    preconditions:
+      - { sh: 'kubectl config get-contexts {{.cluster}}', msg: "Kubectl context '{{.cluster}}' not found" }
+
+  helm:
+    desc: Diagnose a HelmRelease [ns=... name=... cluster=main]
+    requires:
+      vars: [ns, name]
+    cmds:
+      - 'kubectl --context {{.cluster}} -n {{.ns}} describe helmrelease {{.name}}'
+      - 'kubectl --context {{.cluster}} -n {{.ns}} get pods -o wide'
+      - 'kubectl --context {{.cluster}} -n {{.ns}} get events --sort-by=.lastTimestamp'
+
+  helm-retry:
+    desc: Reset and reconcile a stalled HelmRelease [ns=... name=... cluster=main]
+    prompt: Reset failure counters and reconcile HelmRelease {{.ns}}/{{.name}}?
+    requires:
+      vars: [ns, name]
+    cmds:
+      - >-
+        kubectl --context {{.cluster}} -n {{.ns}} annotate helmrelease {{.name}}
+        reconcile.fluxcd.io/resetAt="$(date --iso-8601=seconds)"
+        reconcile.fluxcd.io/requestedAt="$(date --iso-8601=seconds)" --overwrite
+      - 'kubectl --context {{.cluster}} -n {{.ns}} wait helmrelease/{{.name}} --for=condition=Ready --timeout={{.timeout | default "10m"}}'
+
+  kustomization:
+    desc: Diagnose a Flux Kustomization [ns=... name=... cluster=main]
+    requires:
+      vars: [ns, name]
+    cmds:
+      - 'kubectl --context {{.cluster}} -n {{.ns}} describe kustomization {{.name}}'
+      - 'kubectl --context {{.cluster}} -n {{.ns}} get events --sort-by=.lastTimestamp'
+
+  kustomization-retry:
+    desc: Reconcile a Flux Kustomization [ns=... name=... cluster=main]
+    prompt: Reconcile Kustomization {{.ns}}/{{.name}}?
+    requires:
+      vars: [ns, name]
+    cmds:
+      - >-
+        kubectl --context {{.cluster}} -n {{.ns}} annotate kustomization {{.name}}
+        reconcile.fluxcd.io/requestedAt="$(date --iso-8601=seconds)" --overwrite
+      - 'kubectl --context {{.cluster}} -n {{.ns}} wait kustomization/{{.name}} --for=condition=Ready --timeout={{.timeout | default "10m"}}'
+
+  envoy:
+    desc: Diagnose an Envoy HTTPRoute [ns=... name=... cluster=main]
+    requires:
+      vars: [ns, name]
+    cmds:
+      - 'kubectl --context {{.cluster}} -n {{.ns}} describe httproute {{.name}}'
+      - >-
+        kubectl --context {{.cluster}} -n network logs deployment/envoy-gateway --since={{.since | default "15m"}}
+        | grep -Eai '{{.ns}}/{{.name}}|direct response|error'

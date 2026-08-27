@@ -60,6 +60,9 @@ includes:
     aliases: ["s3"]
     taskfile: .taskfiles/Garage/Taskfile.yaml
   authentik: .taskfiles/Authentik/Taskfile.yaml
+  troubleshoot:
+    aliases: ["doctor"]
+    taskfile: .taskfiles/Troubleshoot/Taskfile.yaml
 
 tasks:
 
