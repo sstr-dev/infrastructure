@@ -11,6 +11,7 @@ replacements:
 resources:
   - ./searxng.yaml
   - ./open-webui.yaml
+  - ./litellm.yaml
   - ./toolhive.yaml
   # paperless-gpt and co
 
