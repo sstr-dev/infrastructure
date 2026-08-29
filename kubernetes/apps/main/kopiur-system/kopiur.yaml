@@ -23,7 +23,7 @@ spec:
   interval: 1h
   dependsOn:
     - name: &app kopiur
-  path: ./kubernetes/apps/kopiur-system/repository
+  path: ./kubernetes/apps/base/kopiur-system/repository
   postBuild:
     substitute:
       APP: *app
