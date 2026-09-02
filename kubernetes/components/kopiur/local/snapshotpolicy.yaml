@@ -28,5 +28,5 @@ spec:
     keepMonthly: 12
   sources:
     - pvc:
-        name: ${APP}
+        name: ${KOPIUR_CLAIM:-${APP}}
   volumeSnapshotClassName: ${KOPIUR_SNAPSHOTCLASS:=longhorn-snapclass}

@@ -26,10 +26,11 @@ components:
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
+| `KOPIUR_CLAIM` | `APP` | PVC name |
 | `KOPIUR_ACCESSMODES` | `ReadWriteOnce` | PVC access mode |
 | `KOPIUR_CAPACITY` | `5Gi` | PVC and mover-cache capacity |
 | `KOPIUR_STORAGECLASS` | `longhorn` | Application PVC storage class |
-| `KOPIUR_CACHE_STORAGECLASS` | `longhorn-cache` | Mover-cache storage class |
+| `KOPIUR_CACHE_STORAGECLASS` | `longhorn-cache` | Mover-cache storage class (local-hostpath is also an option) |
 | `KOPIUR_SNAPSHOTCLASS` | `longhorn-snapclass` | VolumeSnapshotClass used by the policy |
 | `KOPIUR_PUID` | `1000` | Mover container user ID |
 | `KOPIUR_PGID` | `1000` | Mover container group and filesystem group ID |

@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: kopiur-system
+components:
+  - ../../../components/common
+  - ../../../vars/test/cluster
+  - ../../../components/kopiur/namespace
+replacements:
+  - path: ../../../components/replacements/ks.yaml
+resources: []
+  #- ./kopiur.yaml
+  # TODO: test snapshot and cache class from openebs (without longhorn), no grafana (subsitude?)
+
+
