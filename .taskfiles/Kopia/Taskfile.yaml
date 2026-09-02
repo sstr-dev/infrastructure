@@ -1,0 +1,93 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  KOPIA_FILE: "{{.ROOT_DIR}}/.secrets/kopia.yaml"
+  KOPIA_ADMIN_NS: storage
+  KOPIA_ADMIN_TARGET: deployment/kopia
+  KOPIA_DEFAULT_ADDRESS:
+    sh: yq -r '.kopia.address' {{.KOPIA_FILE}}
+  KOPIA_DEFAULT_USERNAME:
+    sh: yq -r '.kopia.username' {{.KOPIA_FILE}}
+  KOPIA_DEFAULT_PASSWORD:
+    sh: yq -r '.kopia.password' {{.KOPIA_FILE}}
+  KOPIA_DEFAULT_HOSTNAME:
+    sh: yq -r '.kopia.hostname // ""' {{.KOPIA_FILE}}
+
+env:
+  KOPIA_PASSWORD: "{{.KOPIA_DEFAULT_PASSWORD}}"
+
+tasks:
+  login:
+    desc: Connect the local Kopia client to the server
+    vars:
+      address: '{{.address | default .KOPIA_DEFAULT_ADDRESS}}'
+      username: '{{.username | default .KOPIA_DEFAULT_USERNAME}}'
+      hostname: '{{.hostname | default .KOPIA_DEFAULT_HOSTNAME}}'
+      hostname_arg: '{{if .hostname}}--override-hostname={{.hostname}}{{end}}'
+    cmd: kopia repository connect server --url={{.address}} --override-username={{.username}} {{.hostname_arg}}
+    preconditions:
+      - sh: command -v kopia >/dev/null 2>&1
+        msg: "❌ kopia not found in PATH"
+
+  logout:
+    desc: Disconnect the local Kopia client
+    cmd: kopia repository disconnect
+    preconditions:
+      - sh: command -v kopia >/dev/null 2>&1
+        msg: "❌ kopia not found in PATH"
+
+  status:
+    desc: Show local Kopia repository status
+    cmd: kopia repository status
+
+  snapshot:list:
+    desc: List snapshots
+    cmd: kopia snapshot list --all
+
+  policy:list:
+    desc: List policies
+    cmd: kopia policy list
+
+  user:list:
+    desc: List Kopia server users
+    vars:
+      ns: '{{.ns | default .KOPIA_ADMIN_NS}}'
+      target: '{{.target | default .KOPIA_ADMIN_TARGET}}'
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- kopia server users list
+
+  user:info:
+    desc: Show a Kopia server user
+    vars:
+      ns: '{{.ns | default .KOPIA_ADMIN_NS}}'
+      target: '{{.target | default .KOPIA_ADMIN_TARGET}}'
+      username: '{{or .username .name (fail "Argument (username) is required")}}'
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- kopia server users info {{.username}}
+
+  user:add:
+    desc: Add a Kopia server user
+    vars:
+      ns: '{{.ns | default .KOPIA_ADMIN_NS}}'
+      target: '{{.target | default .KOPIA_ADMIN_TARGET}}'
+      username: '{{or .username .name (fail "Argument (username) is required")}}'
+      password: '{{or .password (fail "Argument (password) is required")}}'
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- kopia server users add {{.username}} --user-password={{.password}}
+
+  user:set-password:
+    desc: Change a Kopia server user password
+    vars:
+      ns: '{{.ns | default .KOPIA_ADMIN_NS}}'
+      target: '{{.target | default .KOPIA_ADMIN_TARGET}}'
+      username: '{{or .username .name (fail "Argument (username) is required")}}'
+      password: '{{or .password (fail "Argument (password) is required")}}'
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- kopia server users set {{.username}} --user-password={{.password}}
+
+  user:delete:
+    desc: Delete a Kopia server user
+    vars:
+      ns: '{{.ns | default .KOPIA_ADMIN_NS}}'
+      target: '{{.target | default .KOPIA_ADMIN_TARGET}}'
+      username: '{{or .username .name (fail "Argument (username) is required")}}'
+    prompt: Delete Kopia user '{{.username}}'?
+    cmd: kubectl --context {{.cluster}} --namespace {{.ns}} exec {{.target}} -- kopia server users delete {{.username}}
