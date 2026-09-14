@@ -15,3 +15,5 @@ data:
 
   DOMAIN: test.lokis-casa.internal
 
+  SNAPSHOTCLASS: csi-local-hostpath
+  STORAGECLASS: local-hostpath
