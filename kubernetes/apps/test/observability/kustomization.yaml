@@ -9,6 +9,6 @@ components:
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources: 
-  - ./prometheus-operator-crds.yaml
+  - ./kube-prometheus-stack.yaml
   - ./grafana.yaml
 
