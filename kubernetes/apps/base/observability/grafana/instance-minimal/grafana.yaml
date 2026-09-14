@@ -32,7 +32,7 @@ spec:
       angular_support_enabled: "true"
     server:
       enable_gzip: "true"
-      root_url: https://${GATUS_SUBDOMAIN}.${DOMAIN}
+      root_url: https://${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
   deployment:
     spec:
       strategy:
@@ -84,7 +84,7 @@ spec:
   httpRoute:
     spec:
       hostnames:
-        - ${GATUS_SUBDOMAIN}.${DOMAIN}
+        - ${GATUS_SUBDOMAIN}.${SECRET_DOMAIN}
       parentRefs:
         - name: envoy-external
           namespace: network
