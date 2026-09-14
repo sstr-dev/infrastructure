@@ -25,33 +25,48 @@ spec:
     kind: OCIRepository
     name: kopiur
   values:
-    extraVolumes:
-      - name: repo
-        nfs:
-          server: nas.main.internal
-          path: /mnt/user/main-backup/kopiur
-    extraVolumeMounts:
-      - name: repo
-        mountPath: /repo
+    features:
+      credentialProjection:
+        enabled: true
+    installScope: cluster
     monitoring:
       dashboards:
-        enabled: true
-        grafanaOperator:
-          enabled: true
-          matchLabels:
-            dashboards: grafana
+        enabled: false
       prometheusRule:
-        enabled: true
+        enabled: false
       serviceMonitor:
-        enabled: true
-    podSecurityContext:
-      runAsNonRoot: true
-      runAsUser: 99
-      runAsGroup: 100
-      fsGroup: 100
-      fsGroupChangePolicy: OnRootMismatch
+        enabled: false
     resources:
       requests:
-        cpu: 100m
-      limits:
-        memory: 1Gi
+        cpu: 50m
+        memory: 128Mi
+    #extraVolumes:
+    #  - name: repo
+    #    nfs:
+    #      server: nas.main.internal
+    #      path: /mnt/user/main-backup/kopiur
+    #extraVolumeMounts:
+    #  - name: repo
+    #    mountPath: /repo
+    #monitoring:
+    #  dashboards:
+    #    enabled: true
+    #    grafanaOperator:
+    #      enabled: true
+    #      matchLabels:
+    #        dashboards: grafana
+    #  prometheusRule:
+    #    enabled: true
+    #  serviceMonitor:
+    #    enabled: true
+    #podSecurityContext:
+    #  runAsNonRoot: true
+    #  runAsUser: 99
+    #  runAsGroup: 100
+    #  fsGroup: 100
+    #  fsGroupChangePolicy: OnRootMismatch
+    #resources:
+    #  requests:
+    #    cpu: 100m
+    #  limits:
+    #    memory: 1Gi

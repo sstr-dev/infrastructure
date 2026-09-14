@@ -9,8 +9,8 @@ components:
   - ../../../components/kopiur/namespace
 replacements:
   - path: ../../../components/replacements/ks.yaml
-resources: []
-  #- ./kopiur.yaml
+resources:
+  - ./kopiur.yaml
   # TODO: test snapshot and cache class from openebs (without longhorn), no grafana (subsitude?)
 
 
