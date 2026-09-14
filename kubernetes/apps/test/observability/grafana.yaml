@@ -30,7 +30,7 @@ spec:
   postBuild:
     substitute:
       CLUSTER: ${CLUSTER}
-      GATUS_SUBDOMAIN: test-grafana
+      GATUS_SUBDOMAIN: grafana
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
