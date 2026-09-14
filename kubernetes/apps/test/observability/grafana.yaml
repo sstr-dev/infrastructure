@@ -6,7 +6,7 @@ metadata:
   name: grafana
 spec:
   interval: 1h
-  path: ./kubernetes/apps/base/observability/grafana/operator
+  path: ./kubernetes/apps/base/observability/grafana/operator-no-instance
   prune: true
   postBuild:
     substitute:
