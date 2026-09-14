@@ -11,4 +11,6 @@ replacements:
 resources: 
   - ./kube-prometheus-stack.yaml
   - ./grafana.yaml
+  - ./keda.yaml
+  - ./silence-operator.yaml
 
