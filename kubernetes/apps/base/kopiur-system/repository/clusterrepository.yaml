@@ -29,18 +29,18 @@ spec:
     hostnameExpr: "'${CLUSTER}'"
     usernameExpr: "namespace + '-' + policyName"
   mode: ReadWrite
-  #maintenance:
-  #  enabled: true
-  #  namespace: storage
-  #  schedule:
-  #    full:
-  #      cron: "0 3 * * *"
-  #      jitter: 1h
-  #    quick:
-  #      cron: "0 * * * *"
-  #      jitter: 10m
-  #    timezone: America/Toronto
-  #  takeoverPolicy: Force
+  maintenance:
+    enabled: true
+    namespace: storage
+    schedule:
+      full:
+        cron: "0 3 * * *"
+        jitter: 1h
+      quick:
+        cron: "0 * * * *"
+        jitter: 10m
+      timezone: ${CLUSTER_TIMEZONE}
+    takeoverPolicy: Force
   moverDefaults:
     podSecurityContext:
       fsGroup: 100
