@@ -11,4 +11,4 @@ replacements:
 resources: 
   - ./prometheus-operator-crds.yaml
   - ./grafana.yaml
-  # todo: grafana crds
+
