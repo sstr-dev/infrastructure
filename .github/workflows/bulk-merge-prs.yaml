@@ -78,4 +78,4 @@ jobs:
               fi
 
               sleep 2
-          done < <(gh pr list "${args[@]}" --json number,title --jq '.[] | "\(.number)\t\(.title)"')
+          done < <(gh pr list "${args[@]}" --json number,title --jq 'sort_by(.number) | .[] | "\(.number)\t\(.title)"')
