@@ -4,16 +4,20 @@ apiVersion: kopiur.home-operations.com/v1alpha1
 kind: SnapshotPolicy
 metadata:
   name: ${APP}
+  annotations:
+    kopiur.home-operations.com/allow-identity-change: "true"
 spec:
   compression:
-    compressor: zstd-fastest
+    compressor: zstd
+  credentialProjection:
+    enabled: true
   mover:
-    cache:
-      capacity: ${KOPIUR_CAPACITY:=5Gi}
-      mode: Persistent
-      storageClassName: "${KOPIUR_CACHE_STORAGECLASS:=longhorn-cache}"
-    podSecurityContext:
-      fsGroup: ${KOPIUR_PGID:=1000}
+    #cache:
+    #  capacity: ${KOPIUR_CAPACITY:=5Gi}
+    #  mode: Persistent
+    #  storageClassName: "${KOPIUR_CACHE_STORAGECLASS:=longhorn-cache}"
+    #podSecurityContext:
+    #  fsGroup: ${KOPIUR_PGID:=1000}
     securityContext:
       runAsUser: ${KOPIUR_PUID:=1000}
       runAsGroup: ${KOPIUR_PGID:=1000}
@@ -29,4 +33,5 @@ spec:
   sources:
     - pvc:
         name: ${KOPIUR_CLAIM:-${APP}}
-  volumeSnapshotClassName: ${KOPIUR_SNAPSHOTCLASS:=longhorn-snapclass}
+  volumeSnapshotClassName: ${KOPIUR_SNAPSHOTCLASS:-${SNAPSHOTCLASS:-longhorn-snapclass}}
+  
