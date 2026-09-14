@@ -11,6 +11,6 @@ replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
   - ./kopiur.yaml
-  # TODO: test snapshot and cache class from openebs (without longhorn), no grafana (subsitude?)
+  # TODO: test snapshot and restore. DONE: snapshot and local storage now from democratic-csi. DONE: grafana and prometheus setup (minimal)
 
 
