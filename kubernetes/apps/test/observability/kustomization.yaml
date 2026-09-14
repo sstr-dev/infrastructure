@@ -8,5 +8,6 @@ components:
   - ../../../vars/test/cluster
 replacements:
   - path: ../../../components/replacements/ks.yaml
-resources: []
-  #- ./node-exporter.yaml
+resources: 
+  - ./prometheus-operator-crds.yaml
+  # todo: grafana crds
