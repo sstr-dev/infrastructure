@@ -11,4 +11,5 @@ replacements:
 resources:
   #- ./openebs.yaml
   - ./democratic-csi.yaml
+  - ./snapshot-controller.yaml
 
