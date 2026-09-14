@@ -10,4 +10,5 @@ replacements:
   - path: ../../../components/replacements/ks.yaml
 resources: 
   - ./prometheus-operator-crds.yaml
+  - ./grafana.yaml
   # todo: grafana crds
