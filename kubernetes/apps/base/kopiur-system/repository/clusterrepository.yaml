@@ -17,7 +17,7 @@ spec:
   credentialProjection:
     allowed: true
   catalog:
-    fallbackNamespace: storage
+    fallbackNamespace: kopiur-system
     periodicRefresh: true
     refreshInterval: 1h
   encryption:
@@ -31,7 +31,7 @@ spec:
   mode: ReadWrite
   maintenance:
     enabled: true
-    namespace: storage
+    namespace: kopiur-system
     schedule:
       full:
         cron: "0 3 * * *"
