@@ -5,7 +5,7 @@ kind: OCIRepository
 metadata:
   name: unifi-dns
 spec:
-  interval: 5m
+  interval: 15m
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
@@ -26,12 +26,13 @@ spec:
   interval: 15m
   values:
     fullnameOverride: *app
+    logLevel: &logLevel info
     provider:
       name: webhook
       webhook:
         image:
-          repository: ghcr.io/kashalls/external-dns-unifi-webhook
-          tag: v0.9.0@sha256:22f4106f44a0b9ac3c97cf29bbfef93026c1164492152dc797a1d6dc86ddfbb5
+          repository: ghcr.io/home-operations/external-dns-unifi-webhook
+          tag: 0.10.12@sha256:5338b99662e2e15048b4e14b49e17279d384970fdcb3c29169f509f806f49cbe
         env:
           - name: &name UNIFI_HOST
             valueFrom:
@@ -43,10 +44,10 @@ spec:
               secretKeyRef:
                 name: *app
                 key: *name
-          - name: SERVER_HOST
-            value: 0.0.0.0
-        securityContext:
-          readOnlyRootFilesystem: true
+          - name: LOG_LEVEL
+            value: *logLevel
+          #- name: SERVER_HOST
+          #  value: 0.0.0.0
         livenessProbe:
           httpGet:
             path: /healthz
@@ -55,7 +56,7 @@ spec:
           timeoutSeconds: 5
         readinessProbe:
           httpGet:
-            path: /healthz
+            path: /readyz
             port: http-webhook
           initialDelaySeconds: 10
           timeoutSeconds: 5
@@ -69,19 +70,17 @@ spec:
     #  - --managed-record-types=CNAME
     #  #- --managed-record-types=TXT
     #  #- --managed-record-types=SRV
-    registry: txt
+    #registry: txt
     sources:
       - gateway-httproute
       - service
-
     txtOwnerId: ${CLUSTER}
-    txtPrefix: k8s.${CLUSTER}.
+    txtPrefix: k8s.${CLUSTER}.%{record_type}-
     domainFilters:
       - ${DOMAIN}
       - ${CERT_DOMAIN}
       - ${CERT_DEV_DOMAIN}
       - ${CERT_GAME_DOMAIN}
-
     serviceMonitor:
       enabled: true
     podAnnotations:
