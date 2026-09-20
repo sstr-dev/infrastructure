@@ -59,7 +59,7 @@ spec:
         labels:
           network.l2.cilium/segment: ${LB_SERVICE_SEGMENT}
         annotations:
-          external-dns.alpha.kubernetes.io/hostname: "${SECRET_FORGEJO_GIT_HOSTNAME}"
+          external-dns.kubernetes.io/hostname: "${SECRET_FORGEJO_GIT_HOSTNAME}"
           io.cilium/lb-ipam-ips: ${LB_SERVICE_IP}
 
     persistence:

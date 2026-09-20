@@ -64,7 +64,7 @@ spec:
     route:
       app:
         annotations:
-          external-dns.alpha.kubernetes.io/controller: "ignore"
+          external-dns.kubernetes.io/controller: "ignore"
           gatus.home-operations.com/endpoint: |-
             conditions: ["[STATUS] == 403"]
         hostnames: ["${SECRET_S3_DOMAIN}", "*.${SECRET_S3_DOMAIN}"]
@@ -78,7 +78,7 @@ spec:
       web:
         enabled: true
         annotations:
-          external-dns.alpha.kubernetes.io/controller: "ignore"
+          external-dns.kubernetes.io/controller: "ignore"
           gatus.home-operations.com/enabled: "false"
         hostnames: ["*.${SECRET_S3_WEB_DOMAIN}"]
         parentRefs:

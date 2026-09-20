@@ -90,7 +90,7 @@ spec:
         labels:
           network.l2.cilium/segment: ${LB_SERVICE_SEGMENT}
         annotations:
-          external-dns.alpha.kubernetes.io/hostname: "esphome-build.${SECRET_MAIN_DOMAIN_NAME}"
+          external-dns.kubernetes.io/hostname: "esphome-build.${SECRET_MAIN_DOMAIN_NAME}"
           io.cilium/lb-ipam-ips: ${LB_SERVICE_IP}
         ports:
           http:

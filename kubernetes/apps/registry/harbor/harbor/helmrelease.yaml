@@ -33,7 +33,7 @@ spec:
       loadBalancer:
         name: harbor
         annotations:
-          external-dns.alpha.kubernetes.io/hostname: "harbor.${SECRET_DOMAIN}"
+          external-dns.kubernetes.io/hostname: "harbor.${SECRET_DOMAIN}"
           lbipam.cilium.io/ips: "${HARBOR_INT_IPV4}"
     externalURL: "https://registry.${SECRET_DOMAIN}"
     ipFamily:

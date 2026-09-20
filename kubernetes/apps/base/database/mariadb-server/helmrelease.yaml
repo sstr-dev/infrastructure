@@ -68,7 +68,7 @@ spec:
         labels:
           network.l2.cilium/segment: ${LB_SERVICE_SEGMENT}
         annotations:
-          external-dns.alpha.kubernetes.io/hostname: mariadb.${DOMAIN}
+          external-dns.kubernetes.io/hostname: mariadb.${DOMAIN}
           io.cilium/lb-ipam-ips: ${LB_SERVICE_IP}
           gatus.home-operations.com/endpoint: |-
             group: Database
