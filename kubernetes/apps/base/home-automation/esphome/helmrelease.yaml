@@ -48,8 +48,7 @@ spec:
               PLATFORMIO_CORE_DIR: /cache/pio
               ESPHOME_BUILD_PATH: /cache/build
               ESPHOME_DATA_DIR: /cache/data
-
-              #CCACHE_DIR: /cache/.ccache
+              CCACHE_DIR: /cache/.ccache
               #PLATFORMIO_CACHING_DIR: /cache/.platformio-cache
             envFrom:
               - secretRef:
