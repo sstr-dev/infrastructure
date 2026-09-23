@@ -54,7 +54,7 @@ spec:
           - --leader-election=false
           - --node-deployment=true
     csiDriver:
-      name: local-hostpath.cluster.local
+      name: ${DEMOCRATIC_CSI_DRIVERNAME:=local-hostpath.cluster.local}
       attachRequired: false
       storageCapacity: true
       fsGroupPolicy: File
@@ -86,15 +86,16 @@ spec:
             path: *storagePath
             type: DirectoryOrCreate
     storageClasses:
-      - name: local-hostpath
+      - name: ${DEMOCRATIC_STORAGECLASS:=local-hostpath}  
         defaultClass: true
         reclaimPolicy: Delete
         volumeBindingMode: WaitForFirstConsumer
         allowVolumeExpansion: true
     volumeSnapshotClasses:
-      - name: csi-local-hostpath
+      - name: ${DEMOCRATIC_SNAPSHOTCLASS:=csi-local-hostpath}
         annotations:
-          snapshot.storage.kubernetes.io/is-default-class: "true"
+          snapshot.storage.kubernetes.io/is-default-class: "${DEMOCRATIC_SNAPSHOTDEFAULT:=true}"
         deletionPolicy: Delete
         parameters:
           detachedSnapshots: "false"
+

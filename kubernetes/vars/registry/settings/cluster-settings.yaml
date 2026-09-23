@@ -16,6 +16,8 @@ data:
 
   #GATEWAY_INT_IPV4:
   #GATEWAY_EXT_IPV4:
-
+  SNAPSHOTCLASS: csi-democratic-csi-hostpath
+  STORAGECLASS: democratic-csi-hostpath
+  
   DOMAIN: registry.lokis-casa.internal
 
