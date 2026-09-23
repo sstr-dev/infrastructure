@@ -9,7 +9,7 @@ components:
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:
-  - ./node-exporter.yaml
+  #- ./node-exporter.yaml
   - ./kube-prometheus-stack.yaml
   - ./grafana.yaml
   - ./keda.yaml
