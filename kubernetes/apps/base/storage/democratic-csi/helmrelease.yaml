@@ -94,7 +94,7 @@ spec:
     volumeSnapshotClasses:
       - name: ${DEMOCRATIC_SNAPSHOTCLASS:=csi-local-hostpath}
         annotations:
-          snapshot.storage.kubernetes.io/is-default-class: "${DEMOCRATIC_SNAPSHOTDEFAULT:=true}"
+          snapshot.storage.kubernetes.io/is-default-class: '${DEMOCRATIC_SNAPSHOTDEFAULT:="true"}'
         deletionPolicy: Delete
         parameters:
           detachedSnapshots: "false"

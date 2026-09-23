@@ -14,7 +14,7 @@ spec:
       DEMOCRATIC_CSI_DRIVERNAME: democratic-csi.cluster.local
       DEMOCRATIC_STORAGECLASS: democratic-csi-hostpath
       DEMOCRATIC_SNAPSHOTCLASS: csi-democratic-csi-hostpath
-      DEMOCRATIC_SNAPSHOTDEFAULT: "true"
+      DEMOCRATIC_SNAPSHOTDEFAULT: '"true"'
   sourceRef:
     kind: GitRepository
     name: flux-system
