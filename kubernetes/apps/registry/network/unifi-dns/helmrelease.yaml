@@ -76,6 +76,7 @@ spec:
     txtOwnerId: ${CLUSTER}
     txtPrefix: k8s.${CLUSTER}.%{record_type}-
     domainFilters:
+      - ${DOMAIN}
       - ${SECRET_DOMAIN}
     serviceMonitor:
       enabled: true

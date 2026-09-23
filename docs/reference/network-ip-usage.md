@@ -11,7 +11,7 @@ This document tracks the configured usage of the `10.0.60.0/24` and `10.0.69.0/2
 |--------------|------------|-----------|------------|-------------------------|---------------------------------------------|
 | `10.0.60.50` | `registry` | `servers` | gateway IP | `envoy-external`        | external Envoy Gateway service IP           |
 | `10.0.60.51` | `registry` | `servers` | service IP | `harbor`                | Harbor service IP                           |
-| `10.0.60.52` | `registry` | `servers` | gateway IP | `-`                     | -                                           |
+| `10.0.60.52` | `registry` | `servers` | gateway IP | `envoy-internal`        | internal Envoy Gateway service IP           |
 | `10.0.60.53` | `-`        | `servers` | service IP | `-`                     | -                                           |
 | `10.0.60.55` | `main`     | `servers` | gateway IP | `envoy-internal`        | internal Envoy Gateway service IP           |
 | `10.0.60.56` | `main`     | `servers` | service IP | `postgres-lb`           | database load balancer service IP           |
