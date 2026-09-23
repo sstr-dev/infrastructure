@@ -1,0 +1,82 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  ns: '{{.ns | default "default"}}'
+
+tasks:
+  inventory:
+    desc: Inspect storage before migration [cluster=required]
+    requires:
+      vars: [cluster]
+    cmds:
+      - kubectl --context {{.cluster}} get csidriver,storageclass
+      - kubectl --context {{.cluster}} get pvc --all-namespaces --output=wide
+      - kubectl --context {{.cluster}} get pv --output=wide
+      - kubectl --context {{.cluster}} get deployments,statefulsets --all-namespaces
+
+  inspect:
+    desc: Inspect a source claim and its node affinity [cluster] [ns] [claim]
+    requires:
+      vars: [cluster, claim]
+    cmds:
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get pvc {{.claim}} --output=yaml
+      - |-
+        pv=$(kubectl --context {{.cluster}} --namespace {{.ns}} get pvc {{.claim}} --output=jsonpath='{.spec.volumeName}')
+        test -n "$pv"
+        kubectl --context {{.cluster}} get pv "$pv" --output=yaml
+
+  snapshot:
+    desc: Back up a prepared workload [cluster] [ns] [app=policy]
+    requires:
+      vars: [cluster, app]
+    cmds:
+      - task: :kopiur:snapshot
+        vars:
+          cluster: '{{.cluster}}'
+          ns: '{{.ns}}'
+          app: '{{.app}}'
+
+  restore:
+    desc: Restore to a new claim [cluster] [ns] [claim=source] [TARGET] [STORAGECLASS] [snapshot]
+    requires:
+      vars: [cluster, claim, TARGET, STORAGECLASS, snapshot]
+    env:
+      MIGRATION_CONTEXT: '{{.cluster}}'
+      MIGRATION_NAMESPACE: '{{.ns}}'
+      MIGRATION_SOURCE: '{{.claim}}'
+      MIGRATION_TARGET: '{{.TARGET}}'
+      MIGRATION_CLASS: '{{.STORAGECLASS}}'
+      MIGRATION_SNAPSHOT: '{{.snapshot}}'
+    preconditions:
+      - which kubectl jq
+    cmd: |-
+      set -eu
+      k() { kubectl --context "$MIGRATION_CONTEXT" --namespace "$MIGRATION_NAMESPACE" "$@"; }
+      test "$MIGRATION_SOURCE" != "$MIGRATION_TARGET"
+      kubectl --context "$MIGRATION_CONTEXT" get storageclass "$MIGRATION_CLASS" >/dev/null
+      source=$(k get pvc "$MIGRATION_SOURCE" --output=json)
+      printf '%s' "$source" | jq --exit-status '.status.phase == "Bound" and (.spec.volumeMode // "Filesystem") == "Filesystem"' >/dev/null
+      snapshot=$(k get snapshots.kopiur.home-operations.com "$MIGRATION_SNAPSHOT" --output=json)
+      printf '%s' "$snapshot" | jq --exit-status '.status.phase == "Succeeded"' >/dev/null
+      policy_name=$(printf '%s' "$snapshot" | jq --exit-status --raw-output '.spec.policyRef.name')
+      policy=$(k get snapshotpolicies.kopiur.home-operations.com "$policy_name" --output=json)
+      printf '%s' "$policy" | jq --exit-status --arg source "$MIGRATION_SOURCE" '.spec.sources | length == 1 and .[0].pvc.name == $source' >/dev/null
+      # create fails if the target already exists; never adopt or overwrite an existing PVC.
+      printf '%s' "$source" | jq --arg target "$MIGRATION_TARGET" --arg ns "$MIGRATION_NAMESPACE" --arg sc "$MIGRATION_CLASS" \
+        '{apiVersion:"v1",kind:"PersistentVolumeClaim",metadata:{name:$target,namespace:$ns},spec:{accessModes:.spec.accessModes,volumeMode:"Filesystem",storageClassName:$sc,resources:{requests:{storage:.status.capacity.storage}}}}' | k create --filename -
+      restore=$(printf '%s' "$policy" | jq --arg target "$MIGRATION_TARGET" --arg ns "$MIGRATION_NAMESPACE" --arg snapshot "$MIGRATION_SNAPSHOT" \
+        '{apiVersion:"kopiur.home-operations.com/v1alpha1",kind:"Restore",metadata:{generateName:"migration-",namespace:$ns},spec:{credentialProjection:{enabled:true},mover:{securityContext:(.spec.mover.securityContext // {})},options:{enableFileDeletion:false},policy:{onMissingSnapshot:"Fail"},source:{snapshotRef:{name:$snapshot}},target:{pvcRef:{name:$target}}}}' | k create --filename - --output=name)
+      printf 'Restore: %s\nTarget PVC: %s\n' "$restore" "$MIGRATION_TARGET"
+      k wait "$restore" --for=jsonpath='{.status.phase}'=Completed --timeout=120m
+      k get "$restore" --output=wide
+      k get pvc "$MIGRATION_TARGET" --output=wide
+
+  verify:
+    desc: Inspect migration results [cluster] [ns]
+    requires:
+      vars: [cluster]
+    cmds:
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get pvc,pods --output=wide
+      - kubectl --context {{.cluster}} --namespace {{.ns}} get snapshots.kopiur.home-operations.com,restores.kopiur.home-operations.com

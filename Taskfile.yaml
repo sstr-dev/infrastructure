@@ -65,6 +65,7 @@ includes:
     aliases: ["doctor"]
     taskfile: .taskfiles/Troubleshoot/Taskfile.yaml
   kopiur: .taskfiles/Kopiur/Taskfile.yaml
+  migration: .taskfiles/Migration/Taskfile.yaml
 
 tasks:
 
