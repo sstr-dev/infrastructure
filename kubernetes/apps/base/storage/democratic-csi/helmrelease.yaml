@@ -87,7 +87,7 @@ spec:
             type: DirectoryOrCreate
     storageClasses:
       - name: ${DEMOCRATIC_STORAGECLASS:=local-hostpath}  
-        defaultClass: true
+        defaultClass: ${DEMOCRATIC_STORAGEDEFAULT:=true}
         reclaimPolicy: Delete
         volumeBindingMode: WaitForFirstConsumer
         allowVolumeExpansion: true

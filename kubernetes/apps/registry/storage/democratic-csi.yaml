@@ -13,6 +13,7 @@ spec:
       STORAGE_PATH: /var/mnt/extra/democratic-csi
       DEMOCRATIC_CSI_DRIVERNAME: democratic-csi.cluster.local
       DEMOCRATIC_STORAGECLASS: democratic-csi-hostpath
+      DEMOCRATIC_STORAGEDEFAULT: "true"
       DEMOCRATIC_SNAPSHOTCLASS: csi-democratic-csi-hostpath
       DEMOCRATIC_SNAPSHOTDEFAULT: '"true"'
   sourceRef:
