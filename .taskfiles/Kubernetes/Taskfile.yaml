@@ -4,6 +4,55 @@ version: "3"
 
 tasks:
 
+  memory:
+    desc: Compare container memory requests and current usage on every node
+    summary: |
+      Usage: task k8s:memory cluster=main
+      Requires Metrics Server. Displays requests and usage per container, grouped by node.
+      N/A means metrics are unavailable. Compare historical peaks before reducing requests.
+      Init containers are included only when configured as persistent sidecars.
+      Pod-level requests and pod overhead are not included in container requests.
+    silent: true
+    requires:
+      vars: [cluster]
+    preconditions:
+      - sh: which kubectl
+        msg: "kubectl not found in PATH"
+      - sh: which jq
+        msg: "jq not found in PATH"
+    cmds:
+      - |
+        set -eu
+        nodes=$(kubectl --context {{.cluster | shellQuote}} get nodes -o jsonpath='{.items[*].metadata.name}')
+        pods=$(kubectl --context {{.cluster | shellQuote}} get pods -A -o json)
+        usage=$(kubectl --context {{.cluster | shellQuote}} top pods -A --containers --no-headers)
+
+        for node in $nodes; do
+          printf '\nNode: %s\n' "$node"
+          printf '%-24s %-60s %-30s %12s %12s\n' NAMESPACE POD CONTAINER REQUEST USAGE
+          printf '%s' "$pods" | jq -r --arg node "$node" '
+            .items[]
+            | select(.spec.nodeName == $node)
+            | select(.status.phase != "Succeeded" and .status.phase != "Failed")
+            | . as $pod
+            | (.spec.containers[], (.spec.initContainers[]? | select(.restartPolicy == "Always")))
+            | [$pod.metadata.namespace, $pod.metadata.name, .name, (.resources.requests.memory // "0")]
+            | @tsv
+          ' | awk -v metrics="$usage" '
+            BEGIN {
+              count = split(metrics, lines, "\n")
+              for (i = 1; i <= count; i++) {
+                split(lines[i], fields, " ")
+                memory[fields[1] SUBSEP fields[2] SUBSEP fields[3]] = fields[5]
+              }
+            }
+            {
+              key = $1 SUBSEP $2 SUBSEP $3
+              printf "%-24s %-60s %-30s %12s %12s\n", $1, $2, $3, $4, (key in memory ? memory[key] : "N/A")
+            }
+          '
+        done
+
   sync-secrets:
     desc: Sync all ExternalSecrets
     cmds:
