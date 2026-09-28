@@ -8,6 +8,6 @@ components:
   - ../../../vars/main/namespaces/experimental
 replacements:
   - path: ../../../components/replacements/ks.yaml
-resources:
-  - ./oidc-test.yaml
+resources: []
+  #- ./oidc-test.yaml
 
