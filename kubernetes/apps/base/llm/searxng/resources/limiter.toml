@@ -1,10 +1,11 @@
 [botdetection]
 ipv4_prefix = 32
-ipv6_prefix = 48
+ipv6_prefix = 64
 
 # Only set trusted proxies if your gateway really forwards X-Forwarded-For / X-Real-IP.
 trusted_proxies = [
   '10.0.60.0/24', # IPv4 private network
+  '10.0.10.0/24',
   '10.42.0.0/16',
 ]
 
@@ -15,7 +16,7 @@ trusted_proxies = [
 # To get unlimited access in a local network, by default link-local addresses
 # (networks) are not monitored by the ip_limit
 filter_link_local = true
-link_token = false
+link_token = true
 
 [botdetection.ip_lists]
 block_ip = []
@@ -23,6 +24,7 @@ block_ip = []
 # Keep this empty for now, otherwise the proxy/node IP bypasses the limiter.
 pass_ip = [
   '10.0.0.0/16', # IPv4 private network
+  '10.0.10.0/16',
   '10.42.0.0/16' # IPv4 private network
 ]
 
