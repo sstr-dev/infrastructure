@@ -27,7 +27,7 @@ spec:
           app:
             image:
               repository: ghcr.io/sstr-dev/maddy
-              tag: 0.9.5@sha256:7d0da972893193c74e2e0096589041beebcb2e0f3aa25cb2d0a56f0a0e419c15
+              tag: 0.9.6@sha256:ab7927b09c8eb6c155ce602aa33a82bca305883d24513d366848388a4e3ba0dd
             env:
               SMTP_RELAY_SMTP_PORT: &port 25
               SMTP_RELAY_METRICS_PORT: &metricsPort 8080
