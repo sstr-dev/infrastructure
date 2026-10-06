@@ -31,7 +31,7 @@ spec:
           app:
             image:
               repository: ghcr.io/sstr-dev/it-tools
-              tag: 2026.7.11@sha256:b3d675cdd5ee67d60c2b2a67c343af8bbde03380f9eeca7afa9895007add7223
+              tag: 2026.9.27@sha256:30c3cec638a5ae50552f18e3e7a8effed4ff0d550ce8dd7ccaabe0576b6244e8
             env:
               TZ: ${CLUSTER_TIMEZONE}
             resources:
