@@ -25,7 +25,7 @@ spec:
           app:
             image:
               repository: docker.io/library/influxdb
-              tag: 2.9-alpine@sha256:38e81dd3af50d085704d970815210dae3d094c5a8a70d7a8f336716889022ea2
+              tag: 2.9-alpine@sha256:f551adeb94b6f97626d2043ec90ed17f81de18d15bb5412d2101e0965c93c797
             resources:
               requests:
                 cpu: 100m
