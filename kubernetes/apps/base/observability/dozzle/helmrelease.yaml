@@ -23,7 +23,7 @@ spec:
           app:
             image:
               repository: ghcr.io/amir20/dozzle
-              tag: v11.1.2@sha256:55204b375a03c92310d79b659b66217bd38f5675b361e2b5e7b4a03139bbb077
+              tag: v11.3.4@sha256:8796ae7e1ecbe011482319cb7040e69aae91a0632b87bbe24b3f643e7455d94b
               pullPolicy: IfNotPresent
             env:
               TZ: ${CLUSTER_TIMEZONE}
