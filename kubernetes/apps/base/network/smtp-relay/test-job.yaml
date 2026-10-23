@@ -12,7 +12,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: smtp-test
-          image: python:3.14-alpine
+          image: python:3.15-alpine
           env:
             - name: SMTP_HOST
               value: smtp-relay
