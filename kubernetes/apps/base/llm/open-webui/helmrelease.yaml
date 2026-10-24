@@ -83,7 +83,7 @@ spec:
             resources:
               requests:
                 cpu: 10m
-                #memory: 100Mi
+                memory: 768Mi
               limits:
                 memory: 2000Mi
         #pod:
