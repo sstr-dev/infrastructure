@@ -53,7 +53,7 @@ machine:
         rsize=1048576
         wsize=1048576
   install:
-    image: factory.talos.dev/metal-installer/0c0d3e0b2d65c242b72c099fa37bf494c868beeed67d4a978b1ac3080623f2c6:v1.12.4
+    image: factory.talos.dev/metal-installer/0c0d3e0b2d65c242b72c099fa37bf494c868beeed67d4a978b1ac3080623f2c6:v1.14.4
     wipe: false
     #extraKernelArgs:
     #  - ipv6.disable=1
@@ -69,7 +69,7 @@ machine:
       maxPods: 250
       serializeImagePulls: false
     # https://github.com/siderolabs/kubelet
-    image: ghcr.io/siderolabs/kubelet:v1.35.1
+    image: ghcr.io/siderolabs/kubelet:v1.37.1
     nodeIP:
       validSubnets: ["10.0.60.0/24"]
     extraMounts:
@@ -179,13 +179,13 @@ cluster:
       enable-aggregator-routing: true
       feature-gates: MutatingAdmissionPolicy=true
       runtime-config: admissionregistration.k8s.io/v1beta1=true
-    image: registry.k8s.io/kube-apiserver:v1.35.1
+    image: registry.k8s.io/kube-apiserver:v1.37.1
     disablePodSecurityPolicy: true
   controllerManager:
     extraArgs:
       bind-address: 0.0.0.0
       #node-cidr-mask-size-ipv6: "112"
-    image: registry.k8s.io/kube-controller-manager:v1.35.1
+    image: registry.k8s.io/kube-controller-manager:v1.37.1
   coreDNS:
     disabled: true
   etcd:
@@ -197,7 +197,7 @@ cluster:
       listen-metrics-urls: http://0.0.0.0:2381
   proxy:
     disabled: true
-    image: registry.k8s.io/kube-proxy:v1.35.1
+    image: registry.k8s.io/kube-proxy:v1.37.1
   secretboxEncryptionSecret: vault://Kubernetes/talos-test#CLUSTER_SECRETBOXENCRYPTIONSECRET
   scheduler:
     config:
@@ -217,7 +217,7 @@ cluster:
                   - maxSkew: 1
                     topologyKey: kubernetes.io/hostname
                     whenUnsatisfiable: ScheduleAnyway
-    image: registry.k8s.io/kube-scheduler:v1.35.1
+    image: registry.k8s.io/kube-scheduler:v1.37.1
     extraArgs:
       bind-address: 0.0.0.0
   serviceAccount:
