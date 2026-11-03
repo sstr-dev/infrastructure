@@ -49,6 +49,7 @@ spec:
               ESPHOME_BUILD_PATH: /cache/build
               ESPHOME_DATA_DIR: /cache/data
               CCACHE_DIR: /cache/.ccache
+              UV_CACHE_DIR: /cache/.uv-cache
               #PLATFORMIO_CACHING_DIR: /cache/.platformio-cache
             envFrom:
               - secretRef:
