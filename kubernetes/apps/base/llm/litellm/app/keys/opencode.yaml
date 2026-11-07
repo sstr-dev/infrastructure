@@ -1,0 +1,40 @@
+---
+# OpenCode: agent/coding
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: opencode
+spec:
+  proxyRef: litellm
+  teamID: dev
+  keyAlias: opencode
+  secretName: litellm-key-opencode
+  secretKey: OPENAI_API_KEY
+  metadata:
+    app: opencode
+  models:
+    - ws-qwen3.8-27b
+    - ws-qwen3.5-9b
+    - qwen3-4b
+---
+# Copy to Vault for use outside the cluster: vault kv get -field=key kv/shared/main/litellm/opencode
+# yaml-language-server: $schema=https://schemas.sstr.dev/external-secrets.io/pushsecret_v1alpha1.json
+apiVersion: external-secrets.io/v1alpha1
+kind: PushSecret
+metadata:
+  name: ${CLUSTER}-litellm-key-opencode
+spec:
+  refreshInterval: 1h
+  secretStoreRefs:
+    - name: vault-backend
+      kind: ClusterSecretStore
+  selector:
+    secret:
+      name: litellm-key-opencode
+  data:
+    - match:
+        secretKey: OPENAI_API_KEY
+        remoteRef:
+          remoteKey: shared/${CLUSTER}/litellm/opencode
+          property: key

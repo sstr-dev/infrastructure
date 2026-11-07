@@ -1,0 +1,21 @@
+---
+# Best local coding/agent model; 17GB > 8GB VRAM -> partly on CPU, slow but capable
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: ws-qwen3.8-27b
+spec:
+  proxyRef: litellm
+  modelName: ws-qwen3.8-27b
+  params:
+    model: ollama_chat/qwen3.8:27b
+    apiBaseRef:
+      name: litellm
+      key: OLLAMA_WORKSTATION_API_BASE
+    additional:
+      num_ctx: 32768
+  info:
+    mode: chat
+    maxInputTokens: 32768
+    supportsFunctionCalling: true

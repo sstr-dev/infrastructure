@@ -1,0 +1,20 @@
+---
+# Home/automation apps (paperless, open-webui, later HA/n8n): only the always-on
+# Jetson, so they never depend on (or wake up) the workstation GPU.
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmteam_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMTeam
+metadata:
+  name: home
+spec:
+  proxyRef: litellm
+  alias: home
+  models:
+    - qwen3-4b
+    - minicpm-v
+  mcpServers:
+    - searxng
+  # Jetson serves one request at a time; protect Home Assistant latency
+  rpmLimit: 60
+  metadata:
+    description: Home and automation apps on local Jetson models

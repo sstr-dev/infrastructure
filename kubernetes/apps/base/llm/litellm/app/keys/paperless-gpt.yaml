@@ -6,6 +6,7 @@ metadata:
   name: paperless-gpt
 spec:
   proxyRef: litellm
+  teamID: home
   keyAlias: paperless-gpt
   secretName: litellm-key-paperless-gpt
   secretKey: OPENAI_API_KEY

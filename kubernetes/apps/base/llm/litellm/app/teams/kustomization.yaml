@@ -1,0 +1,9 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Access control: a team is the upper bound (models, MCP servers, budget, limits).
+# Keys pin a teamID and can only narrow it further.
+resources:
+  - ./home.yaml
+  - ./dev.yaml

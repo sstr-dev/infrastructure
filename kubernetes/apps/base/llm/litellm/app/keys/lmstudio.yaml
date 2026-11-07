@@ -1,0 +1,38 @@
+---
+# LM Studio: runs its own models, uses LiteLLM only as MCP gateway (no model access)
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: lmstudio
+spec:
+  proxyRef: litellm
+  teamID: dev
+  keyAlias: lmstudio
+  secretName: litellm-key-lmstudio
+  secretKey: OPENAI_API_KEY
+  metadata:
+    app: lmstudio
+  models:
+    - no-default-models
+---
+# Copy to Vault for use outside the cluster: vault kv get -field=key kv/shared/main/litellm/lmstudio
+# yaml-language-server: $schema=https://schemas.sstr.dev/external-secrets.io/pushsecret_v1alpha1.json
+apiVersion: external-secrets.io/v1alpha1
+kind: PushSecret
+metadata:
+  name: ${CLUSTER}-litellm-key-lmstudio
+spec:
+  refreshInterval: 1h
+  secretStoreRefs:
+    - name: vault-backend
+      kind: ClusterSecretStore
+  selector:
+    secret:
+      name: litellm-key-lmstudio
+  data:
+    - match:
+        secretKey: OPENAI_API_KEY
+        remoteRef:
+          remoteKey: shared/${CLUSTER}/litellm/lmstudio
+          property: key

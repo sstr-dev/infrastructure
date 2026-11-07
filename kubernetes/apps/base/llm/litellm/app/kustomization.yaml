@@ -8,5 +8,7 @@ resources:
   - ./podmonitor.yaml
   - ./grafana
   - ./models
+  - ./teams
   - ./keys
   - ./mcps
+  - ./networkpolicies

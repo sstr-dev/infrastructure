@@ -3,5 +3,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./ollama
+  - ./ollama        # Jetson vision-01: always on, home/automation
+  - ./workstation   # workstation GPU (ws-*): dev/coding, not always on
   # - ./anthropic  # cloud models: add provider key to Vault + externalsecret.yaml, use params.apiKeyRef

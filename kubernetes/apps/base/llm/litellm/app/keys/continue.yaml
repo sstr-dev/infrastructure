@@ -1,0 +1,41 @@
+---
+# Continue: chat/edit + @codebase embeddings (autocomplete stays on local Ollama)
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: continue
+spec:
+  proxyRef: litellm
+  teamID: dev
+  keyAlias: continue
+  secretName: litellm-key-continue
+  secretKey: OPENAI_API_KEY
+  metadata:
+    app: continue
+  models:
+    - ws-qwen2.5-coder-7b
+    - ws-qwen3.5-9b
+    - ws-nomic-embed-text
+    - qwen3-4b
+---
+# Copy to Vault for use outside the cluster: vault kv get -field=key kv/shared/main/litellm/continue
+# yaml-language-server: $schema=https://schemas.sstr.dev/external-secrets.io/pushsecret_v1alpha1.json
+apiVersion: external-secrets.io/v1alpha1
+kind: PushSecret
+metadata:
+  name: ${CLUSTER}-litellm-key-continue
+spec:
+  refreshInterval: 1h
+  secretStoreRefs:
+    - name: vault-backend
+      kind: ClusterSecretStore
+  selector:
+    secret:
+      name: litellm-key-continue
+  data:
+    - match:
+        secretKey: OPENAI_API_KEY
+        remoteRef:
+          remoteKey: shared/${CLUSTER}/litellm/continue
+          property: key

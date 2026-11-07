@@ -1,0 +1,34 @@
+---
+# LiteLLM is the only entry point: in-namespace apps + operator, the Envoy
+# gateways (HTTPRoute for clients outside the cluster) and Prometheus.
+# yaml-language-server: $schema=https://schemas.sstr.dev/networking.k8s.io/networkpolicy_v1.json
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: litellm-proxy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: litellm
+      app.kubernetes.io/instance: litellm
+      app.kubernetes.io/managed-by: litellm-operator
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector: {} # llm namespace (apps, litellm-operator)
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: network # envoy gateways
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus
+        # - namespaceSelector:
+        #     matchLabels:
+        #       kubernetes.io/metadata.name: automation # n8n
+      ports:
+        - protocol: TCP
+          port: 4000

@@ -51,6 +51,14 @@ spec:
     # shared rpm/tpm/parallel-request counters (needed once replicas > 1)
     redis_host: ${APP}-dragonfly
     redis_port: 6379
+    # workstation (ws-*) is not always on -> fall back to the always-on Jetson
+    fallbacks:
+      - ws-qwen3.8-27b: [ws-qwen3.5-9b, qwen3-4b]
+      - ws-qwen3.5-9b: [qwen3-4b]
+      - ws-qwen2.5-coder-7b: [qwen3-4b]
+    # skip an unreachable backend quickly instead of waiting for every request to time out
+    allowed_fails: 1
+    cooldown_time: 60
   callbacks:
     success: [prometheus]
     failure: [prometheus]

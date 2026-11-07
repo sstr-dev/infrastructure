@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Ollama on the workstation (RTX 3070 8GB, 125GB RAM). Not always online ->
+# routerSettings.fallbacks sends ws-* chat models to the Jetson when it is off.
+# Autocomplete (qwen2.5-coder:1.5b) stays direct on localhost in Continue: latency.
+resources:
+  - ./qwen3.8-27b.yaml
+  - ./qwen3.5-9b.yaml
+  - ./qwen2.5-coder-7b.yaml
+  - ./nomic-embed-text.yaml

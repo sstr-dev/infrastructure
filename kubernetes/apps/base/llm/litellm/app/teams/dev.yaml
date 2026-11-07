@@ -1,0 +1,25 @@
+---
+# Developer tools on the workstation (OpenCode, Continue, LM Studio).
+# Jetson qwen3-4b is included as fallback target when the workstation is off.
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmteam_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMTeam
+metadata:
+  name: dev
+spec:
+  proxyRef: litellm
+  alias: dev
+  models:
+    - ws-qwen3.8-27b
+    - ws-qwen3.5-9b
+    - ws-qwen2.5-coder-7b
+    - ws-nomic-embed-text
+    - qwen3-4b
+    # - claude-sonnet   # once models/anthropic is enabled
+  mcpServers:
+    - searxng
+  # Local models cost 0; this caps cloud spend once cloud models are added
+  maxBudget: "20"
+  budgetDuration: 30d
+  metadata:
+    description: Coding tools on the workstation

@@ -1,0 +1,21 @@
+---
+# MCP servers are only reachable through LiteLLM (keys/teams are enforced there).
+# yaml-language-server: $schema=https://schemas.sstr.dev/networking.k8s.io/networkpolicy_v1.json
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: litellm-mcp-servers
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/managed-by: litellm-operator
+      app.kubernetes.io/component: mcp-server
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: litellm
+              app.kubernetes.io/instance: litellm
+              app.kubernetes.io/managed-by: litellm-operator

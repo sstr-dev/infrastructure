@@ -1,0 +1,21 @@
+---
+# Fits the RTX 3070 (8GB): fast general/agent model
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: ws-qwen3.5-9b
+spec:
+  proxyRef: litellm
+  modelName: ws-qwen3.5-9b
+  params:
+    model: ollama_chat/qwen3.5:9b
+    apiBaseRef:
+      name: litellm
+      key: OLLAMA_WORKSTATION_API_BASE
+    additional:
+      num_ctx: 16384
+  info:
+    mode: chat
+    maxInputTokens: 16384
+    supportsFunctionCalling: true

@@ -1,0 +1,17 @@
+---
+# Embeddings (Continue @codebase, later RAG)
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: ws-nomic-embed-text
+spec:
+  proxyRef: litellm
+  modelName: ws-nomic-embed-text
+  params:
+    model: ollama/nomic-embed-text
+    apiBaseRef:
+      name: litellm
+      key: OLLAMA_WORKSTATION_API_BASE
+  info:
+    mode: embedding

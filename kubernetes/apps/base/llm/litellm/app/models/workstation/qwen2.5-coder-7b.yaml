@@ -1,0 +1,20 @@
+---
+# Continue chat/edit
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: ws-qwen2.5-coder-7b
+spec:
+  proxyRef: litellm
+  modelName: ws-qwen2.5-coder-7b
+  params:
+    model: ollama_chat/qwen2.5-coder:7b
+    apiBaseRef:
+      name: litellm
+      key: OLLAMA_WORKSTATION_API_BASE
+    additional:
+      num_ctx: 8192
+  info:
+    mode: chat
+    maxInputTokens: 8192

@@ -6,9 +6,10 @@ metadata:
   name: open-webui
 spec:
   proxyRef: litellm
+  teamID: home
   keyAlias: open-webui
   secretName: litellm-key-open-webui
   secretKey: OPENAI_API_KEY
   metadata:
     app: open-webui
-  models: [] # all models
+  models: [] # everything the team allows
