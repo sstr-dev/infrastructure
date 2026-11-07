@@ -20,6 +20,12 @@
       "matchPackageNames": ["/mylar3/"]
     },
     {
+      "description": "Keep Gotenberg on v8: Paperless (gotenberg-client 1.0) still uses the /forms/pdfengines routes and pdfa field removed in v9. See paperless-ngx/paperless-ngx#14702",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["gotenberg/gotenberg"],
+      "allowedVersions": "<9.0.0"
+    },
+    {
       "description": "Process terraform files",
       "matchManagers": ["terraform"],
       "matchDatasources": ["terraform-provider"],
