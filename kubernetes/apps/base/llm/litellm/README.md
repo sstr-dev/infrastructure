@@ -34,7 +34,18 @@ cluster nodes (`10.0.60.201-206`) and localhost, so LiteLLM is the only entry.
 ## Prerequisites
 
 - Vault `kv/main/litellm`: `LITELLM_MASTER_KEY`, `LITELLM_SALT_KEY`, `LITELLM_POSTGRES_*`,
-  `OLLAMA_WORKSTATION_HOST` (IP/hostname of the workstation Ollama)
+  `LITELLM_OLLAMA_WORKSTATION_HOST` (IP/hostname of the workstation Ollama),
+  `LITELLM_OIDC_CLIENT_ID`, `LITELLM_OIDC_CLIENT_SECRET` (authentik SSO)
+
+## SSO (authentik)
+
+Admin UI `https://litellm.<domain>/ui` logs in via authentik (generic OIDC):
+
+- authentik: OAuth2/OpenID provider, confidential client,
+  redirect URI `https://litellm.<domain>/sso/callback`, scopes `openid email profile`
+- roles from the `groups` claim: `homelab-admins` → `proxy_admin`,
+  `litellm-users` → `internal_user`, everyone else → `internal_user_viewer`
+- free tier allows SSO for up to 5 users; the master key login keeps working
 
 ## Clients (workstation)
 

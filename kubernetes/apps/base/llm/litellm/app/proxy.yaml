@@ -22,6 +22,34 @@ spec:
     # use the model cost map bundled in the image instead of fetching it from GitHub
     - name: LITELLM_LOCAL_MODEL_COST_MAP
       value: "True"
+    # --- Authentik SSO (UI login). Client id/secret come from the litellm secret.
+    # Redirect URI in authentik: https://litellm.${SECRET_MAIN_DOMAIN_NAME}/sso/callback
+    # Free tier: SSO for up to 5 users.
+    - name: PROXY_BASE_URL
+      value: https://litellm.${SECRET_MAIN_DOMAIN_NAME}
+    # browser redirect -> public URL
+    - name: GENERIC_AUTHORIZATION_ENDPOINT
+      value: https://${SECRET_SSO_DOMAIN}/application/o/authorize/
+    # server-to-server -> in-cluster service (the SSO domain does not resolve inside the cluster)
+    - name: GENERIC_TOKEN_ENDPOINT
+      value: http://authentik-server.security.svc.cluster.local/application/o/token/
+    - name: GENERIC_USERINFO_ENDPOINT
+      value: http://authentik-server.security.svc.cluster.local/application/o/userinfo/
+    - name: GENERIC_SCOPE
+      value: openid email profile
+    - name: GENERIC_USER_ID_ATTRIBUTE
+      value: preferred_username
+    - name: GENERIC_USER_EMAIL_ATTRIBUTE
+      value: email
+    - name: GENERIC_USER_DISPLAY_NAME_ATTRIBUTE
+      value: name
+    # authentik group -> LiteLLM role (groups claim is part of the default "profile" scope mapping)
+    - name: GENERIC_ROLE_MAPPINGS_GROUP_CLAIM
+      value: groups
+    - name: GENERIC_ROLE_MAPPINGS_ROLES
+      value: "{'proxy_admin': ['homelab-admins'], 'internal_user': ['litellm-users']}"
+    - name: GENERIC_ROLE_MAPPINGS_DEFAULT_ROLE
+      value: internal_user_viewer
   envFrom:
     - secretRef:
         name: litellm
