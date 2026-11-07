@@ -24,7 +24,7 @@ metadata:
   name: &app litellm
 spec:
   components:
-    - ../../../../components/cache/dragonfly
+    - ../../../../../components/cache/dragonfly
   healthCheckExprs:
     - apiVersion: dragonflydb.io/v1alpha1
       kind: Dragonfly
