@@ -17,7 +17,7 @@ clients ──► LiteLLM (keys, teams, budgets, logs, cache) ──┬─► Ol
 | `app/teams/` | access control upper bound per consumer group |
 | `app/keys/` | one `LiteLLMVirtualKey` per consumer (+ `PushSecret` to Vault for dev keys) |
 | `app/mcps/` | `LiteLLMMCPServer` (HTTP servers via `workload:`, stdio-only via ToolHive + `url:`) |
-| `app/networkpolicies/` | LiteLLM is the only way in; MCP pods only reachable from LiteLLM |
+| `app/networkpolicies/` | LiteLLM is the only way in; MCP pods only reachable from LiteLLM. **Disabled**, see `app/kustomization.yaml` (Cilium DSR + hostNamespaceOnly socket-LB) |
 
 ## Access control
 

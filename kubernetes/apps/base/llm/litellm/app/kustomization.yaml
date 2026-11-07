@@ -11,4 +11,8 @@ resources:
   - ./teams
   - ./keys
   - ./mcps
-  - ./networkpolicies
+  # Disabled: with Cilium loadBalancer.mode=dsr + socketLB.hostNamespaceOnly=true,
+  # an ingress policy on a pod drops the replies to its own Service calls
+  # (SYN-ACK from ClusterIP -> "Policy denied"), breaking LiteLLM -> Dragonfly/MCP/Postgres.
+  # Re-enable once socketLB.hostNamespaceOnly=false (or equivalent Cilium fix).
+  # - ./networkpolicies
