@@ -44,6 +44,8 @@ jobs:
   renovate:
     name: Renovate
     runs-on: ubuntu-latest
+    # Manual runs only for gznzeus; schedule and push always run
+    if: ${{ github.event_name != 'workflow_dispatch' || github.actor == 'gznzeus' }}
     #runs-on: home-ops-runner
     #runs-on: ["gha-runner-scale-set"]
     permissions:
