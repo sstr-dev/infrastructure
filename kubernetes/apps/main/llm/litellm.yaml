@@ -41,6 +41,7 @@ spec:
       APP: *app
       # renovate: datasource=docker depName=ghcr.io/berriai/litellm
       LITELLM_VERSION: v1.108.2
+      GATEWAY: "envoy-external"
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
