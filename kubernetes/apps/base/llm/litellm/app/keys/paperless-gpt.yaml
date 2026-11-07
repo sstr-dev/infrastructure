@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: paperless-gpt
+spec:
+  proxyRef: litellm
+  keyAlias: paperless-gpt
+  secretName: litellm-key-paperless-gpt
+  secretKey: OPENAI_API_KEY
+  metadata:
+    app: paperless-gpt
+  models:
+    - qwen3-4b
+    - minicpm-v

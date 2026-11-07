@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: minicpm-v
+spec:
+  proxyRef: litellm
+  modelName: minicpm-v
+  params:
+    model: ollama_chat/minicpm-v:8b
+    apiBase: http://vision-01.main.internal:11434
+  info:
+    mode: chat
+    supportsVision: true

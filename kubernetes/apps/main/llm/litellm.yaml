@@ -17,4 +17,37 @@ spec:
     name: flux-system
     namespace: flux-system
 ---
-# TODO: config and mcp
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app litellm
+spec:
+  components:
+    - ../../../../components/cache/dragonfly
+  healthCheckExprs:
+    - apiVersion: dragonflydb.io/v1alpha1
+      kind: Dragonfly
+      failed: status.phase != 'ready'
+      current: status.phase == 'ready'
+  dependsOn:
+    - name: litellm-operator
+  interval: 1h
+  path: ./kubernetes/apps/base/llm/litellm/app
+  wait: false
+  prune: true
+  postBuild:
+    substitute:
+      APP: *app
+      # renovate: datasource=docker depName=ghcr.io/berriai/litellm
+      LITELLM_VERSION: v1.108.2
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+# TODO: mcp (LiteLLMMCPServer -> toolhive)

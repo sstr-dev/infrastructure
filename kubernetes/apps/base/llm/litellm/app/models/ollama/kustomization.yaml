@@ -1,0 +1,8 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Local Ollama on vision-01 (Jetson Orin NX 16GB, unified memory)
+resources:
+  - ./qwen3-4b.yaml
+  - ./minicpm-v.yaml

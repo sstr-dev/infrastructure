@@ -1,0 +1,9 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# One key per consumer. The operator writes each key into Secret litellm-key-<app> (llm namespace).
+resources:
+  - ./open-webui.yaml
+  - ./paperless-gpt.yaml
+  - ./paperless-ai.yaml

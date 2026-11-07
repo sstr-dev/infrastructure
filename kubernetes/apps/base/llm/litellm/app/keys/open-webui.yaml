@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: open-webui
+spec:
+  proxyRef: litellm
+  keyAlias: open-webui
+  secretName: litellm-key-open-webui
+  secretKey: OPENAI_API_KEY
+  metadata:
+    app: open-webui
+  models: [] # all models
