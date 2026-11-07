@@ -32,9 +32,9 @@ spec:
     database_url: os.environ/DATABASE_URL
     store_model_in_db: false
     disable_adding_master_key_hash_to_db: true
-    # scraped by podmonitor.yaml (cluster-internal only)
-    require_auth_for_metrics_endpoint: false
   litellmSettings:
+    # /metrics/ scraped by podmonitor.yaml (cluster-internal only); litellm_settings key, not general_settings
+    require_auth_for_metrics_endpoint: false
     drop_params: true
     request_timeout: 600
     num_retries: 2

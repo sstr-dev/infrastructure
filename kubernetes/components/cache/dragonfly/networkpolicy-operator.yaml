@@ -1,0 +1,28 @@
+---
+# The dragonfly-operator must reach the admin port to promote the master
+# (sets role=master -> Service endpoints). Without this, the prometheus-metrics
+# policy isolates a fresh pod and the operator's own NetworkPolicy is never created.
+# yaml-language-server: $schema=https://schemas.sstr.dev/networking.k8s.io/networkpolicy_v1.json
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ${APP}-dragonfly-operator
+spec:
+  podSelector:
+    matchLabels:
+      app: ${APP}-dragonfly
+      app.kubernetes.io/name: dragonfly
+      app.kubernetes.io/part-of: dragonfly
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: database
+          podSelector:
+            matchLabels:
+              control-plane: controller-manager
+      ports:
+        - protocol: TCP
+          port: 9999
