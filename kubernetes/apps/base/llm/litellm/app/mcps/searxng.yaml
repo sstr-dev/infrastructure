@@ -1,0 +1,44 @@
+---
+# Web search via the in-cluster SearXNG (json format enabled in searxng settings.yml)
+# https://github.com/ihor-sokoliuk/mcp-searxng
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmcpserver_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMMCPServer
+metadata:
+  name: searxng-mcp
+spec:
+  proxyRef: litellm
+  alias: searxng
+  transport: http
+  workload:
+    image: docker.io/isokoliuk/mcp-searxng:2.10.0
+    env:
+      - name: SEARXNG_URL
+        value: http://searxng.llm.svc.cluster.local:8080
+      # HTTP mode instead of stdio; default bind is 127.0.0.1
+      - name: MCP_HTTP_PORT
+        value: "3000"
+      - name: MCP_HTTP_HOST
+        value: "0.0.0.0"
+      # no process-local sessions -> survives pod restarts / multiple replicas
+      - name: MCP_HTTP_STATELESS
+        value: "true"
+    port: 3000
+    path: /mcp
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        memory: 256Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop: [ALL]
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      seccompProfile:
+        type: RuntimeDefault
