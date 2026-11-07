@@ -7,28 +7,28 @@ on:
     inputs:
       dryRun:
         description: Dry Run
-        default: "false"
+        type: boolean
+        default: false
         required: false
       ignoreMergeErrors:
         description: Ignore Merge Errors
-        default: "false"
+        type: boolean
+        default: false
         required: false
       labels:
         description: Labels
         default: "any"
         required: false
 
+permissions: {}
+
 jobs:
   bulk-merge-prs:
     name: Bulk Merge PRs
     #runs-on: home-ops-runner
     runs-on: ubuntu-latest
+    if: ${{ github.actor == 'gznzeus' }}
     steps:
-      - name: Early exit if not gznzeus
-        if: ${{ github.event.sender.login != 'gznzeus' }}
-        run: |
-          echo "Not gznzeus, exiting early."
-          exit 0
       - name: Generate Token
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3
         id: app-token
@@ -36,22 +36,22 @@ jobs:
           app-id: "${{ secrets.BOT_APP_ID }}"
           private-key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
 
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          token: "${{ steps.app-token.outputs.token }}"
-
       - name: Merge
         shell: bash
         env:
           GITHUB_TOKEN: "${{ steps.app-token.outputs.token }}"
+          GH_REPO: "${{ github.repository }}"
+          DRY_RUN: "${{ inputs.dryRun }}"
+          IGNORE_MERGE_ERRORS: "${{ inputs.ignoreMergeErrors }}"
+          LABELS: "${{ inputs.labels }}"
         run: |
           args=()
           args+=(--state open)
-          args+=(--search "-label:hold")
-          args+=(--search "-label:type/major")
-          if [ "${{ github.event.inputs.labels }}" != "any" ]; then
-              IFS=',' read -ra labels <<< "${{ github.event.inputs.labels }}"
+          args+=(--limit 500)
+          # gh only honours the last --search flag, so all exclusions go in one query
+          args+=(--search "-label:hold -label:hold/upstream -label:type/major")
+          if [ "${LABELS}" != "any" ]; then
+              IFS=',' read -ra labels <<< "${LABELS}"
               for label in "${labels[@]}"; do
                   args+=(--label "${label}")
               done
@@ -61,13 +61,13 @@ jobs:
               [ -n "${id}" ] || continue
               echo "Processing PR #${id}: ${title}"
 
-              if [ "${{ github.event.inputs.dryRun }}" = "true" ]; then
+              if [ "${DRY_RUN}" = "true" ]; then
                   echo "Dry run: gh pr merge ${id} --squash"
                   continue
               fi
 
               if ! gh pr merge "${id}" --squash; then
-                  if [ "${{ github.event.inputs.ignoreMergeErrors }}" = "true" ]; then
+                  if [ "${IGNORE_MERGE_ERRORS}" = "true" ]; then
                       echo "Merge failed for PR #${id}, continuing because ignoreMergeErrors=true."
                       sleep 2
                       continue

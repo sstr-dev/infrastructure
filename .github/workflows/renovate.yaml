@@ -49,11 +49,6 @@ jobs:
     permissions:
       packages: read
     steps:
-      - name: Early exit if not gznzeus on issues or pull_request
-        if: ${{ (github.event_name == 'issues' || github.event_name == 'pull_request') && github.event.sender.login != 'gznzeus' }}
-        run: |
-          echo "Not gznzeus, exiting early."
-          exit 0
       - name: Generate Token
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3
         id: app-token
