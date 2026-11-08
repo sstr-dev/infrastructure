@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmteam_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMTeam
+metadata:
+  name: home-assistant
+spec:
+  proxyRef: litellm
+  alias: home-assistant
+  models:
+    # chat (Jetson)
+    - local-chat
+    - local-fast
+    # embeddings (open-webui / paperless-ai RAG)
+    - local-embed
+    - local-embed-large
+    - local-embed-vision
+  # Ceiling for MCP; keys narrow it with mcpToolsets (see teams/kustomization.yaml)
+  mcpServers:
+    - searxng
+    #- home_assistant # whitelisted read + device control tools
+  # Jetson serves one request at a time; protect Home Assistant latency
+  rpmLimit: 60
+

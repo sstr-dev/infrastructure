@@ -1,0 +1,42 @@
+---
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: home-assistant
+spec:
+  proxyRef: litellm
+  teamID: home-assistant
+  keyAlias: home-assistant
+  secretName: litellm-key-home-assistant
+  secretKey: OPENAI_API_KEY
+  metadata:
+    app: home-assistant
+  models:
+    - local-chat
+    - local-embed
+  mcpToolsets:
+    - d5aaa841-2445-4855-8b20-a84544f7556a # research
+---
+# Copy to Vault for use outside the cluster: vault kv get -field=key kv/shared/main/litellm/home-assistant
+# yaml-language-server: $schema=https://schemas.sstr.dev/external-secrets.io/pushsecret_v1alpha1.json
+apiVersion: external-secrets.io/v1alpha1
+kind: PushSecret
+metadata:
+  name: ${CLUSTER}-litellm-key-home-assistant
+spec:
+  refreshInterval: 1h
+  secretStoreRefs:
+    - name: vault-backend
+      kind: ClusterSecretStore
+  selector:
+    secret:
+      name: litellm-key-home-assistant
+  data:
+    - match:
+        secretKey: OPENAI_API_KEY
+        remoteRef:
+          remoteKey: shared/${CLUSTER}/litellm/home-assistant
+          property: key
+
+

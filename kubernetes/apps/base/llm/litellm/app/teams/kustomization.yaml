@@ -10,3 +10,4 @@ resources:
   - ./home.yaml
   - ./dev.yaml
   - ./ops.yaml
+  - ./home-assistant.yaml
