@@ -80,6 +80,12 @@ spec:
       host: ${APP}-dragonfly
       port: 6379
       ttl: 3600
+      #type: qdrant-semantic
+      #qdrant_collection_name: litellm_semantic_cache
+      #qdrant_semantic_cache_embedding_model: local-embed
+      #qdrant_semantic_cache_vector_size: 768   # nomic-embed-text Dimension
+      #qdrant_quantization_config: binary
+      #similarity_threshold: 0.8
   routerSettings:
     routing_strategy: simple-shuffle
     # shared rpm/tpm/parallel-request counters (needed once replicas > 1)
