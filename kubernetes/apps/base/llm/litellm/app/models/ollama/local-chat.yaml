@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: local-chat
+spec:
+  proxyRef: litellm
+  modelName: local-chat
+  params:
+    model: ollama_chat/qwen2.5:7b-instruct-q4_K_M
+    apiBase: http://vision-01.main.internal:11434
+  info:
+    mode: chat
+    supportsVision: false
