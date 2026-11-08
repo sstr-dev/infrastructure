@@ -9,4 +9,5 @@ resources:
   - ./local-chat.yaml
   - ./local-embed-hv.yaml
   - ./local-embed-vision.yaml
-  - ./local-fast.yamls
+  - ./local-embed-large.yaml
+  - ./local-fast.yaml

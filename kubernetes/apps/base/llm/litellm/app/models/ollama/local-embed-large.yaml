@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: local-embed-large
+spec:
+  proxyRef: litellm
+  modelName: local-embed-large
+  params:
+    model: ollama/bge-m3
+    apiBase: http://hv-geekom-01.main.internal:11434
+  info:
+    mode: embedding
+    maxInputTokens: 8192
+    extra:
+      input_cost_per_token: 0
+      output_cost_per_token: 0
