@@ -17,6 +17,12 @@ spec:
     - ws-qwen3.8-27b
     - ws-qwen3.5-9b
     - local-chat
+  # MCP toolsets (UUIDs from the LiteLLM UI, see README "Toolsets"). Capped by the team;
+  # MCP servers not covered by these toolsets are not reachable with this key.
+  mcpToolsets:
+    - d5aaa841-2445-4855-8b20-a84544f7556a # research
+    - ee1c96f1-d1ef-4c0a-810b-f63d0bf7fe7a # cluster-read
+    - 1e46e758-3d43-4294-b9af-620632b5f71a # flux-operate
 ---
 # Copy to Vault for use outside the cluster: vault kv get -field=key kv/shared/main/litellm/opencode
 # yaml-language-server: $schema=https://schemas.sstr.dev/external-secrets.io/pushsecret_v1alpha1.json

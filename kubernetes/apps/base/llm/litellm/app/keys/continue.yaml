@@ -19,6 +19,10 @@ spec:
     - ws-nomic-embed-text
     - local-chat
     - local-embed
+  # MCP toolsets (UUIDs from the LiteLLM UI, see README "Toolsets"). Capped by the team;
+  # MCP servers not covered by these toolsets are not reachable with this key.
+  mcpToolsets:
+    - d5aaa841-2445-4855-8b20-a84544f7556a # research
 ---
 # Copy to Vault for use outside the cluster: vault kv get -field=key kv/shared/main/litellm/continue
 # yaml-language-server: $schema=https://schemas.sstr.dev/external-secrets.io/pushsecret_v1alpha1.json

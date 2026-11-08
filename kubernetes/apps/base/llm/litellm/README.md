@@ -60,12 +60,12 @@ capped by the team. Toolsets are created in the UI; only their IDs live in git.
    **New Toolset**: name, description, pick the tools → **Create Toolset**.
    Suggested set:
 
-   | Toolset | Tools | For |
-   |---------|-------|-----|
-   | `research` | searxng: all · kubesearch: all | dev/continue, every agent |
-   | `cluster-read` | kubectl: all (server is `--read-only`) · flux: `get_flux_instance`, `get_kubernetes_resources`, `trace_kubernetes_resource`, `get_kubernetes_logs`, `get_kubernetes_events`, `get_kubernetes_metrics`, `get_kubernetes_api_versions`, `diff_kubernetes_manifest`, `search_flux_docs`, `read_flux_doc` | ops agents |
-   | `flux-operate` | flux: `reconcile_flux_resource`, `suspend_flux_reconciliation`, `resume_flux_reconciliation` | opencode |
-   | `flux-write` | flux: `apply_kubernetes_manifest`, `patch_kubernetes_resource`, `delete_kubernetes_resource` | only if really needed (cluster-admin, see above) |
+   | Toolset | Tools | For | ID |
+   |---------|-------|-----|----|
+   | `research` | searxng: all · kubesearch: all | dev/continue, every agent | d5aaa841-2445-4855-8b20-a84544f7556a |
+   | `cluster-read` | kubectl: all (server is `--read-only`) · flux: `get_flux_instance`, `get_kubernetes_resources`, `trace_kubernetes_resource`, `get_kubernetes_logs`, `get_kubernetes_events`, `get_kubernetes_metrics`, `get_kubernetes_api_versions`, `diff_kubernetes_manifest`, `search_flux_docs`, `read_flux_doc` | ops agents | ee1c96f1-d1ef-4c0a-810b-f63d0bf7fe7a |
+   | `flux-operate` | flux: `reconcile_flux_resource`, `suspend_flux_reconciliation`, `resume_flux_reconciliation` | opencode | 1e46e758-3d43-4294-b9af-620632b5f71a |
+   | `flux-write` | flux: `apply_kubernetes_manifest`, `patch_kubernetes_resource`, `delete_kubernetes_resource` | only if really needed (cluster-admin, see above) | f11abf7a-9418-4003-82e1-265c53ecc667 |
 
 2. **Copy the IDs**: Toolsets table in the UI, or `GET /v1/mcp/toolset` as above.
 3. **Assign** in `app/keys/<app>.yaml` and commit:
@@ -75,6 +75,18 @@ capped by the team. Toolsets are created in the UI; only their IDs live in git.
        - <research-uuid>
        - <cluster-read-uuid>
    ```
+
+   Current assignment:
+
+   | Key | Toolsets |
+   |-----|----------|
+   | `continue` | research |
+   | `opencode` | research, cluster-read, flux-operate |
+   | `lmstudio` | research, cluster-read |
+   | home keys | none (team `home` only has searxng) |
+
+   `flux-write` is assigned to no key. Add it to `opencode` only when an agent
+   really has to apply/patch/delete.
 4. **Clients**: keep `https://litellm.<domain>/mcp/` (shows the union of the key's
    toolsets), or point at one toolset: `https://litellm.<domain>/toolset/<name>/mcp`
    (403 unless the key holds that toolset).
