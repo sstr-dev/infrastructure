@@ -24,6 +24,18 @@ spec:
       # :%s/, /*, \~*/g
       inline: |
         function envoy_on_request(request_handle)
+          -- Skip UA check for requests coming from internal IPs.
+          -- downstreamRemoteAddress() is the client IP as resolved by Envoy
+          -- (honours clientIPDetection trustedCIDRs), so it can't be spoofed
+          -- by a client-supplied X-Forwarded-For header. Format: "ip:port".
+          local src = request_handle:streamInfo():downstreamRemoteAddress() or ""
+          if string.match(src, "^10%.")
+            or string.match(src, "^192%.168%.")
+            or string.match(src, "^172%.1[6-9]%.")
+            or string.match(src, "^172%.2%d%.")
+            or string.match(src, "^172%.3[01]%.") then
+            return
+          end
           local ua = request_handle:headers():get("user-agent") or ""
           local blocked = {
             "AddSearchBot",
