@@ -7,5 +7,6 @@ resources:
   #- ./qwen3-4b.yaml
   #- ./minicpm-v.yaml
   - ./local-chat.yaml
-  - ./local-embed.yaml
-  - ./local-fast.yaml
+  - ./local-embed-hv.yaml
+  - ./local-embed-vision.yaml
+  - ./local-fast.yamls

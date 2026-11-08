@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: local-embed
+spec:
+  proxyRef: litellm
+  modelName: local-embed
+  params:
+    model: ollama/nomic-embed-text
+    apiBase: http://hv-geekom-01.main.internal:11434
+  info:
+    mode: embedding

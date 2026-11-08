@@ -3,10 +3,10 @@
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
 metadata:
-  name: local-embed
+  name: local-embed-vision
 spec:
   proxyRef: litellm
-  modelName: local-embed
+  modelName: local-embed-vision
   params:
     model: ollama/nomic-embed-text
     apiBase: http://vision-01.main.internal:11434
