@@ -1,6 +1,8 @@
 ---
-# Developer tools on the workstation (OpenCode, Continue, LM Studio).
-# Jetson qwen3-4b is included as fallback target when the workstation is off.
+# Interactive coding on the workstation (Continue): chat/edit/embeddings.
+# No infra MCP servers here, those live in team ops (agents only).
+# local-chat / local-embed are the fallback targets when the workstation is off
+# (proxy.yaml routerSettings.fallbacks), so the team must allow them.
 # yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmteam_v1alpha1.json
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMTeam
@@ -14,12 +16,16 @@ spec:
     - ws-qwen3.5-9b
     - ws-qwen2.5-coder-7b
     - ws-nomic-embed-text
-    - qwen3-4b
+    # fallbacks (always-on)
+    - local-chat
+    - local-embed # same nomic-embed-text -> vectors stay compatible
     # - claude-sonnet   # once models/anthropic is enabled
+  # Ceiling for MCP; keys narrow it with mcpToolsets (see teams/kustomization.yaml)
   mcpServers:
     - searxng
+    - kubesearch # public home-ops HelmRelease search, no cluster access
   # Local models cost 0; this caps cloud spend once cloud models are added
   maxBudget: "20"
   budgetDuration: 30d
   metadata:
-    description: Coding tools on the workstation
+    description: Interactive coding tools on the workstation

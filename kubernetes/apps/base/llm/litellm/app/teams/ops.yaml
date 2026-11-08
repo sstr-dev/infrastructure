@@ -1,0 +1,32 @@
+---
+# Agents that operate on the homelab (OpenCode, LM Studio): tool-calling models
+# plus the infra MCP servers. Separate from dev so the team ceiling alone keeps
+# cluster/network access away from Continue, even without toolsets.
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmteam_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMTeam
+metadata:
+  name: ops
+spec:
+  proxyRef: litellm
+  alias: ops
+  models:
+    # supportsFunctionCalling
+    - ws-qwen3.8-27b
+    - ws-qwen3.5-9b
+    # fallback (always-on)
+    - local-chat
+    # - claude-sonnet   # once models/anthropic is enabled
+  # Ceiling for MCP; keys narrow it with mcpToolsets (see teams/kustomization.yaml)
+  mcpServers:
+    - searxng
+    - kubesearch
+    - kubectl # read-only
+    - flux # read-write, see mcps/flux
+    # enable together with mcps/kustomization.yaml
+    #- unifi_network
+    #- home_assistant
+  maxBudget: "20"
+  budgetDuration: 30d
+  metadata:
+    description: Homelab agents with infra MCP tools

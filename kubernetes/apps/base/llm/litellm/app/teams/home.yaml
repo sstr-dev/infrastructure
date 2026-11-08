@@ -1,6 +1,7 @@
 ---
 # Home/automation apps (paperless, open-webui, later HA/n8n): only the always-on
-# Jetson, so they never depend on (or wake up) the workstation GPU.
+# hosts (Jetson vision-01, hv-geekom-01), so they never depend on (or wake up)
+# the workstation GPU.
 # yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmteam_v1alpha1.json
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMTeam
@@ -10,11 +11,19 @@ spec:
   proxyRef: litellm
   alias: home
   models:
-    - qwen3-4b
-    - minicpm-v
+    # chat (Jetson)
+    - local-chat
+    - local-fast
+    - minicpm-v # vision (paperless-gpt OCR)
+    # embeddings (open-webui / paperless-ai RAG)
+    - local-embed
+    - local-embed-large
+    - local-embed-vision
+  # Ceiling for MCP; keys narrow it with mcpToolsets (see teams/kustomization.yaml)
   mcpServers:
     - searxng
+    #- home_assistant # whitelisted read + device control tools
   # Jetson serves one request at a time; protect Home Assistant latency
   rpmLimit: 60
   metadata:
-    description: Home and automation apps on local Jetson models
+    description: Home and automation apps on always-on local models

@@ -7,7 +7,7 @@ metadata:
   name: opencode
 spec:
   proxyRef: litellm
-  teamID: dev
+  teamID: ops
   keyAlias: opencode
   secretName: litellm-key-opencode
   secretKey: OPENAI_API_KEY
@@ -16,7 +16,7 @@ spec:
   models:
     - ws-qwen3.8-27b
     - ws-qwen3.5-9b
-    - qwen3-4b
+    - local-chat
 ---
 # Copy to Vault for use outside the cluster: vault kv get -field=key kv/shared/main/litellm/opencode
 # yaml-language-server: $schema=https://schemas.sstr.dev/external-secrets.io/pushsecret_v1alpha1.json

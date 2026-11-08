@@ -1,0 +1,93 @@
+---
+# Home Assistant (external HAOS) via ha-mcp in HTTP mode.
+# https://github.com/homeassistant-ai/ha-mcp
+# ha-mcp exposes full admin tooling (automations, backups, restarts, ...), so
+# LiteLLM only forwards a whitelist: read state + control devices + todo/calendar.
+# Use a dedicated non-admin HA user for the token to cap it on the HA side too.
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmcpserver_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMMCPServer
+metadata:
+  name: home-assistant-mcp
+spec:
+  proxyRef: litellm
+  # no "-" in aliases: LiteLLM prefixes tools as <alias>-<tool>
+  alias: home_assistant
+  transport: http
+  # Pinned: otherwise LiteLLM hashes name|url|transport|auth|alias into the id, and any
+  # edit silently orphans toolsets / grants that reference it.
+  params:
+    server_id: home_assistant
+    allowed_tools:
+      # read
+      - ha_get_overview
+      - ha_search
+      - ha_get_state
+      - ha_get_entity
+      - ha_get_device
+      - ha_get_history
+      - ha_list_floors_areas
+      - ha_get_zone
+      - ha_list_services
+      - ha_get_todo
+      - ha_config_get_calendar_events
+      # act
+      - ha_call_service
+      - ha_bulk_control
+      - ha_set_todo_item
+  workload:
+    # renovate: datasource=docker depName=ghcr.io/homeassistant-ai/ha-mcp
+    image: ghcr.io/homeassistant-ai/ha-mcp:7.13.0
+    command: ["ha-mcp-web"]
+    env:
+      - name: TZ
+        value: ${CLUSTER_TIMEZONE}
+      - name: MCP_HOST
+        value: "0.0.0.0"
+      - name: MCP_PORT
+        value: "8086"
+      - name: MCP_SECRET_PATH
+        value: /mcp
+      # settings UI could flip tools/read-only mode at runtime; config stays in git
+      - name: HA_MCP_DISABLE_SETTINGS_UI
+        value: "true"
+      - name: HOMEASSISTANT_URL
+        valueFrom:
+          secretKeyRef:
+            name: home-assistant-mcp
+            key: HOMEASSISTANT_URL
+      - name: HOMEASSISTANT_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: home-assistant-mcp
+            key: HOMEASSISTANT_TOKEN
+    path: /mcp
+    automountServiceAccountToken: true
+    podAnnotations:
+      reloader.stakater.com/auto: "true"
+    podSecurityContext:
+      runAsGroup: 999
+      runAsNonRoot: true
+      runAsUser: 999
+      seccompProfile:
+        type: RuntimeDefault
+    port: 8086
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: true
+    volumeMounts:
+      - name: tmp
+        mountPath: /tmp
+    volumes:
+      - name: tmp
+        emptyDir: {}

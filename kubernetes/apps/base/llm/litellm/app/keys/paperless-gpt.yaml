@@ -13,5 +13,5 @@ spec:
   metadata:
     app: paperless-gpt
   models:
-    - qwen3-4b
+    - local-chat
     - minicpm-v

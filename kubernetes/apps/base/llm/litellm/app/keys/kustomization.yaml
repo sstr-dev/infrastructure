@@ -10,6 +10,7 @@ resources:
   - ./paperless-gpt.yaml
   - ./paperless-ai.yaml
   # team dev
-  - ./opencode.yaml
   - ./continue.yaml
+  # team ops
+  - ./opencode.yaml
   - ./lmstudio.yaml

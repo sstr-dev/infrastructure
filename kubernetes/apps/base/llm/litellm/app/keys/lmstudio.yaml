@@ -7,7 +7,7 @@ metadata:
   name: lmstudio
 spec:
   proxyRef: litellm
-  teamID: dev
+  teamID: ops
   keyAlias: lmstudio
   secretName: litellm-key-lmstudio
   secretKey: OPENAI_API_KEY

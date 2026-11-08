@@ -13,4 +13,5 @@ spec:
   metadata:
     app: paperless-ai
   models:
-    - qwen3-4b
+    - local-chat
+    - local-embed # RAG

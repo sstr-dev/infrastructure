@@ -10,6 +10,10 @@ spec:
   proxyRef: litellm
   alias: searxng
   transport: http
+  # Pinned: otherwise LiteLLM hashes name|url|transport|auth|alias into the id, and any
+  # edit silently orphans toolsets / grants that reference it.
+  params:
+    server_id: searxng
   workload:
     image: docker.io/isokoliuk/mcp-searxng:2.10.0
     env:

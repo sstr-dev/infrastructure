@@ -4,5 +4,18 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 # MCP servers behind LiteLLM. HTTP-capable servers run via `workload:`;
 # stdio-only servers -> ToolHive MCPServer + LiteLLMMCPServer `url:`.
+# Which team sees which server: teams/*.yaml (`mcpServers`, by alias).
 resources:
-  - ./searxng.yaml
+  # home
+  #- ./home-assistant/
+  # web
+  - ./searxng/
+  # infra (rw)
+  - ./flux/
+  # infra (all read-only)
+  - ./kubesearch/
+  #- ./unifi-network/
+  #- ./grafana/
+  - ./kubectl/
+  #- ./paperless/
+  #- ./victoria-logs/

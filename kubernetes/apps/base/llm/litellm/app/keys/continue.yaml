@@ -17,7 +17,8 @@ spec:
     - ws-qwen2.5-coder-7b
     - ws-qwen3.5-9b
     - ws-nomic-embed-text
-    - qwen3-4b
+    - local-chat
+    - local-embed
 ---
 # Copy to Vault for use outside the cluster: vault kv get -field=key kv/shared/main/litellm/continue
 # yaml-language-server: $schema=https://schemas.sstr.dev/external-secrets.io/pushsecret_v1alpha1.json

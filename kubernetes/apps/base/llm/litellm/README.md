@@ -4,9 +4,10 @@ OpenAI-compatible gateway in front of all local models and MCP servers, managed 
 [litellm-operator](https://github.com/home-operations/litellm-operator) CRDs.
 
 ```
-clients ──► LiteLLM (keys, teams, budgets, logs, cache) ──┬─► Ollama Jetson vision-01   (qwen3-4b, minicpm-v)
+clients ──► LiteLLM (keys, teams, budgets, logs, cache) ──┬─► Ollama Jetson vision-01   (local-chat, local-fast, minicpm-v, local-embed-vision)
+                                                          ├─► Ollama hv-geekom-01       (local-embed, local-embed-large)
                                                           ├─► Ollama workstation        (ws-*)
-                                                          └─► MCP servers               (searxng)
+                                                          └─► MCP servers               (searxng, home_assistant, kubernetes, flux, unifi_network)
 ```
 
 | Path | Content |
@@ -23,19 +24,74 @@ clients ──► LiteLLM (keys, teams, budgets, logs, cache) ──┬─► Ol
 
 | Team | Consumers | Models | MCP | Limits |
 |------|-----------|--------|-----|--------|
-| `home` | open-webui, paperless-gpt, paperless-ai (later HA, n8n) | Jetson only | searxng | 60 rpm |
-| `dev` | opencode, continue, lmstudio | workstation `ws-*` + `qwen3-4b` fallback | searxng | 20 USD / 30d (cloud) |
+| `home` | open-webui, paperless-gpt, paperless-ai (later HA, n8n) | always-on hosts only (`local-*`, `minicpm-v`) | searxng (+ home_assistant) | 60 rpm |
+| `dev` | continue | workstation `ws-*` + `local-chat` / `local-embed` fallback | searxng, kubesearch | 20 USD / 30d (cloud) |
+| `ops` | opencode, lmstudio | tool-calling `ws-qwen3.8-27b`, `ws-qwen3.5-9b` + `local-chat` fallback | searxng, kubesearch, kubectl, flux (+ unifi_network, home_assistant) | 20 USD / 30d (cloud) |
 
-Keys can only narrow their team. `lmstudio` has `no-default-models` (MCP only).
+MCP servers in parentheses are prepared but commented out until enabled in `app/mcps/kustomization.yaml`.
+Fallback targets (`proxy.yaml` `routerSettings.fallbacks`) must be in the caller's team.
 
-Ollama itself has no auth: restrict port 11434 on both Ollama hosts to the
-cluster nodes (`10.0.60.201-206`) and localhost, so LiteLLM is the only entry.
+A team is the ceiling. Keys narrow **models** via `models` and **MCP tools** via
+`mcpToolsets` (see [Toolsets](#toolsets)); a key without toolsets sees every MCP
+server of its team. `lmstudio` has `no-default-models` (MCP only).
+
+### MCP servers
+
+Every server pins `params.server_id` to its alias. Without the pin LiteLLM derives
+the id from a hash of name/url/transport/alias, and any edit silently orphans the
+toolsets that reference it.
+
+| Alias | Server | Scope |
+|-------|--------|-------|
+| `searxng` | mcp-searxng | web search |
+| `kubesearch` | kubesearch-mcp | search over public home-ops HelmReleases (kubesearch.dev), no cluster access |
+| `kubectl` | kubectl-mcp-server | `--read-only`, toolsets `core,diagnostics,crds,certs,cilium,gitops`; ClusterRoles `kubectl-mcp-readonly*` (no Secrets) |
+| `flux` | flux-operator-mcp | **read-write** |
+| `home_assistant` | ha-mcp → external HA | `allowed_tools` whitelist: read state, `ha_call_service`/`ha_bulk_control`, todo, calendar. No automation/backup/restart tools |
+| `unifi_network` | unifi-network-mcp | no `UNIFI_POLICY_*` gates (mutations denied), dedicated read-only local account |
+
+### Toolsets
+
+A toolset is a named list of `server_id` + tool pairs, stored in the LiteLLM DB
+(random UUID, no CRD). On a key, `mcpToolsets` restricts it to exactly those tools,
+capped by the team. Toolsets are created in the UI; only their IDs live in git.
+
+1. **Create.** `https://litellm.<domain>/ui` → **MCP Servers** → **Toolsets** tab →
+   **New Toolset**: name, description, pick the tools → **Create Toolset**.
+   Suggested set:
+
+   | Toolset | Tools | For |
+   |---------|-------|-----|
+   | `research` | searxng: all · kubesearch: all | dev/continue, every agent |
+   | `cluster-read` | kubectl: all (server is `--read-only`) · flux: `get_flux_instance`, `get_kubernetes_resources`, `trace_kubernetes_resource`, `get_kubernetes_logs`, `get_kubernetes_events`, `get_kubernetes_metrics`, `get_kubernetes_api_versions`, `diff_kubernetes_manifest`, `search_flux_docs`, `read_flux_doc` | ops agents |
+   | `flux-operate` | flux: `reconcile_flux_resource`, `suspend_flux_reconciliation`, `resume_flux_reconciliation` | opencode |
+   | `flux-write` | flux: `apply_kubernetes_manifest`, `patch_kubernetes_resource`, `delete_kubernetes_resource` | only if really needed (cluster-admin, see above) |
+
+2. **Copy the IDs**: Toolsets table in the UI, or `GET /v1/mcp/toolset` as above.
+3. **Assign** in `app/keys/<app>.yaml` and commit:
+   ```yaml
+   spec:
+     mcpToolsets:
+       - <research-uuid>
+       - <cluster-read-uuid>
+   ```
+4. **Clients**: keep `https://litellm.<domain>/mcp/` (shows the union of the key's
+   toolsets), or point at one toolset: `https://litellm.<domain>/toolset/<name>/mcp`
+   (403 unless the key holds that toolset).
+
+Editing a toolset (tools, name) keeps its UUID. **Deleting and recreating it changes
+the UUID**, and a key whose declared toolset no longer resolves loses all MCP access
+until the ID in git is updated.
 
 ## Prerequisites
 
 - Vault `kv/main/litellm`: `LITELLM_MASTER_KEY`, `LITELLM_SALT_KEY`, `LITELLM_POSTGRES_*`,
   `LITELLM_OLLAMA_WORKSTATION_HOST` (IP/hostname of the workstation Ollama),
-  `LITELLM_OIDC_CLIENT_ID`, `LITELLM_OIDC_CLIENT_SECRET` (authentik SSO)
+  `LITELLM_OIDC_CLIENT_ID`, `LITELLM_OIDC_CLIENT_SECRET` (authentik SSO),
+  `LITELLM_HASS_URL` (`https://<ha-host>`), `LITELLM_HASS_TOKEN` (long-lived token of a
+  dedicated **non-admin** HA user)
+  `LITELLM_UNIFI_NETWORK_HOST` (bare IP/hostname), `LITELLM_UNIFI_NETWORK_USERNAME`,
+  `LITELLM_UNIFI_NETWORK_PASSWORD` (dedicated local read-only UniFi account)
 
 ## SSO (authentik)
 

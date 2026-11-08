@@ -1,0 +1,45 @@
+---
+# Flux status, diffs, reconcile history, docs search.
+# https://fluxoperator.dev/docs/mcp/config/
+# --read-only hides reconcile/suspend/resume/delete tools; Secret values are
+# masked by default (--mask-secrets) and the SA (../rbac.yaml) cannot read them anyway.
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmcpserver_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMMCPServer
+metadata:
+  name: flux-mcp
+spec:
+  proxyRef: litellm
+  alias: flux
+  transport: http
+  # Pinned: otherwise LiteLLM hashes name|url|transport|auth|alias into the id, and any
+  # edit silently orphans toolsets / grants that reference it.
+  params:
+    server_id: flux
+  workload:
+    # renovate: datasource=docker depName=ghcr.io/controlplaneio-fluxcd/flux-operator-mcp
+    image: ghcr.io/controlplaneio-fluxcd/flux-operator-mcp:v0.62.1
+    args:
+      - serve
+      - --transport=http
+      - --port=8000
+    env:
+      - name: RUNTIME_NAMESPACE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.namespace
+    port: 8000
+    path: /mcp
+    podLabels:
+      app.kubernetes.io/name: flux-mcp
+      #egress.policy.home.arpa/block-all: "true"
+      #egress.policy.home.arpa/kube-api: "true"
+    replicas: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    serviceAccountName: flux-mcp

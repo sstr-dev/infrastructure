@@ -4,6 +4,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 # Access control: a team is the upper bound (models, MCP servers, budget, limits).
 # Keys pin a teamID and can only narrow it further.
+# MCP: keys narrow via mcpToolsets (toolset UUIDs from the LiteLLM UI, see
+# README "Toolsets"); a key without toolsets sees all MCP servers of its team.
 resources:
   - ./home.yaml
   - ./dev.yaml
+  - ./ops.yaml
