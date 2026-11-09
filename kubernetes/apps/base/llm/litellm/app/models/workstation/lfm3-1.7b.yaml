@@ -1,0 +1,21 @@
+---
+# Small, fast model on the workstation; falls back to local-fast (same model)
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: ws-lfm3-1.7b
+spec:
+  proxyRef: litellm
+  modelName: ws-lfm3-1.7b
+  params:
+    model: ollama_chat/lfm3:1.7b
+    apiBaseRef:
+      name: litellm
+      key: OLLAMA_WORKSTATION_API_BASE
+    additional:
+      num_ctx: 32768 # 1.7B fits easily into 8GB VRAM
+  info:
+    mode: chat
+    maxInputTokens: 32768
+    supportsFunctionCalling: true

@@ -11,3 +11,4 @@ resources:
   - ./local-embed-vision.yaml
   - ./local-embed-large.yaml
   - ./local-fast.yaml
+  - ./local-fast-hv.yaml

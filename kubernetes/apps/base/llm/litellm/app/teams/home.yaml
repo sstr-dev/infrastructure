@@ -13,7 +13,8 @@ spec:
   models:
     # chat (Jetson)
     - local-chat
-    - local-fast
+    - local-fast # lfm3:1.7b (HA Assist, task model)
+    - local-fast-hv # fallback for local-fast
     - minicpm-v # vision (paperless-gpt OCR)
     # embeddings (open-webui / paperless-ai RAG)
     - local-embed

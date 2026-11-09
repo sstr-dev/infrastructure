@@ -16,8 +16,10 @@ spec:
     - ws-qwen3.5-9b
     - ws-qwen2.5-coder-7b
     - ws-nomic-embed-text
+    - ws-lfm3-1.7b
     # fallbacks (always-on)
     - local-chat
+    - local-fast # fallback for ws-lfm3-1.7b
     - local-embed # same nomic-embed-text -> vectors stay compatible
     # - claude-sonnet   # once models/anthropic is enabled
   # Ceiling for MCP; keys narrow it with mcpToolsets (see teams/kustomization.yaml)

@@ -1,0 +1,23 @@
+---
+# Fallback for local-fast (same model, CPU on hv-geekom-01) when the Jetson is down
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmodel_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMModel
+metadata:
+  name: local-fast-hv
+spec:
+  proxyRef: litellm
+  modelName: local-fast-hv
+  params:
+    model: ollama_chat/lfm3:1.7b
+    apiBase: http://hv-geekom-01.main.internal:11434
+    dropParams: true # drop params Ollama doesn't support instead of erroring
+    additional:
+      num_ctx: 8192 # HA sends all exposed entities in the prompt
+      think: false # thinking adds latency to every Assist reply
+      timeout: 30
+      # no keep_alive: fallback only, don't pin memory on hv
+  info:
+    mode: chat
+    maxInputTokens: 8192
+    supportsFunctionCalling: true

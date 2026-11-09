@@ -9,4 +9,5 @@ resources:
   - ./qwen3.8-27b.yaml
   - ./qwen3.5-9b.yaml
   - ./qwen2.5-coder-7b.yaml
+  - ./lfm3-1.7b.yaml
   - ./nomic-embed-text.yaml

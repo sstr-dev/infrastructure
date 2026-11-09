@@ -13,7 +13,9 @@ spec:
   metadata:
     app: home-assistant
   models:
-    - local-chat
+    - local-fast # Assist: low latency tool calls
+    - local-fast-hv # fallback target, must be on the key too
+    - local-chat # optional larger conversation agent
     - local-embed
   mcpToolsets:
     - d5aaa841-2445-4855-8b20-a84544f7556a # research

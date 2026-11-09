@@ -1,4 +1,7 @@
 ---
+# Small, low-latency model: Home Assistant Assist (tool calls), Open WebUI task
+# model (titles, tags, search queries). Not for paperless/coding, use local-chat.
+# Fallback to local-fast-hv when the Jetson is down (proxy.yaml).
 # yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmodel_v1alpha1.json
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
@@ -8,7 +11,15 @@ spec:
   proxyRef: litellm
   modelName: local-fast
   params:
-    model: ollama_chat/gemma3:4b
+    model: ollama_chat/lfm3:1.7b
     apiBase: http://vision-01.main.internal:11434
+    dropParams: true # drop params Ollama doesn't support instead of erroring
+    additional:
+      num_ctx: 8192 # HA sends all exposed entities in the prompt
+      think: false # thinking adds latency to every Assist reply
+      keep_alive: -1 # stay loaded, no cold start for HA (~2GB of the 16GB)
+      timeout: 30 # fail fast so the fallback to local-fast-hv kicks in
   info:
     mode: chat
+    maxInputTokens: 8192
+    supportsFunctionCalling: true

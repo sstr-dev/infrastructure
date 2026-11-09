@@ -97,6 +97,9 @@ spec:
       - ws-qwen3.8-27b: [ws-qwen3.5-9b, local-chat]
       - ws-qwen3.5-9b: [local-chat]
       - ws-qwen2.5-coder-7b: [local-chat]
+      - ws-lfm3-1.7b: [local-fast]
+      # Jetson down -> same model on hv-geekom-01 (CPU)
+      - local-fast: [local-fast-hv]
       # same model (nomic-embed-text) -> embeddings stay compatible with the existing index
       - ws-nomic-embed-text: [local-embed]
     # skip an unreachable backend quickly instead of waiting for every request to time out

@@ -4,8 +4,8 @@ OpenAI-compatible gateway in front of all local models and MCP servers, managed 
 [litellm-operator](https://github.com/home-operations/litellm-operator) CRDs.
 
 ```
-clients ──► LiteLLM (keys, teams, budgets, logs, cache) ──┬─► Ollama Jetson vision-01   (local-chat, local-fast, minicpm-v, local-embed-vision)
-                                                          ├─► Ollama hv-geekom-01       (local-embed, local-embed-large)
+clients ──► LiteLLM (keys, teams, budgets, logs, cache) ──┬─► Ollama Jetson vision-01   (local-chat, local-fast = lfm3:1.7b, minicpm-v, local-embed-vision)
+                                                          ├─► Ollama hv-geekom-01       (local-embed, local-embed-large, local-fast-hv)
                                                           ├─► Ollama workstation        (ws-*)
                                                           └─► MCP servers               (searxng, home_assistant, kubernetes, flux, unifi_network)
 ```
