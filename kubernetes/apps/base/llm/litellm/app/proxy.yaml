@@ -80,6 +80,9 @@ spec:
       host: ${APP}-dragonfly
       port: 6379
       ttl: 3600
+      # embeddings only: cached chat replies break regenerate (Open WebUI)
+      # and could hand HA a stale answer
+      supported_call_types: [embedding, aembedding]
       #type: qdrant-semantic
       #qdrant_collection_name: litellm_semantic_cache
       #qdrant_semantic_cache_embedding_model: local-embed
@@ -105,6 +108,15 @@ spec:
     # skip an unreachable backend quickly instead of waiting for every request to time out
     allowed_fails: 1
     cooldown_time: 60
+    # Retries run before fallbacks. A timeout (hung Jetson, workstation off)
+    # should go straight to the fallback instead of waiting num_retries x timeout.
+    retry_policy:
+      TimeoutErrorRetries: 0
+      InternalServerErrorRetries: 1
+      RateLimitErrorRetries: 2
+      BadRequestErrorRetries: 0
+      AuthenticationErrorRetries: 0
+      ContentPolicyViolationErrorRetries: 0
   callbacks:
     success: [prometheus]
     failure: [prometheus]
