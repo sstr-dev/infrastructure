@@ -40,7 +40,7 @@ spec:
     substitute:
       APP: *app
       # renovate: datasource=docker depName=ghcr.io/berriai/litellm
-      LITELLM_VERSION: v1.108.2
+      LITELLM_VERSION: v1.108.4
       GATEWAY: "envoy-external"
     substituteFrom:
       - kind: ConfigMap
