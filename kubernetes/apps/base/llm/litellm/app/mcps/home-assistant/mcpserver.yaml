@@ -37,7 +37,7 @@ spec:
       - ha_set_todo_item
   workload:
     # renovate: datasource=docker depName=ghcr.io/homeassistant-ai/ha-mcp
-    image: ghcr.io/homeassistant-ai/ha-mcp:7.14.2
+    image: ghcr.io/homeassistant-ai/ha-mcp:9.2.0
     command: ["ha-mcp-web"]
     env:
       - name: TZ
