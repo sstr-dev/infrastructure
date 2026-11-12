@@ -15,7 +15,7 @@ spec:
   params:
     server_id: searxng
   workload:
-    image: docker.io/isokoliuk/mcp-searxng:2.10.0
+    image: docker.io/isokoliuk/mcp-searxng:2.10.1
     env:
       - name: SEARXNG_URL
         value: http://searxng.llm.svc:8080
