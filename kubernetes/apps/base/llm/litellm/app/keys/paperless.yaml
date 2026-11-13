@@ -14,7 +14,7 @@ spec:
   metadata:
     app: paperless
   models:
-    - local-chat
+    - qwen3-4b # local-chat (qwen2.5) returns no tool calls
     - local-embed-large # bge-m3, multilingual (German archive)
 ---
 # paperless runs in self-hosted -> hand the key over via Vault (ExternalSecret paperless)

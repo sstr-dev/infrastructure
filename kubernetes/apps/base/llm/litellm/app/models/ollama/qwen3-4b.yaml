@@ -1,6 +1,6 @@
 ---
-# Kept loaded for Home Assistant -> default text model, so other apps
-# don't force Ollama to swap models.
+# Reliable tool calls on Ollama (qwen2.5:7b in local-chat returns empty tool
+# calls since Ollama 0.40): paperless-ngx AI suggestions (tool_choice=required).
 # yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmmodel_v1alpha1.json
 apiVersion: litellm.home-operations.com/v1alpha1
 kind: LiteLLMModel
@@ -12,6 +12,8 @@ spec:
   params:
     model: ollama_chat/qwen3:4b-instruct
     apiBase: http://vision-01.main.internal:11434
+    additional:
+      num_ctx: 8192 # matches PAPERLESS_AI_LLM_CONTEXT_SIZE, Ollama would truncate silently otherwise
   info:
     mode: chat
     maxInputTokens: 8192

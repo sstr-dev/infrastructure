@@ -13,6 +13,7 @@ spec:
   models:
     # chat (Jetson)
     - local-chat
+    - qwen3-4b # tool calls (paperless-ngx AI)
     - local-fast # lfm3:1.7b (HA Assist, task model)
     - local-fast-hv # fallback for local-fast
     - minicpm-v # vision (paperless-gpt OCR)

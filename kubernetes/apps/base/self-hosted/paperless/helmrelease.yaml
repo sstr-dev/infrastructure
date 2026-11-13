@@ -89,7 +89,7 @@ spec:
               PAPERLESS_AI_ENABLED: "true"
               PAPERLESS_AI_LLM_BACKEND: openai-like
               PAPERLESS_AI_LLM_ENDPOINT: &litellm http://litellm.llm.svc.cluster.local:4000/v1
-              PAPERLESS_AI_LLM_MODEL: local-chat # qwen2.5:7b-instruct (Jetson)
+              PAPERLESS_AI_LLM_MODEL: qwen3-4b # needs reliable tool calls; qwen2.5 (local-chat) returns none
               PAPERLESS_AI_LLM_EMBEDDING_BACKEND: openai-like
               PAPERLESS_AI_LLM_EMBEDDING_ENDPOINT: *litellm
               # bge-m3, multilingual; changing it requires rebuilding the LLM index
