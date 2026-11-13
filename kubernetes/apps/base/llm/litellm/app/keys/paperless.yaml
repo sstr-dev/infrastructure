@@ -1,0 +1,39 @@
+---
+# paperless-ngx built-in AI (suggestions, document chat, RAG)
+# yaml-language-server: $schema=https://schemas.sstr.dev/litellm.home-operations.com/litellmvirtualkey_v1alpha1.json
+apiVersion: litellm.home-operations.com/v1alpha1
+kind: LiteLLMVirtualKey
+metadata:
+  name: paperless
+spec:
+  proxyRef: litellm
+  teamID: home
+  keyAlias: paperless
+  secretName: litellm-key-paperless
+  secretKey: OPENAI_API_KEY
+  metadata:
+    app: paperless
+  models:
+    - local-chat
+    - local-embed-large # bge-m3, multilingual (German archive)
+---
+# paperless runs in self-hosted -> hand the key over via Vault (ExternalSecret paperless)
+# yaml-language-server: $schema=https://schemas.sstr.dev/external-secrets.io/pushsecret_v1alpha1.json
+apiVersion: external-secrets.io/v1alpha1
+kind: PushSecret
+metadata:
+  name: ${CLUSTER}-litellm-key-paperless
+spec:
+  refreshInterval: 1h
+  secretStoreRefs:
+    - name: vault-backend
+      kind: ClusterSecretStore
+  selector:
+    secret:
+      name: litellm-key-paperless
+  data:
+    - match:
+        secretKey: OPENAI_API_KEY
+        remoteRef:
+          remoteKey: shared/${CLUSTER}/litellm/paperless
+          property: key

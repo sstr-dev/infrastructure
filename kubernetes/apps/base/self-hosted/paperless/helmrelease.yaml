@@ -84,6 +84,17 @@ spec:
               PAPERLESS_ACCOUNT_ALLOW_SIGNUPS: 'false'
               PAPERLESS_SOCIALACCOUNT_ALLOW_SIGNUPS: 'true'
               PAPERLESS_DISABLE_REGULAR_LOGIN: 'true'
+              # AI (LiteLLM, team home: always-on local models)
+              # https://github.com/paperless-ngx/paperless-ngx/wiki/AI-Model-Recommendations
+              PAPERLESS_AI_ENABLED: "true"
+              PAPERLESS_AI_LLM_BACKEND: openai-like
+              PAPERLESS_AI_LLM_ENDPOINT: &litellm http://litellm.llm.svc.cluster.local:4000/v1
+              PAPERLESS_AI_LLM_MODEL: local-chat # qwen2.5:7b-instruct (Jetson)
+              PAPERLESS_AI_LLM_EMBEDDING_BACKEND: openai-like
+              PAPERLESS_AI_LLM_EMBEDDING_ENDPOINT: *litellm
+              # bge-m3, multilingual; changing it requires rebuilding the LLM index
+              PAPERLESS_AI_LLM_EMBEDDING_MODEL: local-embed-large
+              PAPERLESS_AI_LLM_OUTPUT_LANGUAGE: German
               PAPERLESS_OCR_USER_ARGS: '{"invalidate_digital_signatures": true}'
               TRIGGER_UPDATE: 1
 

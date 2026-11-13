@@ -9,6 +9,7 @@ resources:
   - ./open-webui.yaml
   - ./paperless-gpt.yaml
   - ./paperless-ai.yaml
+  - ./paperless.yaml
   # team dev
   - ./continue.yaml
   # team ops

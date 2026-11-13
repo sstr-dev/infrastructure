@@ -24,7 +24,7 @@ clients ──► LiteLLM (keys, teams, budgets, logs, cache) ──┬─► Ol
 
 | Team | Consumers | Models | MCP | Limits |
 |------|-----------|--------|-----|--------|
-| `home` | open-webui, paperless-gpt, paperless-ai (later HA, n8n) | always-on hosts only (`local-*`, `minicpm-v`) | searxng (+ home_assistant) | 60 rpm |
+| `home` | open-webui, paperless (ngx AI), paperless-gpt, paperless-ai (later HA, n8n) | always-on hosts only (`local-*`, `minicpm-v`) | searxng (+ home_assistant) | 60 rpm |
 | `dev` | continue | workstation `ws-*` + `local-chat` / `local-embed` fallback | searxng, kubesearch | 20 USD / 30d (cloud) |
 | `ops` | opencode, lmstudio | tool-calling `ws-qwen3.8-27b`, `ws-qwen3.5-9b` + `local-chat` fallback | searxng, kubesearch, kubectl, flux (+ unifi_network, home_assistant) | 20 USD / 30d (cloud) |
 
