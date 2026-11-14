@@ -39,7 +39,7 @@ spec:
             image:
               repository: ghcr.io/n8n-io/n8n
               # renovate: datasource=github-releases depName=n8n-io/n8n
-              tag: 3.1.0
+              tag: 3.2.2
               pullPolicy: IfNotPresent
             env:
               #===CORE SETTINGS===
