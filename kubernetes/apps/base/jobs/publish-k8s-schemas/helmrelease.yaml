@@ -86,7 +86,7 @@ spec:
           git:
             image:
               repository: alpine/git
-              tag: v2.54.0
+              tag: v2.54.1
             env:
               GIT_TOKEN:
                 valueFrom:
