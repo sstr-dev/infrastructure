@@ -75,16 +75,12 @@ spec:
           memory: 128Mi
         limits:
           memory: 192Mi
+    # only mutating policies are used -> policy reports add API server load without value
+    features:
+      admissionReports:
+        enabled: false
     reportsController:
-      serviceMonitor:
-        enabled: true
-        #namespace: observability
-      resources:
-        requests:
-          cpu: 50m
-          memory: 128Mi
-        limits:
-          memory: 192Mi
+      enabled: false
     admissionController:
       replicas: 3
       serviceMonitor:
