@@ -117,6 +117,9 @@ flowchart LR
 - [`network-ip-usage.md`](./reference/network-ip-usage.md)
   Inventory of network ranges, VIPs, service IPs, and node addresses.
 
+- [`labels-and-annotations.md`](./reference/labels-and-annotations.md)
+  Which labels/annotations actually do something, and the `<area>.sstr.dev/` prefix for our own.
+
 ## Suggested Reading Order
 
 1. [`hardware-high-level-pattern.md`](./architecture/hardware-high-level-pattern.md)

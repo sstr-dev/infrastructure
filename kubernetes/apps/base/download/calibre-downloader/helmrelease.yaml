@@ -66,8 +66,6 @@ spec:
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
-      annotations:
-        setDownloadGateway: "true"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000

@@ -19,8 +19,6 @@ spec:
   values:
 
     defaultPodOptions:
-      #annotations:
-      #  setDownloadGateway: "true"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000

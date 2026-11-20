@@ -26,8 +26,8 @@ spec:
     - name: not-ignored
       expression: >-
         !has(object.metadata.annotations) ||
-        !('kyverno.io/ignore' in object.metadata.annotations) ||
-        object.metadata.annotations['kyverno.io/ignore'] != 'true'
+        !('kyverno.sstr.dev/ignore' in object.metadata.annotations) ||
+        object.metadata.annotations['kyverno.sstr.dev/ignore'] != 'true'
     - name: has-emptydir-or-hostpath
       expression: >-
         has(object.spec.volumes) &&

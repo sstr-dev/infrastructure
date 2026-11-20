@@ -43,20 +43,20 @@ spec:
     - patchType: ApplyConfiguration
       applyConfiguration:
         expression: >-
-          'route.gateway.io/exposure' in variables.labels ? Object{} :
+          'route.sstr.dev/exposure' in variables.labels ? Object{} :
           Object{
             metadata: Object.metadata{
-              labels: {"route.gateway.io/exposure": variables.exposures[0]}
+              labels: {"route.sstr.dev/exposure": variables.exposures[0]}
             }
           }
     - patchType: ApplyConfiguration
       applyConfiguration:
         expression: >-
-          'route.gateway.io/gateway' in variables.labels ? Object{} :
+          'route.sstr.dev/gateway' in variables.labels ? Object{} :
           Object{
             metadata: Object.metadata{
               labels: {
-                "route.gateway.io/gateway":
+                "route.sstr.dev/gateway":
                   variables.parentNames.filter(n, n.contains(variables.exposures[0]))[0]
               }
             }

@@ -3,6 +3,9 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: &app paperless
+  labels:
+    # no rollback on failed upgrade, longer timeout (see clusters/main/apps.yaml)
+    helm.sstr.dev/upgrade-strategy: retry
 spec:
   interval: 1h
   chartRef:
@@ -11,10 +14,6 @@ spec:
   install:
     remediation:
       retries: -1
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
   values:
     #defaultPodOptions:
     #  dnsConfig:
@@ -23,9 +22,6 @@ spec:
     #        value: "1"
     controllers:
       *app :
-        labels:
-          nfsMount: "true"
-          postgres: "true"
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
