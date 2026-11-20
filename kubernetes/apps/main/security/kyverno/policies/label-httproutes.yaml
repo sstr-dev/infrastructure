@@ -1,78 +1,63 @@
 ---
-# yaml-language-server: $schema=https://schemas.sstr.dev/kyverno.io/clusterpolicy_v1.json
-apiVersion: kyverno.io/v1
-kind: ClusterPolicy
+# yaml-language-server: $schema=https://schemas.sstr.dev/policies.kyverno.io/mutatingpolicy_v1.json
+apiVersion: policies.kyverno.io/v1
+kind: MutatingPolicy
 metadata:
   name: label-httproutes
   annotations:
     policies.kyverno.io/category: Other
     policies.kyverno.io/subject: HTTPRoute,Label
-    policies.kyverno.io/minversion: 1.6.0
     policies.kyverno.io/description: >-
-      Automatically labels HTTPRoutes as 'internal' or 'external' based on
+      Automatically labels HTTPRoutes as 'external', 'public' or 'internal' based on
       their parent gateway reference. This helps with identifying and filtering
       routes based on their exposure level.
 spec:
-  rules:
-    - name: label-external-httproutes
-      match:
-        any:
-          - resources:
-              kinds:
-                - HTTPRoute
-              operations:
-                - CREATE
-                - UPDATE
-      preconditions:
-        any:
-          - key: "{{ request.object.spec.parentRefs[].name || '' }}"
-            operator: AnyIn
-            value: ["*external*"]
-      mutate:
-        patchStrategicMerge:
-          metadata:
-            labels:
-              +(route.gateway.io/exposure): external
-              +(route.gateway.io/gateway): "{{ request.object.spec.parentRefs[?contains(name, 'external')] | [0].name || 'unknown' }}"
-
-    - name: label-public-httproutes
-      match:
-        any:
-          - resources:
-              kinds:
-                - HTTPRoute
-              operations:
-                - CREATE
-                - UPDATE
-      preconditions:
-        any:
-          - key: "{{ request.object.spec.parentRefs[].name || '' }}"
-            operator: AnyIn
-            value: ["*public*"]
-      mutate:
-        patchStrategicMerge:
-          metadata:
-            labels:
-              +(route.gateway.io/exposure): public
-              +(route.gateway.io/gateway): "{{ request.object.spec.parentRefs[?contains(name, 'public')] | [0].name || 'unknown' }}"
-
-    - name: label-internal-httproutes
-      match:
-        any:
-          - resources:
-              kinds:
-                - HTTPRoute
-              operations:
-                - CREATE
-                - UPDATE
-      preconditions:
-        any:
-          - key: "{{ request.object.spec.parentRefs[].name || '' }}"
-            operator: AnyIn
-            value: ["*internal*"]
-      mutate:
-        patchStrategicMerge:
-          metadata:
-            labels:
-              +(route.gateway.io/exposure): internal
-              +(route.gateway.io/gateway): "{{ request.object.spec.parentRefs[?contains(name, 'internal')] | [0].name || 'unknown' }}"
+  failurePolicy: Ignore
+  evaluation:
+    # admission-only; background reporting would need extra RBAC for httproutes
+    background:
+      enabled: false
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [gateway.networking.k8s.io]
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [httproutes]
+  variables:
+    - name: parentNames
+      expression: >-
+        has(object.spec.parentRefs) ? object.spec.parentRefs.map(p, p.name) : []
+    # first matching exposure wins (same precedence as the former ClusterPolicy rules)
+    - name: exposures
+      expression: >-
+        ['external', 'public', 'internal'].filter(e, variables.parentNames.exists(n, n.contains(e)))
+    - name: labels
+      expression: >-
+        has(object.metadata.labels) ? object.metadata.labels : {}
+  matchConditions:
+    - name: has-known-gateway
+      expression: >-
+        has(object.spec.parentRefs) &&
+        object.spec.parentRefs.exists(p, ['external', 'public', 'internal'].exists(e, p.name.contains(e)))
+  mutations:
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: >-
+          'route.gateway.io/exposure' in variables.labels ? Object{} :
+          Object{
+            metadata: Object.metadata{
+              labels: {"route.gateway.io/exposure": variables.exposures[0]}
+            }
+          }
+    - patchType: ApplyConfiguration
+      applyConfiguration:
+        expression: >-
+          'route.gateway.io/gateway' in variables.labels ? Object{} :
+          Object{
+            metadata: Object.metadata{
+              labels: {
+                "route.gateway.io/gateway":
+                  variables.parentNames.filter(n, n.contains(variables.exposures[0]))[0]
+              }
+            }
+          }
