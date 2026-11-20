@@ -7,7 +7,7 @@ metadata:
 spec:
   interval: 1h
   retryInterval: 2m
-  path: ./kubernetes/apps/base/security/kyverno
+  path: ./kubernetes/apps/base/kyverno/kyverno
   prune: true
   sourceRef:
     kind: GitRepository
@@ -26,7 +26,7 @@ kind: Kustomization
 metadata:
   name: cluster-policies
 spec:
-  path: ./kubernetes/apps/${CLUSTER}/security/kyverno/policies
+  path: ./kubernetes/apps/${CLUSTER}/kyverno/policies
   prune: true
   sourceRef:
     kind: GitRepository

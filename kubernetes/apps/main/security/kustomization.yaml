@@ -11,5 +11,3 @@ replacements:
 resources:
   - ./lldap.yaml
   - ./authentik.yaml
-  - ./kyverno.yaml
-  - ./grafanadashboards.yaml
