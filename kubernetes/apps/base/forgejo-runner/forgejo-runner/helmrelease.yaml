@@ -234,9 +234,13 @@ spec:
       config:
         type: configMap
         identifier: config
+        # runner reads runner.yaml, the k8s-plugin reads the podspec-*.yaml files
         advancedMounts:
           forgejo-runner:
             app:
+              - path: /config
+                readOnly: true
+            k8s-plugin:
               - path: /config
                 readOnly: true
       plugin:
