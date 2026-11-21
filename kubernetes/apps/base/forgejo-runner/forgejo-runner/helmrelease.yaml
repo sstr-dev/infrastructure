@@ -57,6 +57,12 @@ spec:
                       memory: 1Gi
           podspec-default.yaml: |-
             automountServiceAccountToken: false
+            # external names first: avoids 3 cluster search domains x A/AAAA
+            # per lookup (inherited by DinD/BuildKit build containers)
+            dnsConfig:
+              options:
+                - name: ndots
+                  value: "1"
             enableServiceLinks: false
             restartPolicy: Never
             containers:
@@ -79,6 +85,12 @@ spec:
                     ephemeral-storage: 15Gi
           podspec-dind.yaml: |-
             automountServiceAccountToken: false
+            # external names first: avoids 3 cluster search domains x A/AAAA
+            # per lookup (inherited by DinD/BuildKit build containers)
+            dnsConfig:
+              options:
+                - name: ndots
+                  value: "1"
             enableServiceLinks: false
             restartPolicy: Never
             initContainers:

@@ -39,13 +39,12 @@ spec:
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: kube-system
             k8s-app: kube-dns
+      # no `rules: dns` (L7 DNS proxy): not needed without toFQDNs, and it
+      # dropped lookups under the parallel load of docker/uv builds
       toPorts:
         - ports:
             - port: "53"
               protocol: ANY
-          rules:
-            dns:
-              - matchPattern: "*"
     - # Forgejo server (checkout, API, artifacts)
       toEndpoints:
         - matchLabels:
