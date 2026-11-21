@@ -20,6 +20,15 @@ spec:
     - fromEndpoints:
         - matchLabels:
             app.kubernetes.io/managed-by: forgejo-runner
+    # Replies from Services (ClusterIP/LB) are not matched by conntrack here
+    # (bpf-lb-sock-hostns-only), so they must be allowed as ingress explicitly.
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: dev
+            app.kubernetes.io/name: forgejo
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: network
+            gateway.networking.k8s.io/gateway-name: envoy-external
   egress:
     - # Service containers of the same run
       toEndpoints:
