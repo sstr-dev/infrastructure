@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: forgejo-runner
 components:
   - ../../../components/common
+  - ../../../vars/main/namespaces/forgejo-runner
 patches:
   # DinD job pods need privileged containers
   - target:

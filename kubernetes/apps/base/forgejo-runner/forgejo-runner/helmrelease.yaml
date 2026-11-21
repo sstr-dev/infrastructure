@@ -197,8 +197,13 @@ spec:
                 else
                   echo "Runner already registered, skipping."
                 fi
+                # The address ends up as GITHUB_SERVER_URL in jobs (registry
+                # host, package URLs), so keep it on the public HTTPS URL.
+                sed -i -E "s#(\"address\": *)\"[^\"]*\"#\1\"$FORGEJO_INSTANCE_URL\"#" /data/.runner
+                grep '"address"' /data/.runner
             env:
-              FORGEJO_INSTANCE_URL: &forgejoUrl http://forgejo-http.dev.svc.cluster.local:3000
+              # public URL: docker login to the package registry requires HTTPS
+              FORGEJO_INSTANCE_URL: https://${SECRET_FORGEJO_HOSTNAME}
             envFrom:
               - secretRef:
                   name: forgejo-runner-secret

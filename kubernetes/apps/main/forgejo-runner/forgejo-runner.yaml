@@ -11,6 +11,9 @@ spec:
     substitute:
       APP: *app
       CLUSTER: ${CLUSTER}
+    substituteFrom:
+      - kind: Secret
+        name: ns-forgejo-runner-secret
   dependsOn:
     - name: forgejo
       namespace: dev
