@@ -75,6 +75,12 @@ spec:
         secretKey: RENOVATE_OPERATOR_CLIENT_SECRET
         sessionSecretKey: RENOVATE_OPERATOR_SESSION_SECRET
         redirectUrl: https://renovate.${DOMAIN}/auth/callback
+    authorization:
+      defaults:
+        # Authentik group (same as the Forgejo admin group); applies to every
+        # RenovateJob without its own spec.access
+        adminGroups:
+          - homelab-admins
   valuesFrom:
     - targetPath: auth.oidc.clientId
       kind: Secret
