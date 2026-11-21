@@ -18,7 +18,7 @@ spec:
     server_id: flux
   workload:
     # renovate: datasource=docker depName=ghcr.io/controlplaneio-fluxcd/flux-operator-mcp
-    image: ghcr.io/controlplaneio-fluxcd/flux-operator-mcp:v0.62.1
+    image: ghcr.io/controlplaneio-fluxcd/flux-operator-mcp:v0.63.0
     args:
       - serve
       - --transport=http
