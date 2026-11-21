@@ -4,27 +4,25 @@
 
 | Job                        | Provider | Schedule | Notes |
 |----------------------------|----------|----------|-------|
-| [forgejo](./forgejo.yaml)  | Forgejo  | hourly   | Autodiscovers `sstr-dev/*` as bot user `lab-assistant`. |
+| [forgejo](./forgejo.yaml)  | Forgejo  | hourly   | Autodiscovers `sstr-dev/*` as bot user `renovate`. |
 
 ## Forgejo setup
 
-Renovate runs as the existing bot user `lab-assistant`. Internal sign-in is disabled on
-Forgejo, so the token is created with the Forgejo CLI inside the pod.
+Renovate runs as the dedicated bot user `renovate` (not `lab-assistant`): Renovate decides
+whether it may rebase/force-push a branch by the commit author, so a shared account would
+let it overwrite commits other tools pushed to `renovate/*` branches. It also keeps the
+token limited to the repositories Renovate maintains.
 
-If the user not exists:
+Internal sign-in is disabled on Forgejo, so user and token are created with the Forgejo CLI
+inside the pod:
 
 ```sh
-kubectl -n dev exec -it deploy/forgejo -- forgejo admin user create \
-  --username lab-assistant --email renovate@<deine-domain> \
+kubectl -n dev exec -it deploy/forgejo -c forgejo -- forgejo admin user create \
+  --username renovate --email bot-user+renovate@sstr.dev \
   --random-password --must-change-password=false
-```
 
-Use a dedicated token for Renovate, so it can be rotated or revoked without breaking other
-tools that also use `lab-assistant`:
-
-```sh
-kubectl -n dev exec -it deploy/forgejo -- forgejo admin user generate-access-token \
-  --username lab-assistant \
+kubectl -n dev exec -it deploy/forgejo -c forgejo -- forgejo admin user generate-access-token \
+  --username renovate \
   --token-name renovate-operator \
   --scopes "write:repository,write:issue,read:user,read:organization,read:package" \
   --raw
@@ -40,11 +38,26 @@ Required scopes:
 | `read:organization`  | autodiscover repositories in `sstr-dev` |
 | `read:package`       | optional, Forgejo package registry as a datasource |
 
-Repository access: autodiscover only finds repositories `lab-assistant` can write to.
+Repository access: autodiscover only finds repositories `renovate` can write to.
 Give the bot **Write** permission on Code, Issues and Pull Requests, either through an
-org team (`sstr-dev` → Teams → e.g. `bots`) or as a collaborator per repository.
+org team (`sstr-dev` → Teams → `bots`, add `renovate` as member) or as a collaborator per repository.
 
 Repositories without a `renovate.json` get an onboarding PR first.
+
+Restrict the account (Site Administration → User Accounts → `renovate` → Edit):
+**Restricted** on, **May create organizations** off, **Max repository creation** `0`.
+Do not set *Prohibit login*, it also blocks the API token.
+
+Disable email notifications: the bot cannot sign in (internal sign-in is disabled) and
+admins cannot change another user's notification setting, so set it in the database
+(same as Settings → Notifications → Disabled):
+
+```sh
+# primary instance: kubectl -n database get cluster postgres
+# database name: Vault key FORGEJO_POSTGRES_DB
+kubectl -n database exec -it postgres-6 -c postgres -- psql -U postgres -d <forgejo-db> -c \
+  "UPDATE \"user\" SET email_notifications_preference = 'disabled' WHERE lower_name = 'renovate';"
+```
 
 ## Secrets
 
