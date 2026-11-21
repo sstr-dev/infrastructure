@@ -13,7 +13,18 @@ spec:
   enableDefaultDeny:
     ingress: true
     egress: true
+  # `services:` (e.g. valkey, postgres) run as separate pods with the same
+  # managed-by label; the job pod reaches them via hostAliases.
+  # Cilium cannot match "same environment-id", so this allows all job pods.
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/managed-by: forgejo-runner
   egress:
+    - # Service containers of the same run
+      toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/managed-by: forgejo-runner
     - # DNS
       toEndpoints:
         - matchLabels:
