@@ -42,7 +42,11 @@ Repository access: autodiscover only finds repositories `renovate` can write to.
 Give the bot **Write** permission on Code, Issues and Pull Requests, either through an
 org team (`sstr-dev` → Teams → `bots`, add `renovate` as member) or as a collaborator per repository.
 
-Repositories without a `renovate.json` get an onboarding PR first.
+Repositories without a `renovate.json` get an onboarding PR first. It proposes
+`extends: ["local>sstr-dev/renovate-config"]` (`RENOVATE_ONBOARDING_CONFIG` in the job), so
+the shared preset repository `sstr-dev/renovate-config` must exist on Forgejo with a
+`default.json` (e.g. `{"extends": ["config:recommended"]}`) and be part of the `bots` team.
+`local>` resolves against this Forgejo instance; do not use `gitea>`/`forgejo>`.
 
 Restrict the account (Site Administration → User Accounts → `renovate` → Edit):
 **Restricted** on, **May create organizations** off, **Max repository creation** `0`.

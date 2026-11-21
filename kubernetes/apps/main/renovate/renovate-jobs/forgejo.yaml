@@ -11,6 +11,15 @@ spec:
   extraEnv:
     - name: LOG_LEVEL
       value: info
+    # renovate.json proposed in onboarding PRs; the shared preset lives on
+    # Forgejo (local> = same platform as this job) and must be readable by
+    # the bot user (team "bots")
+    - name: RENOVATE_ONBOARDING_CONFIG
+      value: >-
+        {
+          "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+          "extends": ["local>sstr-dev/renovate-config"]
+        }
   image: ghcr.io/renovatebot/renovate:44.256.1
   parallelism: 3
   provider:
