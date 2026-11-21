@@ -70,8 +70,13 @@ spec:
                   requests:
                     cpu: 100m
                     memory: 256Mi
+                    # workspace, toolchains and caches live on the node disk;
+                    # the limit kills one job instead of the whole node
+                    # running into DiskPressure
+                    ephemeral-storage: 2Gi
                   limits:
                     memory: 2Gi
+                    ephemeral-storage: 15Gi
           podspec-dind.yaml: |-
             automountServiceAccountToken: false
             enableServiceLinks: false
@@ -123,8 +128,13 @@ spec:
                   requests:
                     cpu: 100m
                     memory: 256Mi
+                    # workspace, toolchains and caches live on the node disk;
+                    # the limit kills one job instead of the whole node
+                    # running into DiskPressure
+                    ephemeral-storage: 2Gi
                   limits:
                     memory: 2Gi
+                    ephemeral-storage: 15Gi
                 volumeMounts:
                   - name: docker-certs
                     mountPath: /certs

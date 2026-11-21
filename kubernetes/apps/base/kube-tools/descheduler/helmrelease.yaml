@@ -53,6 +53,10 @@ spec:
                   cpu: 50
                   memory: 50
                   pods: 50
+                # evicting the runner aborts every running CI job
+                evictableNamespaces:
+                  exclude: &excludeNamespaces
+                    - forgejo-runner
             - name: RemoveFailedPods
               args:
                 reasons:
@@ -65,13 +69,26 @@ spec:
                 excludeOwnerKinds:
                   - Job
                 minPodLifetimeSeconds: 1800
+                namespaces:
+                  exclude: *excludeNamespaces
             - name: RemovePodsViolatingInterPodAntiAffinity
+              args:
+                namespaces:
+                  exclude: *excludeNamespaces
             - name: RemovePodsViolatingNodeAffinity
               args:
                 nodeAffinityType:
                   - requiredDuringSchedulingIgnoredDuringExecution
+                namespaces:
+                  exclude: *excludeNamespaces
             - name: RemovePodsViolatingNodeTaints
+              args:
+                namespaces:
+                  exclude: *excludeNamespaces
             - name: RemovePodsViolatingTopologySpreadConstraint
+              args:
+                namespaces:
+                  exclude: *excludeNamespaces
           plugins:
             balance:
               enabled:
