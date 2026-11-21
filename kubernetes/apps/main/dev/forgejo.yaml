@@ -34,25 +34,3 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
----
-# yaml-language-server: $schema=https://schemas.sstr.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: &app forgejo-runner
-spec:
-  interval: 15m
-  path: ./kubernetes/apps/base/dev/forgejo-runner
-  postBuild:
-    substitute:
-      APP: *app
-      CLUSTER: ${CLUSTER}
-  dependsOn:
-    - name: forgejo
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false
-

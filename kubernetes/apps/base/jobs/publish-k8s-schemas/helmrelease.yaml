@@ -36,8 +36,8 @@ spec:
         initContainers:
           generate-schemas:
             image:
-              repository: ghcr.io/bjw-s-labs/k8s-crd-extractor
-              tag: 2026.3.11@sha256:a26844ff81905a8fac4dba61b416bed087a1944e20e38634acba5a7f65eeac93
+              repository: ghcr.io/sstr-dev/k8s-crd-extractor
+              tag: 2026.11.21@sha256:3b2aa5abf26094d9626df2a6ea5976df8a10d23b1e028d42010b76d2c0443d1f
             command:
               - /usr/bin/catatonit
               - --

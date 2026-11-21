@@ -1,0 +1,67 @@
+---
+# yaml-language-server: $schema=https://schemas.sstr.dev/cilium.io/ciliumnetworkpolicy_v2.json
+# Restricts the workflow job pods created by the runner-k8s-plugin.
+# The runner controller itself is not selected by this policy.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: forgejo-runner-jobs
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/managed-by: forgejo-runner
+  enableDefaultDeny:
+    ingress: true
+    egress: true
+  egress:
+    - # DNS
+      toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+    - # Forgejo server (checkout, API, artifacts)
+      toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: dev
+            app.kubernetes.io/name: forgejo
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+    - # Runner cache & cache proxy
+      toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: forgejo-runner
+      toPorts:
+        - ports:
+            - port: "8088"
+              protocol: TCP
+            - port: "8089"
+              protocol: TCP
+    - # Hairpinned in-cluster services (Forgejo/Harbor via public hostname)
+      toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: network
+            gateway.networking.k8s.io/gateway-name: envoy-external
+    - # Internet (no LAN / private ranges)
+      toCIDRSet:
+        - cidr: 0.0.0.0/0
+          except:
+            - 10.0.0.0/8
+            - 172.16.0.0/12
+            - 192.168.0.0/16
+            - 100.64.0.0/10
+            - 169.254.0.0/16
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+            - port: "443"
+              protocol: TCP

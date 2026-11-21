@@ -51,8 +51,8 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/bjw-s-labs/manyfold
-              tag: 0.154.3@sha256:d6b9dd1d7d198cf2d74ae21b4dea52f4afc4569b7210af67ea4885e0657e195f
+              repository: ghcr.io/sstr-dev/manyfold
+              tag: 0.154.3@sha256:0bd412b927b3582f7b613fb7ee506e02e0a95dd76ac1ca6d1d7fa1eb4e6af260
             env:
               PORT: &port 3214
               PUID: 99

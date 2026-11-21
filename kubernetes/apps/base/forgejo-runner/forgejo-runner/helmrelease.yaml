@@ -1,0 +1,279 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+# Runner controller + runner-k8s-plugin. Every workflow job runs as its own
+# Kubernetes Job in this namespace (no shared Docker daemon in the runner pod).
+# Note: `$${ENV_ID}` is escaped for Flux postBuild substitution.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app forgejo-runner
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  values:
+    configMaps:
+      config:
+        suffix: config
+        data:
+          runner.yaml: |-
+            log:
+              level: info
+            runner:
+              file: /data/.runner
+              capacity: 3
+              timeout: 3h
+              shutdown_timeout: 3m
+              fetch_timeout: 5s
+              fetch_interval: 2s
+              labels:
+                - ubuntu-latest:k8s:///config/podspec-default.yaml
+                - ubuntu-26.04:k8s:///config/podspec-default.yaml
+                - default:k8s:///config/podspec-default.yaml
+                - docker:k8s:///config/podspec-dind.yaml
+            cache:
+              enabled: true
+              dir: /data/cache
+              port: 8088
+              proxy_port: 8089
+            container:
+              docker_host: "-"
+              workdir_parent: shared/workdir
+            host:
+              workdir_parent: /data/act
+            plugins:
+              k8s:
+                address: unix:///plugin/forgejo-runner-k8s.sock
+                options:
+                  namespace: forgejo-runner
+                  poll_timeout: 10m
+                  labels: "app.kubernetes.io/name=forgejo-runner-instance,app.kubernetes.io/instance=env-$${ENV_ID}"
+                  resources: |
+                    requests:
+                      cpu: 100m
+                      memory: 256Mi
+                    limits:
+                      memory: 1Gi
+          podspec-default.yaml: |-
+            automountServiceAccountToken: false
+            enableServiceLinks: false
+            restartPolicy: Never
+            containers:
+              - name: main
+                image: ghcr.io/sstr-dev/forgejo-runner:26.04@sha256:e0ea96caf3f482cc88c79d9bab8046a85263f2ad2b67692fb5755818d0c9ca31
+                imagePullPolicy: IfNotPresent
+                env:
+                  - name: DEBIAN_FRONTEND
+                    value: noninteractive
+                resources:
+                  requests:
+                    cpu: 100m
+                    memory: 256Mi
+                  limits:
+                    memory: 2Gi
+          podspec-dind.yaml: |-
+            automountServiceAccountToken: false
+            enableServiceLinks: false
+            restartPolicy: Never
+            initContainers:
+              # native sidecar, lives as long as the job pod
+              - name: dind
+                image: docker:29-dind
+                restartPolicy: Always
+                securityContext:
+                  privileged: true
+                env:
+                  - name: DOCKER_TLS_CERTDIR
+                    value: /certs
+                resources:
+                  requests:
+                    cpu: 100m
+                    memory: 256Mi
+                  limits:
+                    memory: 4Gi
+                volumeMounts:
+                  - name: docker-storage
+                    mountPath: /var/lib/docker
+                  - name: docker-certs
+                    mountPath: /certs
+                startupProbe:
+                  exec:
+                    command:
+                      - sh
+                      - -c
+                      - docker --tlsverify --tlscacert=/certs/client/ca.pem --tlscert=/certs/client/cert.pem --tlskey=/certs/client/key.pem -H tcp://localhost:2376 info
+                  initialDelaySeconds: 5
+                  periodSeconds: 1
+                  failureThreshold: 30
+            containers:
+              - name: main
+                image: ghcr.io/sstr-dev/forgejo-runner:26.04@sha256:e0ea96caf3f482cc88c79d9bab8046a85263f2ad2b67692fb5755818d0c9ca31
+                imagePullPolicy: IfNotPresent
+                env:
+                  - name: DEBIAN_FRONTEND
+                    value: noninteractive
+                  - name: DOCKER_HOST
+                    value: tcp://localhost:2376
+                  - name: DOCKER_TLS_VERIFY
+                    value: "1"
+                  - name: DOCKER_CERT_PATH
+                    value: /certs/client
+                resources:
+                  requests:
+                    cpu: 100m
+                    memory: 256Mi
+                  limits:
+                    memory: 2Gi
+                volumeMounts:
+                  - name: docker-certs
+                    mountPath: /certs
+                    readOnly: true
+            volumes:
+              - name: docker-storage
+                ephemeral:
+                  volumeClaimTemplate:
+                    spec:
+                      accessModes:
+                        - ReadWriteOnce
+                      storageClassName: local-hostpath
+                      resources:
+                        requests:
+                          storage: 25Gi
+              - name: docker-certs
+                emptyDir: {}
+
+    controllers:
+      forgejo-runner:
+        type: statefulset
+        serviceAccount:
+          identifier: forgejo-runner
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          automountServiceAccountToken: true
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+          # must cover runner.shutdown_timeout plus the plugin's cleanup budget
+          terminationGracePeriodSeconds: 300
+        statefulset:
+          volumeClaimTemplates:
+            - name: data
+              accessMode: ReadWriteOnce
+              size: 20Gi
+              globalMounts:
+                - path: /data
+        initContainers:
+          register:
+            image: &runnerImage
+              repository: code.forgejo.org/forgejo/runner
+              tag: 13.2.2@sha256:a8543a45fe62bebef0534d5c223cf485d3294e6dd2e42a82dbcbfd40c54a6a22
+            command:
+              - sh
+              - -ec
+              - |
+                if [ ! -f /data/.runner ]; then
+                  echo "Registering runner..."
+                  cd /data
+                  forgejo-runner register --no-interactive \
+                    --token "$RUNNER_TOKEN" \
+                    --name "$RUNNER_NAME" \
+                    --instance "$FORGEJO_INSTANCE_URL" \
+                    --labels "default"
+                else
+                  echo "Runner already registered, skipping."
+                fi
+            env:
+              FORGEJO_INSTANCE_URL: &forgejoUrl http://forgejo-http.dev.svc.cluster.local:3000
+            envFrom:
+              - secretRef:
+                  name: forgejo-runner-secret
+            securityContext: &securityContext
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+          # native sidecar: starts before and stops after the runner, so the
+          # plugin socket outlives job draining on shutdown
+          k8s-plugin:
+            image:
+              repository: registry.erwanleboucher.dev/eleboucher/runner-k8s-plugin
+              tag: 13.2.2
+            args:
+              - --listen
+              - unix:///plugin/forgejo-runner-k8s.sock
+            restartPolicy: Always
+            resources:
+              requests:
+                cpu: 5m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+            securityContext: *securityContext
+        containers:
+          app:
+            image: *runnerImage
+            command:
+              - /bin/forgejo-runner
+              - daemon
+              - --config
+              - /config/runner.yaml
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+            securityContext: *securityContext
+
+    persistence:
+      config:
+        type: configMap
+        identifier: config
+        advancedMounts:
+          forgejo-runner:
+            app:
+              - path: /config
+                readOnly: true
+      plugin:
+        type: emptyDir
+        advancedMounts:
+          forgejo-runner:
+            app:
+              - path: /plugin
+            k8s-plugin:
+              - path: /plugin
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+
+    serviceAccount:
+      forgejo-runner: {}
+
+    rbac:
+      roles:
+        forgejo-runner:
+          type: Role
+          rules:
+            # the plugin creates one Job per workflow job
+            - apiGroups: ["batch"]
+              resources: ["jobs"]
+              verbs: ["create", "get", "list", "watch", "delete"]
+            - apiGroups: [""]
+              resources: ["pods", "pods/log"]
+              verbs: ["get", "list", "watch"]
+            - apiGroups: [""]
+              resources: ["pods/exec"]
+              verbs: ["create", "get"]
+      bindings:
+        forgejo-runner:
+          type: RoleBinding
+          roleRef:
+            identifier: forgejo-runner
+          subjects:
+            - identifier: forgejo-runner

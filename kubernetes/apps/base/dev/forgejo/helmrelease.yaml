@@ -22,9 +22,12 @@ spec:
     kind: OCIRepository
     name: forgejo
   values:
-    containerSecurityContext:
-      capabilities:
-        add: ["SYS_CHROOT"]
+    # chart 17.x defaults to the v15 LTS; pin the current stable release
+    image:
+      registry: code.forgejo.org
+      repository: forgejo/forgejo
+      tag: 17.0.2-rootless
+      rootless: true
 
     deployment:
       annotations:
