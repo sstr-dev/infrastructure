@@ -6,6 +6,7 @@ namespace: renovate
 components:
   - ../../../components/common
   - ../../../vars/main/settings
+  - ../../../vars/main/namespaces/renovate
 replacements:
   - path: ../../../components/replacements/ks.yaml
 resources:

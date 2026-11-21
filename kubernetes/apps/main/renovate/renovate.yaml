@@ -23,19 +23,27 @@ spec:
     name: flux-system
     namespace: flux-system
 ---
-## yaml-language-server: $schema=https://schemas.sstr.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-#apiVersion: kustomize.toolkit.fluxcd.io/v1
-#kind: Kustomization
-#metadata:
-#  name: &app renovate-operator-jobs
-#spec:
-#  dependsOn:
-#  - name: renovate-operator
-#  interval: 1h
-#  path: ./kubernetes/apps/${CLUSTER}/renovate/renovate-jobs
-#  prune: true
-#  sourceRef:
-#    kind: GitRepository
-#    name: flux-system
-#    namespace: flux-system
-#  wait: false
+# yaml-language-server: $schema=https://schemas.sstr.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: renovate-operator-jobs
+spec:
+  dependsOn:
+  - name: renovate-operator
+  interval: 1h
+  path: ./kubernetes/apps/main/renovate/renovate-jobs
+  prune: true
+  postBuild:
+    substitute:
+      CLUSTER: ${CLUSTER}
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: ns-renovate-secret
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false

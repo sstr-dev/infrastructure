@@ -1,0 +1,37 @@
+---
+# yaml-language-server: $schema=https://schemas.sstr.dev/renovate-operator.mogenius.com/renovatejob_v1alpha1.json
+apiVersion: renovate-operator.mogenius.com/v1alpha1
+kind: RenovateJob
+metadata:
+  name: forgejo
+spec:
+  # autodiscover only covers repos the bot user can access
+  discoveryFilters:
+    - sstr-dev/*
+  extraEnv:
+    - name: LOG_LEVEL
+      value: info
+  image: ghcr.io/renovatebot/renovate:44.256.1
+  parallelism: 3
+  provider:
+    name: forgejo
+    endpoint: https://${SECRET_FORGEJO_HOSTNAME}/api/v1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 2Gi
+  scratchVolume:
+    enabled: true
+    ephemeral:
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+          storageClassName: local-hostpath
+  schedule: 0 * * * *
+  secretRef: renovate-forgejo-secret
