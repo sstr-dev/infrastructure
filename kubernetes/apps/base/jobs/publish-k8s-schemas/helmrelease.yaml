@@ -38,6 +38,11 @@ spec:
             image:
               repository: ghcr.io/sstr-dev/k8s-crd-extractor
               tag: 2026.11.21@sha256:3b2aa5abf26094d9626df2a6ea5976df8a10d23b1e028d42010b76d2c0443d1f
+            env:
+              # explicit OUTPUT_DIR (= former default $HOME/.datree/crdSchemas):
+              # without it the script also copies schemas to $(dirname /app)/<group>,
+              # which fails on the read-only root filesystem
+              OUTPUT_DIR: /config/.datree/crdSchemas
             command:
               - /usr/bin/catatonit
               - --
