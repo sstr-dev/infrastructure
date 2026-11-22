@@ -8,6 +8,12 @@ spec:
   # autodiscover only covers repos the bot user can access
   discoveryFilters:
     - sstr-dev/*
+  # node resolver instead of CoreDNS: with ndots:5 the node search domain
+  # k8s.main.internal is tried first, and the upstream answers
+  # code.sstr.dev.k8s.main.internal with NOERROR/no records instead of
+  # NXDOMAIN, so the lookup fails (Renovate reports "Authentication failure").
+  # Renovate only needs external names.
+  dnsPolicy: Default
   extraEnv:
     - name: LOG_LEVEL
       value: info
