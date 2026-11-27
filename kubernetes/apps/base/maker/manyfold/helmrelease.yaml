@@ -125,7 +125,7 @@ spec:
           redis:
             image:
               repository: ghcr.io/valkey-io/valkey
-              tag: 9.2.0
+              tag: 9.2.1
             args:
               - --save
               - ""
