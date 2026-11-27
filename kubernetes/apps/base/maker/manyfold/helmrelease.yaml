@@ -52,7 +52,7 @@ spec:
           app:
             image:
               repository: ghcr.io/sstr-dev/manyfold
-              tag: 0.154.3@sha256:0bd412b927b3582f7b613fb7ee506e02e0a95dd76ac1ca6d1d7fa1eb4e6af260
+              tag: 0.154.4@sha256:73a58e8b238105335c931489dc8180ac58484a936b6bbf94d1af411177851a20
             env:
               PORT: &port 3214
               PUID: 99
