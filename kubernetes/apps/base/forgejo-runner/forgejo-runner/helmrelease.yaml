@@ -67,7 +67,7 @@ spec:
             restartPolicy: Never
             containers:
               - name: main
-                image: ghcr.io/sstr-dev/forgejo-runner:26.04@sha256:e0ea96caf3f482cc88c79d9bab8046a85263f2ad2b67692fb5755818d0c9ca31
+                image: ghcr.io/sstr-dev/forgejo-runner:26.04@sha256:29748a7ee807e1a0e5657fd1971ca1f7d6c50718371341ab4bfceb7d0d6c3b83
                 imagePullPolicy: IfNotPresent
                 env:
                   - name: DEBIAN_FRONTEND
@@ -125,7 +125,7 @@ spec:
                   failureThreshold: 30
             containers:
               - name: main
-                image: ghcr.io/sstr-dev/forgejo-runner:26.04@sha256:e0ea96caf3f482cc88c79d9bab8046a85263f2ad2b67692fb5755818d0c9ca31
+                image: ghcr.io/sstr-dev/forgejo-runner:26.04@sha256:29748a7ee807e1a0e5657fd1971ca1f7d6c50718371341ab4bfceb7d0d6c3b83
                 imagePullPolicy: IfNotPresent
                 env:
                   - name: DEBIAN_FRONTEND
