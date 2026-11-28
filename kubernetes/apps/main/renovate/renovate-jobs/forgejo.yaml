@@ -26,7 +26,7 @@ spec:
           "$schema": "https://docs.renovatebot.com/renovate-schema.json",
           "extends": ["local>sstr-dev/renovate-config"]
         }
-  image: ghcr.io/renovatebot/renovate:44.256.1
+  image: ghcr.io/renovatebot/renovate:44.264.1
   parallelism: 3
   provider:
     name: forgejo
